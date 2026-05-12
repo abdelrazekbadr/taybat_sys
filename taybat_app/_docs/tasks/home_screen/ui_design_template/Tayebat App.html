@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>الطيبات · Tayebat Mobile App</title>
+<link rel="stylesheet" href="tayebat-tokens.css" />
+<style>
+  body {
+    margin: 0;
+    background: #EEF2F6;
+    font-family: 'Cairo', system-ui, sans-serif;
+    color: #0F2A36;
+  }
+  .intro {
+    max-width: 980px;
+    margin: 36px auto 8px;
+    padding: 0 28px;
+    direction: rtl;
+  }
+  .intro .kicker {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    background: #DCFCE7;
+    color: #059669;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .intro h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .intro p {
+    margin: 8px 0 0;
+    font-size: 15px;
+    line-height: 1.7;
+    color: #64748B;
+    max-width: 720px;
+  }
+  .intro .palette {
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .intro .swatch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid #E5EBF1;
+    font-size: 12px;
+    font-weight: 700;
+    color: #1E293B;
+  }
+  .intro .swatch .dot { width: 14px; height: 14px; border-radius: 4px; }
+</style>
+</head>
+<body>
+  <div class="intro">
+    <div class="kicker">🌿 الطيّبات · رحلة استشفاء</div>
+    <h1>تطبيق غذائي استشفائي — شاشات الترحيب والتسجيل والرئيسية</h1>
+    <p>
+      تصميم باللغة العربية يعتمد على نظام الألوان من العيّنات المرفقة: أخضر زمرّدي أساسي على خلفية رمادية ناعمة، مع تيبوغرافيا Cairo.
+      تحت كل قسم خيارات بديلة. ركّزنا على ٣ مفاهيم للشاشة الرئيسية لتختار الأقرب لجوهر فكرة الطيّبات: <b>الأنصات للجسد بدلاً من عدّ السعرات</b>.
+    </p>
+    <div class="palette">
+      <div class="swatch"><div class="dot" style="background:#10B981"></div>Emerald #10B981</div>
+      <div class="swatch"><div class="dot" style="background:#0F2A36"></div>Deep Navy #0F2A36</div>
+      <div class="swatch"><div class="dot" style="background:#F1F5F9;border:1px solid #E5EBF1"></div>Soft Slate #F1F5F9</div>
+      <div class="swatch"><div class="dot" style="background:#F5C24A"></div>Honey #F5C24A</div>
+      <div class="swatch"><div class="dot" style="background:#FB7185"></div>Rose #FB7185</div>
+    </div>
+  </div>
+
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="tayebat-shared.jsx"></script>
+  <script type="text/babel" src="tayebat-onboarding.jsx"></script>
+  <script type="text/babel" src="tayebat-home-a.jsx"></script>
+  <script type="text/babel" src="tayebat-home-b.jsx"></script>
+  <script type="text/babel" src="tayebat-home-c.jsx"></script>
+  <script type="text/babel" src="tayebat-home-redesign.jsx"></script>
+
+  <script type="text/babel">
+    const { useState } = React;
+
+    // wrap any screen in the iPhone shell
+    function Phone({ children, statusDark = false }) {
+      return <TbPhone width={390} height={844} statusbarDark={statusDark}>{children}</TbPhone>;
+    }
+
+    function App() {
+      return (
+        <DesignCanvas title="الطيّبات · شاشات التطبيق" subtitle="Tayebat Mobile App — Onboarding · Auth · Home (3 concepts)">
+
+          <DCSection id="onboarding" title="١ · شاشات الترحيب · Onboarding flow">
+            <DCArtboard id="splash"   label="Splash" width={390} height={844}>
+              <Phone statusDark><ScSplash/></Phone>
+            </DCArtboard>
+            <DCArtboard id="ob1"      label="Onboarding 1 — اسمع جسدك" width={390} height={844}>
+              <Phone><ScOnboard1/></Phone>
+            </DCArtboard>
+            <DCArtboard id="ob2"      label="Onboarding 2 — راقب شعورك" width={390} height={844}>
+              <Phone><ScOnboard2/></Phone>
+            </DCArtboard>
+            <DCArtboard id="ob3"      label="Onboarding 3 — خريطة المناطق" width={390} height={844}>
+              <Phone><ScOnboard3/></Phone>
+            </DCArtboard>
+            <DCArtboard id="whyjoin"  label="Onboarding 4 — لماذا تنضم" width={390} height={844}>
+              <Phone><ScWhyJoin/></Phone>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="auth" title="٢ · التسجيل والدخول · Auth">
+            <DCArtboard id="signin" label="تسجيل الدخول · Sign In" width={390} height={844}>
+              <Phone><ScSignIn/></Phone>
+            </DCArtboard>
+            <DCArtboard id="signup" label="إنشاء حساب · Sign Up" width={390} height={844}>
+              <Phone><ScSignUp/></Phone>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="home" title="٣ · الشاشة الرئيسية — ٣ مفاهيم · Home concepts">
+            <DCArtboard id="home-a" label="A · رفيق اليوم — جوع وطبق وشارة" width={390} height={844}>
+              <Phone><ScHomeA/></Phone>
+            </DCArtboard>
+            <DCArtboard id="home-b" label="B · خريطة المناطق الخمس" width={390} height={844}>
+              <Phone><ScHomeB/></Phone>
+            </DCArtboard>
+            <DCArtboard id="home-c" label="C · إشارات جسدك — راحة لا أرقام" width={390} height={844}>
+              <Phone><ScHomeC/></Phone>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="redesign" title="٤ · الرئيسية المُعاد تصميمها — تدفق كامل · Home Redesign + Meal Flow">
+            <DCArtboard id="home-new" label="الرئيسية الجديدة — رقم المشترك + شارة + وجبات اليوم" width={390} height={844}>
+              <Phone><ScHomeNew/></Phone>
+            </DCArtboard>
+            <DCArtboard id="meal-picker" label="اختاري وجبتك — تبويبات فطار/غداء/عشاء" width={390} height={844}>
+              <Phone><ScMealPicker/></Phone>
+            </DCArtboard>
+            <DCArtboard id="meal-detail" label="تفاصيل الوجبة — تقييم كل عنصر + مشاركة" width={390} height={844}>
+              <Phone><ScMealDetails/></Phone>
+            </DCArtboard>
+            <DCArtboard id="home-flow" label="تدفق تفاعلي — جرّبي الضغط على الأزرار" width={390} height={844}>
+              <Phone><ScHomeFlow/></Phone>
+            </DCArtboard>
+          </DCSection>
+
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+  </script>
+</body>
+</html>

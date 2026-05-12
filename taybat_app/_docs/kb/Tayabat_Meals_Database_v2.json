@@ -1,0 +1,919 @@
+{
+  "metadata": {
+    "system": "نظام الطيّبات",
+    "version": "2.0 - محسّنة",
+    "description": "قاعدة بيانات دقيقة تحتوي على العناصر الغذائية المذكورة فعلياً في نظام الطيّبات فقط",
+    "creator": "د. ضياء العوضي - رحمه الله",
+    "note": "تم استخراج العناصر مباشرة من الملف الأصلي دون إضافة أو اختراع",
+    "colorZones": {
+      "green": "🟢 الأخضر - الأساس الإلزامي (يومي بدون قيود)",
+      "yellow": "🟡 الأصفر - الاستخدام اليومي (مع المراقبة)",
+      "orange": "🟠 البرتقالي - الحالات المستقرة (أسبوعي 1-3 مرات)",
+      "purple": "🟣 البنفسجي - للأصحاء فقط (نادر جدا)",
+      "red": "🔴 الأحمر - الممنوع نهائيا"
+    }
+  },
+  "greenZone": [
+    {
+      "id": "G001",
+      "name": "الأرز",
+      "category": "حبوب",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "أساس النظام"
+    },
+    {
+      "id": "G002",
+      "name": "البطاطس",
+      "category": "خضار نشوية",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "أساس النظام"
+    },
+    {
+      "id": "G003",
+      "name": "زيت الزيتون",
+      "category": "زيوت",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "زيت أساسي"
+    },
+    {
+      "id": "G004",
+      "name": "الملح",
+      "category": "تتبيلات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "للطهي"
+    },
+    {
+      "id": "G005",
+      "name": "الخل",
+      "category": "تتبيلات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "خل نظيف"
+    },
+    {
+      "id": "G006",
+      "name": "التمر",
+      "category": "فواكه",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "محلي طبيعي"
+    },
+    {
+      "id": "G007",
+      "name": "السكر",
+      "category": "محليات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "محلي"
+    },
+    {
+      "id": "G008",
+      "name": "العسل",
+      "category": "محليات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "محلي طبيعي"
+    },
+    {
+      "id": "G009",
+      "name": "عصير القصب بدون مبيّض",
+      "category": "عصائر",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "يجب التأكد من خلوه من المبيضات"
+    },
+    {
+      "id": "G010",
+      "name": "فيتامين د",
+      "category": "مكملات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي",
+      "notes": "عنصر إلزامي في بروتوكول التعافي"
+    }
+  ],
+  "yellowZone": [
+    {
+      "id": "Y001",
+      "name": "الأجبان الصفراء - شيدر",
+      "category": "أجبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق"
+    },
+    {
+      "id": "Y002",
+      "name": "الأجبان الصفراء - فلمنك",
+      "category": "أجبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق"
+    },
+    {
+      "id": "Y003",
+      "name": "الأجبان الصفراء - جودا",
+      "category": "أجبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق"
+    },
+    {
+      "id": "Y004",
+      "name": "الأجبان الصفراء - كشكفال",
+      "category": "أجبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق"
+    },
+    {
+      "id": "Y005",
+      "name": "الأجبان الصفراء - بريميزان",
+      "category": "أجبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق"
+    },
+    {
+      "id": "Y006",
+      "name": "الأجبان الصفراء - ريكفورد",
+      "category": "أجبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق"
+    },
+    {
+      "id": "Y007",
+      "name": "الأجبان الصفراء - أميريكان",
+      "category": "أجبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق"
+    },
+    {
+      "id": "Y008",
+      "name": "الجبن الأبيض - المثلثات واللكويات",
+      "category": "أجبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق فقط"
+    },
+    {
+      "id": "Y009",
+      "name": "القهوة التركي غير الموجعة",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "قهوة محتاط منها"
+    },
+    {
+      "id": "Y010",
+      "name": "الأمريكاني",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "قهوة ضعيفة"
+    },
+    {
+      "id": "Y011",
+      "name": "الإسبريسو",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "قهوة"
+    },
+    {
+      "id": "Y012",
+      "name": "شاي Earl Grey - ماركة أحمد تي",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "نوع محدد"
+    },
+    {
+      "id": "Y013",
+      "name": "الشاي الأخضر",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "شاي صحي"
+    },
+    {
+      "id": "Y014",
+      "name": "مشروبات الأعشاب",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "أعشاب آمنة"
+    },
+    {
+      "id": "Y015",
+      "name": "عصائر رمضان بدون صويا",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "مشروبات موسمية"
+    },
+    {
+      "id": "Y016",
+      "name": "عصير القصب المصنع",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "عصير معلب"
+    },
+    {
+      "id": "Y017",
+      "name": "عصائر جهينة - جوافة",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة"
+    },
+    {
+      "id": "Y018",
+      "name": "عصائر جهينة - تفاح",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة"
+    },
+    {
+      "id": "Y019",
+      "name": "عصائر جهينة - عنب",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة"
+    },
+    {
+      "id": "Y020",
+      "name": "عصائر جهينة - توت",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة"
+    },
+    {
+      "id": "Y021",
+      "name": "عصائر جهينة - رمان",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة"
+    },
+    {
+      "id": "Y022",
+      "name": "الرطب",
+      "category": "فواكه",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "تمر طازج"
+    },
+    {
+      "id": "Y023",
+      "name": "مربى البلح المنزلية",
+      "category": "فواكه",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "محضرة منزليا"
+    },
+    {
+      "id": "Y024",
+      "name": "دبس البلح",
+      "category": "فواكه",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "محلي طبيعي"
+    },
+    {
+      "id": "Y025",
+      "name": "الشوكولاتة",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "بكميات محدودة"
+    },
+    {
+      "id": "Y026",
+      "name": "الفشار - ذرة بوب كورن",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ذرة مفجرة"
+    },
+    {
+      "id": "Y027",
+      "name": "الشيبس - ملح وزيت فقط",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "بدون نكهات"
+    },
+    {
+      "id": "Y028",
+      "name": "الزيتون المخلل النظيف",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "مخلل بسيط"
+    },
+    {
+      "id": "Y029",
+      "name": "السمسم",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "حبوب"
+    },
+    {
+      "id": "Y030",
+      "name": "الطحينة - سمسم فقط",
+      "category": "معجونات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "بدون إضافات"
+    },
+    {
+      "id": "Y031",
+      "name": "توست القمح الكامل بالردة",
+      "category": "حبوب",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "يجب أن يكون قابل للذوبان في الماء"
+    },
+    {
+      "id": "Y032",
+      "name": "الفلفل الأسود",
+      "category": "تتبيلات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "تتبيل"
+    },
+    {
+      "id": "Y033",
+      "name": "دبس الرمان",
+      "category": "تتبيلات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "مركز طبيعي"
+    },
+    {
+      "id": "Y034",
+      "name": "زيت دوار الشمس",
+      "category": "زيوت",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "زيت بديل"
+    },
+    {
+      "id": "Y035",
+      "name": "زيت الذرة",
+      "category": "زيوت",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "زيت بديل"
+    }
+  ],
+  "orangeZone": [
+    {
+      "id": "O001",
+      "name": "اللحم البلدي أو الجاموسي - مسلوق",
+      "category": "لحوم",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "مرة واحدة أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O002",
+      "name": "اللحم الضاني أو الجملي - مسلوق",
+      "category": "لحوم",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "مرتين أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O003",
+      "name": "اللكبدة الضاني - مسلوقة",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق"
+    },
+    {
+      "id": "O004",
+      "name": "اللكوارع - مسلوقة",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق"
+    },
+    {
+      "id": "O005",
+      "name": "لحمة الرأس - مسلوقة",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق"
+    },
+    {
+      "id": "O006",
+      "name": "الممبار - مسلوق",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق"
+    },
+    {
+      "id": "O007",
+      "name": "العكاوي - مسلوقة",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق"
+    },
+    {
+      "id": "O008",
+      "name": "لحم الأرانب - مسلوق",
+      "category": "لحوم",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق"
+    },
+    {
+      "id": "O009",
+      "name": "السمان - مسلوق",
+      "category": "طيور",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق"
+    },
+    {
+      "id": "O010",
+      "name": "الحمام - مسلوق",
+      "category": "طيور",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق"
+    },
+    {
+      "id": "O011",
+      "name": "الأسماك البحرية غير المزارع - مشوية",
+      "category": "سمك",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "بدون ثوم أو شطة"
+    },
+    {
+      "id": "O012",
+      "name": "التونة - معلبة",
+      "category": "سمك",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "معلبة فقط"
+    },
+    {
+      "id": "O013",
+      "name": "السردين - معلب",
+      "category": "سمك",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "معلب فقط"
+    },
+    {
+      "id": "O014",
+      "name": "العنب",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة"
+    },
+    {
+      "id": "O015",
+      "name": "الموز",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة"
+    },
+    {
+      "id": "O016",
+      "name": "الفراولة",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة"
+    },
+    {
+      "id": "O017",
+      "name": "التوت",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة"
+    },
+    {
+      "id": "O018",
+      "name": "الجوافة - بدون بذر ومغسولة",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "تُغسل بالبيكنج صودا"
+    },
+    {
+      "id": "O019",
+      "name": "التين",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة"
+    },
+    {
+      "id": "O020",
+      "name": "عصير الرمان - مصفى من الألياف",
+      "category": "عصائر",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "مصفى تماما"
+    },
+    {
+      "id": "O021",
+      "name": "عصير التين الشوكي - مصفى",
+      "category": "عصائر",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "مصفى تماما"
+    },
+    {
+      "id": "O022",
+      "name": "السميد - خشن",
+      "category": "حبوب",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حبوب غير أرز"
+    },
+    {
+      "id": "O023",
+      "name": "السميد - وسط",
+      "category": "حبوب",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حبوب غير أرز"
+    },
+    {
+      "id": "O024",
+      "name": "مكرونة السميد",
+      "category": "حبوب",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حبوب"
+    },
+    {
+      "id": "O025",
+      "name": "الذرة - مسلوقة",
+      "category": "حبوب",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حبوب"
+    },
+    {
+      "id": "O026",
+      "name": "البسبوسة - بدون لبن أو بيض",
+      "category": "معجنات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حلوى"
+    },
+    {
+      "id": "O027",
+      "name": "النوتيلا",
+      "category": "معجونات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "معجون الشوكولاتة"
+    },
+    {
+      "id": "O028",
+      "name": "الحلاوة الطحينية الغامقة - بدون دقيق",
+      "category": "حلويات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "بدون إضافات"
+    },
+    {
+      "id": "O029",
+      "name": "الجيلي - الغومي",
+      "category": "حلويات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حلوى"
+    },
+    {
+      "id": "O030",
+      "name": "الفندام",
+      "category": "حلويات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حلوى"
+    },
+    {
+      "id": "O031",
+      "name": "اللب السوري",
+      "category": "مسليات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "بذور"
+    },
+    {
+      "id": "O032",
+      "name": "المكسرات - جميعها ما عدا البندق",
+      "category": "مكسرات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "مسموحة"
+    },
+    {
+      "id": "O033",
+      "name": "البندق - مسلوق ومقشر",
+      "category": "مكسرات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب سلقه وتقشيره أولا"
+    },
+    {
+      "id": "O034",
+      "name": "كريمة الطبخ",
+      "category": "ألبان",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "منتج ألبان"
+    },
+    {
+      "id": "O035",
+      "name": "القشطة",
+      "category": "ألبان",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "منتج ألبان"
+    },
+    {
+      "id": "O036",
+      "name": "مربى الفراولة والتين",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "مربى"
+    },
+    {
+      "id": "O037",
+      "name": "جبنة موتزاريلا - بدون دقيق",
+      "category": "أجبان",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "جبن أبيض"
+    },
+    {
+      "id": "O038",
+      "name": "البهارات الكاملة - غير مطحونة",
+      "category": "تتبيلات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "لا تُؤكل مباشرة"
+    }
+  ],
+  "purpleZone": [
+    {
+      "id": "P001",
+      "name": "البطاطا - بدون سلق أخضر",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P002",
+      "name": "القلقاس - بدون سلق أخضر",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P003",
+      "name": "قرع العسل",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P004",
+      "name": "اللكوسة",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P005",
+      "name": "التفاح - بإزالة القشرة",
+      "category": "فواكه",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P006",
+      "name": "الكمّثرى - بإزالة القشرة",
+      "category": "فواكه",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P007",
+      "name": "اللوز",
+      "category": "مكسرات",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    }
+  ],
+  "redZone": [
+    {
+      "id": "R001",
+      "name": "البيض",
+      "category": "بروتينات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R002",
+      "name": "الفراخ",
+      "category": "لحوم",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R003",
+      "name": "الثوم",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا تماما",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R004",
+      "name": "البصل",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا تماما",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R005",
+      "name": "الطماطم",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R006",
+      "name": "البقوليات",
+      "category": "بقوليات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R007",
+      "name": "الدقيق الأبيض",
+      "category": "حبوب",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R008",
+      "name": "الحمضيات",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    }
+  ],
+  "summary": {
+    "totalItems": 103,
+    "byColor": {
+      "green": 10,
+      "yellow": 35,
+      "orange": 38,
+      "purple": 7,
+      "red": 8
+    },
+    "note": "هذه النسخة تحتوي فقط على العناصر المذكورة فعلياً في الملف الأصلي"
+  }
+}

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-fixed-variant": "#005236",
+                        "surface-tint": "#006c49",
+                        "inverse-primary": "#4edea3",
+                        "primary-fixed-dim": "#4edea3",
+                        "primary": "#006c49",
+                        "on-tertiary-fixed-variant": "#3c475a",
+                        "tertiary-container": "#98a3ba",
+                        "surface-bright": "#f4fbf4",
+                        "on-secondary": "#ffffff",
+                        "on-background": "#161d19",
+                        "on-primary-fixed": "#002113",
+                        "surface-container-high": "#e3eae3",
+                        "tertiary-fixed": "#d8e3fb",
+                        "surface-container-highest": "#dde4dd",
+                        "tertiary-fixed-dim": "#bcc7de",
+                        "primary-fixed": "#6ffbbe",
+                        "on-tertiary-container": "#2e394c",
+                        "on-secondary-fixed-variant": "#004e61",
+                        "secondary-fixed-dim": "#6cd3f7",
+                        "secondary-fixed": "#b7eaff",
+                        "surface-container-low": "#eef6ee",
+                        "surface-variant": "#dde4dd",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#d4dcd5",
+                        "secondary": "#006780",
+                        "on-secondary-container": "#006077",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#e8f0e9",
+                        "outline-variant": "#bbcabf",
+                        "secondary-container": "#76dcff",
+                        "on-primary": "#ffffff",
+                        "tertiary": "#545f73",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface": "#161d19",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "surface": "#f4fbf4",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#ebf3eb",
+                        "background": "#f4fbf4",
+                        "on-primary-container": "#00422b",
+                        "on-secondary-fixed": "#001f28",
+                        "inverse-surface": "#2b322d",
+                        "on-tertiary-fixed": "#111c2d",
+                        "outline": "#6c7a71",
+                        "on-surface-variant": "#3c4a42",
+                        "primary-container": "#10b981"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "container-padding": "24px",
+                        "stack-sm": "12px",
+                        "base": "8px",
+                        "stack-md": "20px",
+                        "stack-lg": "32px"
+                    },
+                    "fontFamily": {
+                        "sans": ["Cairo", "ui-sans-serif", "system-ui"]
+                    },
+                    "fontSize": {
+                        "h3": ["20px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "600"}],
+                        "h1": ["32px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "700"}],
+                        "h2": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "700"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                        "caption": ["12px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Cairo', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bento-bg {
+            background-image: radial-gradient(circle at 2px 2px, rgba(0, 108, 73, 0.05) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col selection:bg-primary-fixed-dim selection:text-on-primary-fixed bento-bg">
+<main class="flex-grow flex flex-col items-center justify-center px-container-padding py-stack-lg relative overflow-hidden">
+<!-- Background Organic Shape -->
+<div class="absolute top-[-10%] left-[-10%] w-[400px] h-[400px] bg-primary-container/10 rounded-full blur-3xl -z-10"></div>
+<div class="absolute bottom-[-5%] right-[-5%] w-[300px] h-[300px] bg-secondary-container/10 rounded-full blur-3xl -z-10"></div>
+<!-- Brand Header Section -->
+<header class="text-center mb-stack-lg animate-in fade-in slide-in-from-top-4 duration-700">
+<div class="inline-flex items-center justify-center p-4 bg-white rounded-2xl shadow-sm shadow-primary/5 mb-stack-sm">
+<span class="material-symbols-outlined text-[48px] text-primary" data-icon="eco" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<h1 class="font-h1 text-primary tracking-tight mb-2">الطيبات</h1>
+<p class="font-body-lg text-on-surface-variant max-w-xs mx-auto">انضم إلى عائلة الطيبات</p>
+</header>
+<!-- Selection Card -->
+<section class="w-full max-w-md bg-white rounded-[24px] shadow-sm shadow-cyan-900/5 border border-surface-container-highest p-8 pb-6">
+<!-- Social Login Cluster -->
+<div class="space-y-4 mb-stack-lg">
+<!-- Apple -->
+<button class="w-full h-12 flex items-center justify-center gap-3 border border-outline-variant rounded-xl font-label-md text-on-surface hover:bg-surface-container transition-colors active:scale-[0.98] duration-150">
+<span class="material-symbols-outlined" data-icon="apple">ios</span>
+<span>المتابعة باستخدام Apple</span>
+</button>
+<!-- Google -->
+<button class="w-full h-12 flex items-center justify-center gap-3 border border-outline-variant rounded-xl font-label-md text-on-surface hover:bg-surface-container transition-colors active:scale-[0.98] duration-150">
+<img alt="Google logo" class="w-5 h-5" data-alt="Official Google G logo in its signature four colors on a transparent background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA1_AByHFuKaAcrp_T94CjCC8V3O6qm18UkpzCqtX_XzIyUE2bqn8Oi65AE7bo3hsW8fFxWDHBg_1Pt5oOmLP3yNd8-Dt_xJntNbHvNAFgiWsGeboatn4XlPcuVAe8YG7X6s35xUo6eHRpw1qwu3pMjXvPE5gLNbSOgfXQRnwRcHheAkagVP-tmjKHyCijgHtV8d2klfLJmouJ1azzW-bqODJsViqFEjNIWvADr0r2yXCnaUp-A3J5e7AujhuytOfw5HpM_7042mHHk"/>
+<span>المتابعة باستخدام Google</span>
+</button>
+<!-- Facebook -->
+<button class="w-full h-12 flex items-center justify-center gap-3 border border-outline-variant rounded-xl font-label-md text-on-surface hover:bg-surface-container transition-colors active:scale-[0.98] duration-150">
+<span class="material-symbols-outlined text-[#1877F2]" data-icon="facebook" style="font-variation-settings: 'FILL' 1;">social_leaderboard</span>
+<span>المتابعة باستخدام Facebook</span>
+</button>
+</div>
+<!-- Separator -->
+<div class="relative flex items-center gap-4 mb-stack-lg">
+<div class="flex-grow h-px bg-outline-variant"></div>
+<span class="font-caption text-outline">أو</span>
+<div class="flex-grow h-px bg-outline-variant"></div>
+</div>
+<!-- Email Registration CTA -->
+<div class="space-y-6">
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-h3 shadow-md shadow-primary/20 hover:bg-on-primary-fixed-variant transition-all active:scale-[0.97]">
+                    إنشاء حساب جديد
+                </button>
+<div class="text-center">
+<p class="font-body-md text-on-surface-variant">
+                        لديك حساب بالفعل؟
+                        <a class="text-secondary font-semibold hover:underline decoration-secondary/30 underline-offset-4" href="#">تسجيل الدخول</a>
+</p>
+</div>
+</div><div class="mt-6 pt-4 border-t border-surface-container-highest flex justify-center">
+<button class="text-on-surface-variant font-label-md hover:text-primary transition-colors flex items-center gap-2 group active:scale-95 duration-150">
+<span>تخطي، سأقوم بالتسجيل لاحقاً</span>
+<span class="material-symbols-outlined text-lg group-hover:translate-x-[-4px] transition-transform" data-icon="arrow_back">arrow_back</span>
+</button>
+</div>
+</section>
+<!-- Footer Visual/Trust Element -->
+<footer class="mt-stack-lg text-center opacity-60">
+<div class="flex items-center justify-center gap-2 mb-stack-sm">
+<span class="material-symbols-outlined text-sm" data-icon="verified_user">verified_user</span>
+<span class="font-caption">بياناتك آمنة ومشفرة بالكامل</span>
+</div>
+<div class="relative w-48 h-12 mx-auto mt-4 overflow-hidden rounded-full grayscale opacity-30">
+<img class="w-full h-full object-cover" data-alt="A subtle composition of minimal health and wellness trust badges in soft gray tones on a white background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAia5nCaoYnDSss1gIJgheTMw6bstkqhZ8q7N6eacYefA4d9vPvQ6VyP431B9keU5lM8MvrxKmLwsywRjURXtnodV87zRGBpynO2EOGvR5lHzhMaLUoLOvjxWBNTdw5vOKzgHKjSdN3PS58Fgtnss4SXPC4M4cntCPj3NXdHLVitD6HKtQT55m1yHkrFyeavV6eo2uA8gIMJcFNkjXrQMgXL5nuCLqya4kXG7lnr24w7_O47CkFy4n-w4eqMch2FcquJgJeI-U8wQJU"/>
+</div>
+</footer>
+</main>
+<!-- Bottom Decorative Mesh (Simplified for CSS) -->
+<div class="fixed bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary-container opacity-20"></div>
+</body></html>

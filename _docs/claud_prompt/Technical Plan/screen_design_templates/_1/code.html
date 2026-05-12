@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2b322d",
+                    "surface": "#f4fbf4",
+                    "secondary-container": "#76dcff",
+                    "secondary-fixed": "#b7eaff",
+                    "surface-container-high": "#e3eae3",
+                    "on-secondary-fixed-variant": "#004e61",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#bbcabf",
+                    "on-background": "#161d19",
+                    "surface-variant": "#dde4dd",
+                    "inverse-on-surface": "#ebf3eb",
+                    "surface-container-highest": "#dde4dd",
+                    "primary-fixed-dim": "#4edea3",
+                    "on-secondary-container": "#006077",
+                    "on-tertiary-fixed-variant": "#3c475a",
+                    "surface-container": "#e8f0e9",
+                    "tertiary-fixed": "#d8e3fb",
+                    "on-surface": "#161d19",
+                    "inverse-primary": "#4edea3",
+                    "background": "#f4fbf4",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#f4fbf4",
+                    "surface-dim": "#d4dcd5",
+                    "on-tertiary": "#ffffff",
+                    "primary-container": "#10b981",
+                    "secondary-fixed-dim": "#6cd3f7",
+                    "surface-container-low": "#eef6ee",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#2e394c",
+                    "primary": "#006c49",
+                    "tertiary-container": "#98a3ba",
+                    "secondary": "#006780",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#005236",
+                    "tertiary": "#545f73",
+                    "on-surface-variant": "#3c4a42",
+                    "on-secondary-fixed": "#001f28",
+                    "primary-fixed": "#6ffbbe",
+                    "tertiary-fixed-dim": "#bcc7de",
+                    "on-primary-container": "#00422b",
+                    "surface-tint": "#006c49",
+                    "on-primary-fixed": "#002113",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#111c2d",
+                    "outline": "#6c7a71"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "stack-lg": "32px",
+                    "base": "8px",
+                    "stack-md": "20px",
+                    "stack-sm": "12px",
+                    "container-padding": "24px"
+            },
+            "fontFamily": {
+              "sans": ["Cairo", "sans-serif"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h2": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "700"}],
+                    "h1": ["32px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h3": ["20px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "caption": ["12px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f4fbf4;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .form-input-focus:focus {
+            outline: none;
+            border-color: #006c49;
+            box-shadow: 0 0 0 2px rgba(0, 108, 73, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start sm:justify-center p-container-padding bg-surface">
+<div class="w-full max-w-md bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden border border-outline-variant/30">
+<header class="pt-10 pb-6 px-8 text-center">
+<div class="mb-4 inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-container/10">
+<span class="material-symbols-outlined text-primary text-[32px]">person_add</span>
+</div>
+<h1 class="font-sans text-h1 text-on-surface mb-2">إنشاء حسابك</h1>
+<p class="font-sans text-body-md text-on-surface-variant">معلومات بسيطة لتخصيص نظامك</p>
+</header>
+<form class="px-8 pb-10 space-y-stack-md">
+<div class="space-y-2">
+<label class="block font-sans text-label-md text-on-surface text-right pr-1" for="full-name">الاسم الكامل</label>
+<div class="relative">
+<input class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-xl font-sans text-body-md text-on-surface text-right form-input-focus transition-all" id="full-name" placeholder="أدخل اسمك بالكامل" type="text"/>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">person</span>
+</div>
+</div><div class="space-y-2">
+<label class="block font-sans text-label-md text-on-surface text-right pr-1" for="email">البريد الإلكتروني</label>
+<div class="relative">
+<input class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-xl font-sans text-body-md text-on-surface text-right form-input-focus transition-all" id="email" placeholder="أدخل بريدك الإلكتروني" type="email"/>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">mail</span>
+</div>
+</div><div class="space-y-2">
+<label class="block font-sans text-label-md text-on-surface text-right pr-1" for="password">كلمة المرور</label>
+<div class="relative">
+<input class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-xl font-sans text-body-md text-on-surface text-right form-input-focus transition-all" id="password" placeholder="أدخل كلمة المرور" type="password"/>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline cursor-pointer hover:text-primary transition-colors">visibility</span>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block font-sans text-label-md text-on-surface text-right pr-1" for="phone">رقم الهاتف</label>
+<div class="flex gap-2">
+<div class="relative w-1/4">
+<select class="w-full h-12 pr-4 pl-8 bg-surface-container-low border border-outline-variant rounded-xl font-sans text-body-md text-on-surface appearance-none form-input-focus">
+<option>+966</option>
+<option>+971</option>
+<option>+965</option>
+<option>+20</option>
+</select>
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+</div>
+<div class="relative flex-1">
+<input class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-xl font-sans text-body-md text-on-surface text-left dir-ltr form-input-focus transition-all" id="phone" placeholder="50 000 0000" type="tel"/>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline">call</span>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block font-sans text-label-md text-on-surface text-right pr-1" for="dob">تاريخ الميلاد / العمر</label>
+<div class="relative">
+<input class="w-full h-12 px-4 bg-surface-container-low border border-outline-variant rounded-xl font-sans text-body-md text-on-surface text-right form-input-focus transition-all" id="dob" type="date"/>
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline pointer-events-none">calendar_month</span>
+</div>
+</div>
+<div class="space-y-3">
+<label class="block font-sans text-label-md text-on-surface text-right pr-1">الجنس</label>
+<div class="grid grid-cols-3 gap-3">
+<label class="cursor-pointer">
+<input class="peer hidden" name="gender" type="radio" value="male"/>
+<div class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-xl bg-surface-container-low peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-outline peer-checked:text-primary mb-1">male</span>
+<span class="font-sans text-caption text-on-surface-variant">ذكر</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer hidden" name="gender" type="radio" value="female"/>
+<div class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-xl bg-surface-container-low peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-outline peer-checked:text-primary mb-1">female</span>
+<span class="font-sans text-caption text-on-surface-variant">أنثى</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input checked="" class="peer hidden" name="gender" type="radio" value="none"/>
+<div class="flex flex-col items-center justify-center p-3 border border-outline-variant rounded-xl bg-surface-container-low peer-checked:border-primary peer-checked:bg-primary/5 transition-all">
+<span class="material-symbols-outlined text-outline peer-checked:text-primary mb-1">block</span>
+<span class="font-sans text-caption text-on-surface-variant text-center leading-tight">أفضل عدم التحديد</span>
+</div>
+</label>
+</div>
+</div>
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-sans text-h3 shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2 mt-stack-lg" type="button">
+<span>التالي</span>
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div class="pt-4 text-center">
+<p class="font-sans text-caption text-on-surface-variant">
+                    لديك حساب بالفعل؟ 
+                    <a class="text-primary font-semibold hover:underline decoration-primary" href="#">تسجيل الدخول</a>
+</p>
+</div>
+</form>
+</div>
+<div class="mt-8 flex gap-6 opacity-30 grayscale pointer-events-none">
+<img alt="logo" class="h-8 w-auto" data-alt="minimalist logo for health app with clean green geometric shapes and organic leaf motif" src="https://lh3.googleusercontent.com/aida-public/AB6AXuATtcO4a4OICmqkdawnVcPrgLfIuGH7dDok-jDNDJytkVECTMWNDSULHnjiMa80pUAhZxKl0mwXD4epvPiyB7j1dNj---28JBau3j5Ej_yvIg0i02luSOuri7QwmutojMkzmdWkVf_QZRr0zLqIy339DpULvX6ArPIxOv0JR4irndoirHF3Ul5FQa8Z--81R1APpg1Q2qjRexBPcooC-V-LYHrdfdPuJSVcdmkQ-3-UaMlwg8_xAqIoqygctCgOjA907Y_VE9gn_oIH"/>
+</div>
+<div class="fixed top-0 left-0 w-full h-full -z-10 bg-surface">
+<div class="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-primary-container/10 rounded-full blur-[100px]"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-secondary-container/10 rounded-full blur-[100px]"></div>
+</div>
+</body></html>

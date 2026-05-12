@@ -1,0 +1,40 @@
+i want act as mobile react native architectect and technical team leader i want to implemt code with abstract layers or design man layout without detail or full implementation
+
+
+Fetch this design file, read its readme, and implement the relevant aspects of the design. https://api.anthropic.com/v1/design/h/n1zJOm_mEYZeojLMImxoPw?open_file=Tayebat+App.html
+
+- now we need to generate task to  implment home screen layout only  from previous link 
+
+- extract data structure needed and create mockup data will replace 
+this will replace later with supabase layer backend i need now fast proto type 
+expected data structure
+this my ideas i need to complete data and models explected 
+- meals: expect information from @_docs/kb/Tayabat_Meals_Database_v2.json 
+- meal_item:
+- user : simulate static logged in user include me include subscriber_id sequence integer
+user also include  meals_preferences ,..
+- meals_preferences: include active and is_favorite to for future use
+- user_meals:this for users meals transaction per day user_id,meal_id,meal_items_ids,datetime ,...
+this table so important for statistics later
+meal_items_ids is  ids compination string example  1,2,3
+validate max 3 meals per day 
+
+system gool:
+the app used to track users mail and measure health enhancement based on food plan
+ to extract finally success story or fail story when implement this al tayebat system
+so we need also data structure to register user rating every 7 day per user this important statsic include some question bloean on rating and health generalrating
+when design data structure we need to take performance in our consideration minimal data and detil mesured question for accurate measurement
+
+as technical leader and architechure make analysis to geneate tasks 
+ use sequence number in file name format like 01_{task_name}.md 
+ don't focus on code implementation just abstract layout or abstract function
+  be clean , short , simple, don't complicate task , focus on app architecture  ,
+   fast delivery , consider performance and storage scale don't use fields or data not used 
+
+ - for tasks related to app structure and archtechure and data structure types focus on app will scall
+  and need more measurement save output in folder  @app_structure  under @_docs/tasks/ 
+- tasks related home screen save it folder @home_screen under @_docs/tasks/ 
+
+ 
+
+

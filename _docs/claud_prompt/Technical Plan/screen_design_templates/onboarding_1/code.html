@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2b322d",
+                    "surface": "#f4fbf4",
+                    "secondary-container": "#76dcff",
+                    "secondary-fixed": "#b7eaff",
+                    "surface-container-high": "#e3eae3",
+                    "on-secondary-fixed-variant": "#004e61",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#bbcabf",
+                    "on-background": "#161d19",
+                    "surface-variant": "#dde4dd",
+                    "inverse-on-surface": "#ebf3eb",
+                    "surface-container-highest": "#dde4dd",
+                    "primary-fixed-dim": "#4edea3",
+                    "on-secondary-container": "#006077",
+                    "on-tertiary-fixed-variant": "#3c475a",
+                    "surface-container": "#e8f0e9",
+                    "tertiary-fixed": "#d8e3fb",
+                    "on-surface": "#161d19",
+                    "inverse-primary": "#4edea3",
+                    "background": "#f4fbf4",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#f4fbf4",
+                    "surface-dim": "#d4dcd5",
+                    "on-tertiary": "#ffffff",
+                    "primary-container": "#10b981",
+                    "secondary-fixed-dim": "#6cd3f7",
+                    "surface-container-low": "#eef6ee",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#2e394c",
+                    "primary": "#006c49",
+                    "tertiary-container": "#98a3ba",
+                    "secondary": "#006780",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#005236",
+                    "tertiary": "#545f73",
+                    "on-surface-variant": "#3c4a42",
+                    "on-secondary-fixed": "#001f28",
+                    "primary-fixed": "#6ffbbe",
+                    "tertiary-fixed-dim": "#bcc7de",
+                    "on-primary-container": "#00422b",
+                    "surface-tint": "#006c49",
+                    "on-primary-fixed": "#002113",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#111c2d",
+                    "outline": "#6c7a71"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "stack-lg": "32px",
+                    "base": "8px",
+                    "stack-md": "20px",
+                    "stack-sm": "12px",
+                    "container-padding": "24px"
+            },
+            "fontFamily": {
+                "sans": ["system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "sans-serif"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h2": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "700"}],
+                    "h1": ["32px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h3": ["20px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "caption": ["12px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body {
+            background-color: #f4fbf4; /* surface-bright */
+            color: #161d19; /* on-surface */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex flex-col font-sans">
+<!-- Top Navigation Suppression: As per rules, navigation is suppressed for onboarding -->
+<header class="flex justify-between items-center px-container-padding py-6">
+<div class="flex items-center gap-2">
+<span class="text-primary font-h3 font-bold">الطيبات</span>
+</div>
+<button class="text-on-surface-variant font-label-md text-label-md px-4 py-2 hover:bg-surface-container transition-colors rounded-full">
+            تخطي
+        </button>
+</header>
+<main class="flex-grow flex flex-col items-center justify-center px-container-padding pb-stack-lg">
+<!-- Hero Illustration -->
+<div class="w-full max-w-md aspect-square relative mb-stack-lg overflow-hidden rounded-[2rem] bg-emerald-50/50 flex items-center justify-center">
+<img alt="Mindful wellness illustration" class="w-full h-full object-cover mix-blend-multiply opacity-90" data-alt="A peaceful person sitting in a meditative pose surrounded by lush green leaves and soft sunlight, evoking healing and nature" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVYVOJMcT4orecnCz3hxYLIXXv8XgbG8inmDp3DpPvJU3WdsBmyRzDHgav5hw1DUcDktIcZHetV9_IMQRifM4y9p33q-SRy9-BlIgYqvJJ0GW2HDWSoVW_f6AqIHGSCnzRsUG5Gs9JW4ZbA9mw-_UHfhyTgyC1BL-5bTOPmue0RpUf2C5092oleEuBDdXPWD3RlV2k6HULpckS7hqzUNEEhAKUdFq1dP-kPsHqRnJlUKi4MCFCFVV6ICKEBSva3eREzS7SMY0Dru8t"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent opacity-40"></div>
+</div>
+<!-- Content Stack -->
+<div class="w-full max-w-xl text-center flex flex-col gap-stack-sm">
+<h1 class="font-h1 text-h1 text-on-surface tracking-tight">
+                اسمع جسدك، لا تعد السعرات
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-stack-md leading-relaxed">
+                نظام الطيبات يركز على الأكل عند الجوع الحقيقي واختيار أطعمة تشفي الجسم من الالتهاب
+            </p>
+<!-- Feature Chips/List -->
+<div class="flex flex-col gap-4 text-right items-start mx-auto w-fit">
+<div class="flex items-center gap-3 bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/30 w-full">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface">أطعمة مسموحة محددة بوضوح</span>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/30 w-full">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface">الأكل عند الجوع الفعلي، لا على جدول</span>
+</div>
+<div class="flex items-center gap-3 bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/30 w-full">
+<div class="flex-shrink-0 w-8 h-8 rounded-full bg-primary-container/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-body-md text-body-md text-on-surface">الاستماع لإشارات جسدك</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Fixed Action Bar -->
+<footer class="p-container-padding pb-10 flex flex-col items-center gap-6">
+<!-- Progress Indicators -->
+<div class="flex gap-2">
+<div class="w-8 h-2 rounded-full bg-primary"></div>
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+</div>
+<button class="w-full max-w-md h-14 bg-primary text-on-primary font-label-md text-lg rounded-full shadow-lg shadow-primary/20 flex items-center justify-center gap-2 active:scale-95 transition-transform">
+<span>التالي</span>
+<span class="material-symbols-outlined transform rotate-180">arrow_forward</span>
+</button>
+</footer>
+</body></html>

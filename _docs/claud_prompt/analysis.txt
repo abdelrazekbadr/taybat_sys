@@ -1,0 +1,30 @@
+اولا
+قم بالتعديل في ملف data structure file
+لكي تضم البيانات التالية
+قم باضافة العناصر اللازمة حتي يتم عرض داشبورد تحليلية للمستخدم لمعرفة التحسن الاسبوعي او الشهري
+
+ثانيا
+قم بعمل خطة فنية تنفيذية للتطبيق  باللغة الانجليزية تغطي الخصائص التالي
+
+* suppose supabase represent backend DB
+1- react native mobile app simple architecture  including  layers
+
+* UI Layer , 
+* Store layer (zustand) 
+* Service Layer (supabase client)
+* localization(multi language - Arabic ,RTL first ,)
+2- Analysis for  1 splash screen and 4 onboarding screens  ready to implement
+3- Analysis for sign-up screen with 4 Options
+
+* gmail account
+* facebook account
+* apple account
+* custom register
+* after finish complete data registration like sex , complains types , age,weight , goal of subscription
+mobile numbers
+ return to first analysis to recommend what data need to collect with minimal input 
+4- custom sign up name , email ,password easy and simple registeration suggest skip and create account alter in any required screen laters to make user not delete or cancel app  need user have aplity to view app first and complete reuired information later 
+
+5- login screen if have account 
+6- create app layout pages ,tapped button bottom page empty don't make anlaysis detail for other pages
+like home, library, schedules , profile  , setting , meal setting  this pages we will discuss in detail later

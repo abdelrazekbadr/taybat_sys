@@ -1,0 +1,1650 @@
+{
+  "metadata": {
+    "system": "نظام الطيّبات",
+    "version": "1.0",
+    "description": "قاعدة بيانات شاملة لجميع الأطعمة والمشروبات في نظام الطيّبات",
+    "creator": "د. ضياء العوضي - رحمه الله",
+    "colorZones": {
+      "green": "الأخضر - الأساس الإلزامي (يومي بدون قيود)",
+      "yellow": "الأصفر - الاستخدام اليومي (مع المراقبة)",
+      "orange": "البرتقالي - الحالات المستقرة (أسبوعي)",
+      "purple": "البنفسجي - للأصحاء فقط (نادر جدا)",
+      "red": "الأحمر - الممنوع نهائيا"
+    },
+    "ratingScale": {
+      "5": "آمن جداً - أساسي",
+      "4": "آمن - يومي",
+      "3": "محتاط - مع مراقبة",
+      "2": "محدود - نادر",
+      "1": "ممنوع نهائياً"
+    }
+  },
+  "meals": [
+    {
+      "id": "G001",
+      "name": "الأرز",
+      "nameEN": "Rice",
+      "category": "حبوب",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "أساس النظام، آمن تماما للجميع"
+    },
+    {
+      "id": "G002",
+      "name": "البطاطس",
+      "nameEN": "Potatoes",
+      "category": "خضار نشوية",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "أساس النظام، آمن تماما"
+    },
+    {
+      "id": "G003",
+      "name": "زيت الزيتون",
+      "nameEN": "Olive Oil",
+      "category": "زيوت",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "زيت صحي، أساسي في النظام"
+    },
+    {
+      "id": "G004",
+      "name": "الملح",
+      "nameEN": "Salt",
+      "category": "تتبيلات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "للطهي والتتبيل الأساسي"
+    },
+    {
+      "id": "G005",
+      "name": "الخل",
+      "nameEN": "Vinegar",
+      "category": "تتبيلات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "خل نظيف للطهي"
+    },
+    {
+      "id": "G006",
+      "name": "التمر",
+      "nameEN": "Dates",
+      "category": "فواكه مجففة",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "محلي طبيعي آمن"
+    },
+    {
+      "id": "G007",
+      "name": "السكر",
+      "nameEN": "Sugar",
+      "category": "محليات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "محلي مسموح"
+    },
+    {
+      "id": "G008",
+      "name": "العسل",
+      "nameEN": "Honey",
+      "category": "محليات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "محلي طبيعي آمن"
+    },
+    {
+      "id": "G009",
+      "name": "عصير القصب بدون مبيّض",
+      "nameEN": "Sugarcane Juice (without bleach)",
+      "category": "عصائر",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي بدون قيود",
+      "notes": "يجب التأكد من خلو العصير من المبيضات"
+    },
+    {
+      "id": "G010",
+      "name": "فيتامين د",
+      "nameEN": "Vitamin D",
+      "category": "مكملات",
+      "color": "green",
+      "rating": 5,
+      "frequency": "يومي",
+      "notes": "عنصر إلزامي في بروتوكول التعافي"
+    },
+    {
+      "id": "Y001",
+      "name": "الزبدة الطبيعية",
+      "nameEN": "Butter",
+      "category": "منتجات ألبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "راقب أعراض الهضم"
+    },
+    {
+      "id": "Y002",
+      "name": "السمنة الطبيعية",
+      "nameEN": "Ghee",
+      "category": "منتجات ألبان",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "راقب الأعراض الهضمية"
+    },
+    {
+      "id": "Y003",
+      "name": "جبنة شيدر",
+      "nameEN": "Cheddar Cheese",
+      "category": "أجبان صفراء",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن أصفر معتق"
+    },
+    {
+      "id": "Y004",
+      "name": "جبنة فلمنك",
+      "nameEN": "Fleminck Cheese",
+      "category": "أجبان صفراء",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن أصفر معتق"
+    },
+    {
+      "id": "Y005",
+      "name": "جبنة جودا",
+      "nameEN": "Gouda Cheese",
+      "category": "أجبان صفراء",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن أصفر معتق"
+    },
+    {
+      "id": "Y006",
+      "name": "جبنة كشكفال",
+      "nameEN": "Kashkaval Cheese",
+      "category": "أجبان صفراء",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن أصفر معتق"
+    },
+    {
+      "id": "Y007",
+      "name": "جبنة بريميزان",
+      "nameEN": "Parmisan Cheese",
+      "category": "أجبان صفراء",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن أصفر معتق"
+    },
+    {
+      "id": "Y008",
+      "name": "جبنة ريكفورد",
+      "nameEN": "Roquefort Cheese",
+      "category": "أجبان صفراء",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن أصفر معتق"
+    },
+    {
+      "id": "Y009",
+      "name": "جبنة أميريكان",
+      "nameEN": "American Cheese",
+      "category": "أجبان صفراء",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن أصفر معتق"
+    },
+    {
+      "id": "Y010",
+      "name": "الجبن الأبيض - المثلثات",
+      "nameEN": "White Cheese Triangles",
+      "category": "أجبان بيضاء معتقة",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق فقط"
+    },
+    {
+      "id": "Y011",
+      "name": "الجبن الأبيض - اللكويات",
+      "nameEN": "White Cheese (Lakouiates)",
+      "category": "أجبان بيضاء معتقة",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "جبن معتق فقط"
+    },
+    {
+      "id": "Y012",
+      "name": "القهوة التركي غير الموجعة",
+      "nameEN": "Turkish Coffee (Mild)",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "قهوة مشروب محتاط، راقب الأعراض"
+    },
+    {
+      "id": "Y013",
+      "name": "الأمريكاني",
+      "nameEN": "Americano",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "قهوة ضعيفة"
+    },
+    {
+      "id": "Y014",
+      "name": "الإسبريسو",
+      "nameEN": "Espresso",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "قهوة عالية التركيز"
+    },
+    {
+      "id": "Y015",
+      "name": "شاي Earl Grey ماركة أحمد تي",
+      "nameEN": "Earl Grey Tea (Ahmad Tea)",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "نوع محدد من الشاي الأسود"
+    },
+    {
+      "id": "Y016",
+      "name": "الشاي الأخضر",
+      "nameEN": "Green Tea",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "شاي صحي"
+    },
+    {
+      "id": "Y017",
+      "name": "مشروبات الأعشاب",
+      "nameEN": "Herbal Drinks",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "أنواع آمنة من الأعشاب"
+    },
+    {
+      "id": "Y018",
+      "name": "عصائر رمضان (بدون صويا)",
+      "nameEN": "Ramadan Drinks (without soy)",
+      "category": "مشروبات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "مشروبات موسمية، تجنب الصويا"
+    },
+    {
+      "id": "Y019",
+      "name": "عصير القصب المصنع",
+      "nameEN": "Manufactured Sugarcane Juice",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "عصائر معلبة"
+    },
+    {
+      "id": "Y020",
+      "name": "عصير جهينة - جوافة",
+      "nameEN": "Juhayna Juice - Guava",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة وآمنة"
+    },
+    {
+      "id": "Y021",
+      "name": "عصير جهينة - تفاح",
+      "nameEN": "Juhayna Juice - Apple",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة وآمنة"
+    },
+    {
+      "id": "Y022",
+      "name": "عصير جهينة - عنب",
+      "nameEN": "Juhayna Juice - Grape",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة وآمنة"
+    },
+    {
+      "id": "Y023",
+      "name": "عصير جهينة - توت",
+      "nameEN": "Juhayna Juice - Berry",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة وآمنة"
+    },
+    {
+      "id": "Y024",
+      "name": "عصير جهينة - رمان",
+      "nameEN": "Juhayna Juice - Pomegranate",
+      "category": "عصائر",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ماركة محددة وآمنة"
+    },
+    {
+      "id": "Y025",
+      "name": "الرطب",
+      "nameEN": "Fresh Dates",
+      "category": "فواكه",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "تمر طازج"
+    },
+    {
+      "id": "Y026",
+      "name": "مربى البلح المنزلية",
+      "nameEN": "Homemade Date Jam",
+      "category": "فواكه مجهزة",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "محضرة في البيت"
+    },
+    {
+      "id": "Y027",
+      "name": "دبس البلح",
+      "nameEN": "Date Molasses",
+      "category": "فواكه مجهزة",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "محلي طبيعي"
+    },
+    {
+      "id": "Y028",
+      "name": "الشوكولاتة",
+      "nameEN": "Chocolate",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "بكميات محدودة"
+    },
+    {
+      "id": "Y029",
+      "name": "الفشار - ذرة بوب كورن",
+      "nameEN": "Popcorn",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "ذرة مفجرة بدون إضافات"
+    },
+    {
+      "id": "Y030",
+      "name": "الشيبس - ملح وزيت فقط",
+      "nameEN": "Chips (Salt and Oil only)",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "بدون نكهات أخرى"
+    },
+    {
+      "id": "Y031",
+      "name": "الزيتون المخلل النظيف",
+      "nameEN": "Clean Pickled Olives",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "مخلل بسيط نظيف"
+    },
+    {
+      "id": "Y032",
+      "name": "السمسم",
+      "nameEN": "Sesame",
+      "category": "مسليات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "حبوب السمسم"
+    },
+    {
+      "id": "Y033",
+      "name": "الطحينة - سمسم فقط",
+      "nameEN": "Tahini (Sesame only)",
+      "category": "معجونات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "بدون إضافات"
+    },
+    {
+      "id": "Y034",
+      "name": "توست القمح الكامل بالردة",
+      "nameEN": "Whole Wheat Toast with Bran",
+      "category": "حبوب",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "يجب أن يكون قابل للذوبان في الماء"
+    },
+    {
+      "id": "Y035",
+      "name": "الفلفل الأسود",
+      "nameEN": "Black Pepper",
+      "category": "تتبيلات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "تتبيل آمن"
+    },
+    {
+      "id": "Y036",
+      "name": "دبس الرمان",
+      "nameEN": "Pomegranate Molasses",
+      "category": "تتبيلات",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "مركز طبيعي"
+    },
+    {
+      "id": "Y037",
+      "name": "زيت دوار الشمس",
+      "nameEN": "Sunflower Oil",
+      "category": "زيوت",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "زيت صحي بديل"
+    },
+    {
+      "id": "Y038",
+      "name": "زيت الذرة",
+      "nameEN": "Corn Oil",
+      "category": "زيوت",
+      "color": "yellow",
+      "rating": 4,
+      "frequency": "يومي مع مراقبة",
+      "notes": "زيت صحي بديل"
+    },
+    {
+      "id": "O001",
+      "name": "اللحم البلدي أو الجاموسي - مسلوق",
+      "nameEN": "Beef (Boiled)",
+      "category": "لحوم",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "مرة واحدة أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O002",
+      "name": "اللحم الضاني أو الجملي - مسلوق",
+      "nameEN": "Lamb or Camel Meat (Boiled)",
+      "category": "لحوم",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "مرتين أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O003",
+      "name": "اللكبدة الضاني - مسلوقة",
+      "nameEN": "Lamb Liver (Boiled)",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O004",
+      "name": "اللكوارع - مسلوقة",
+      "nameEN": "Trotters (Boiled)",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O005",
+      "name": "لحمة الرأس - مسلوقة",
+      "nameEN": "Head Meat (Boiled)",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O006",
+      "name": "الممبار - مسلوق",
+      "nameEN": "Mumbar (Boiled)",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O007",
+      "name": "العكاوي - مسلوقة",
+      "nameEN": "Organs (Boiled)",
+      "category": "أحشاء",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O008",
+      "name": "لحم الأرانب - مسلوق",
+      "nameEN": "Rabbit Meat (Boiled)",
+      "category": "لحوم",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O009",
+      "name": "السمان - مسلوق",
+      "nameEN": "Quail (Boiled)",
+      "category": "طيور",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O010",
+      "name": "الحمام - مسلوق",
+      "nameEN": "Pigeon (Boiled)",
+      "category": "طيور",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب السلق الطويل"
+    },
+    {
+      "id": "O011",
+      "name": "الأسماك البحرية غير المزارع - مشوية",
+      "nameEN": "Sea Fish (Grilled)",
+      "category": "سمك",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "بدون ثوم أو شطة"
+    },
+    {
+      "id": "O012",
+      "name": "التونة المعلبة",
+      "nameEN": "Canned Tuna",
+      "category": "سمك",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "معلبة فقط"
+    },
+    {
+      "id": "O013",
+      "name": "السردين المعلب",
+      "nameEN": "Canned Sardines",
+      "category": "سمك",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "معلبة فقط"
+    },
+    {
+      "id": "O014",
+      "name": "العنب",
+      "nameEN": "Grapes",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة آمنة"
+    },
+    {
+      "id": "O015",
+      "name": "الموز",
+      "nameEN": "Banana",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة آمنة"
+    },
+    {
+      "id": "O016",
+      "name": "الفراولة",
+      "nameEN": "Strawberry",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة آمنة"
+    },
+    {
+      "id": "O017",
+      "name": "التوت",
+      "nameEN": "Berries",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة آمنة"
+    },
+    {
+      "id": "O018",
+      "name": "الجوافة - بدون بذر ومغسولة",
+      "nameEN": "Guava (seedless and washed)",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "تُغسل بالبيكنج صودا"
+    },
+    {
+      "id": "O019",
+      "name": "التين",
+      "nameEN": "Figs",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "فاكهة آمنة"
+    },
+    {
+      "id": "O020",
+      "name": "عصير الرمان المصفى من الألياف",
+      "nameEN": "Pomegranate Juice (fiber-free)",
+      "category": "عصائر",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "مصفى تماما من الألياف"
+    },
+    {
+      "id": "O021",
+      "name": "عصير التين الشوكي المصفى",
+      "nameEN": "Prickly Pear Juice (fiber-free)",
+      "category": "عصائر",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "مصفى تماما من الألياف"
+    },
+    {
+      "id": "O022",
+      "name": "السميد - خشن",
+      "nameEN": "Semolina (coarse)",
+      "category": "حبوب",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حبوب غير أرز"
+    },
+    {
+      "id": "O023",
+      "name": "السميد - وسط",
+      "nameEN": "Semolina (medium)",
+      "category": "حبوب",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حبوب غير أرز"
+    },
+    {
+      "id": "O024",
+      "name": "مكرونة السميد",
+      "nameEN": "Semolina Pasta",
+      "category": "حبوب",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حبوب غير أرز"
+    },
+    {
+      "id": "O025",
+      "name": "الذرة المسلوقة",
+      "nameEN": "Boiled Corn",
+      "category": "حبوب",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حبوب غير أرز"
+    },
+    {
+      "id": "O026",
+      "name": "البسبوسة - بدون لبن أو بيض",
+      "nameEN": "Basboosa (no milk or eggs)",
+      "category": "معجنات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حلوى آمنة"
+    },
+    {
+      "id": "O027",
+      "name": "النوتيلا",
+      "nameEN": "Nutella",
+      "category": "معجونات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "معجون الشوكولاتة"
+    },
+    {
+      "id": "O028",
+      "name": "الحلاوة الطحينية الغامقة - بدون دقيق",
+      "nameEN": "Dark Tahini Halawa (no flour)",
+      "category": "حلويات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "بدون إضافات"
+    },
+    {
+      "id": "O029",
+      "name": "الجيلي - الغومي",
+      "nameEN": "Jelly (Gummy)",
+      "category": "حلويات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حلوى آمنة"
+    },
+    {
+      "id": "O030",
+      "name": "الفندام",
+      "nameEN": "Fondant",
+      "category": "حلويات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "حلوى آمنة"
+    },
+    {
+      "id": "O031",
+      "name": "اللب السوري",
+      "nameEN": "Sunflower Seeds",
+      "category": "مسليات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "بذور آمنة"
+    },
+    {
+      "id": "O032",
+      "name": "جميع المكسرات الأخرى",
+      "nameEN": "Other Nuts",
+      "category": "مكسرات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "مسموحة ما عدا البندق"
+    },
+    {
+      "id": "O033",
+      "name": "البندق - مسلوق ومقشر",
+      "nameEN": "Hazelnuts (Boiled and peeled)",
+      "category": "مكسرات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "يجب سلقه وتقشيره أولا"
+    },
+    {
+      "id": "O034",
+      "name": "كريمة الطبخ",
+      "nameEN": "Cooking Cream",
+      "category": "منتجات ألبان",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "منتج ألبان"
+    },
+    {
+      "id": "O035",
+      "name": "القشطة",
+      "nameEN": "Clotted Cream",
+      "category": "منتجات ألبان",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "منتج ألبان"
+    },
+    {
+      "id": "O036",
+      "name": "مربى الفراولة والتين",
+      "nameEN": "Strawberry and Fig Jam",
+      "category": "فواكه",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "مربى آمنة"
+    },
+    {
+      "id": "O037",
+      "name": "جبنة موتزاريلا - بدون دقيق",
+      "nameEN": "Mozzarella Cheese (no flour)",
+      "category": "أجبان",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "جبن أبيض طازجة"
+    },
+    {
+      "id": "O038",
+      "name": "البهارات الكاملة - غير مطحونة",
+      "nameEN": "Whole Spices (not ground)",
+      "category": "تتبيلات",
+      "color": "orange",
+      "rating": 3,
+      "frequency": "1-3 مرات أسبوعيا",
+      "notes": "لا تُؤكل مباشرة"
+    },
+    {
+      "id": "P001",
+      "name": "البطاطا - بدون سلق أخضر",
+      "nameEN": "Potatoes (no green boiling)",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P002",
+      "name": "القلقاس - بدون سلق أخضر",
+      "nameEN": "Taro (no green boiling)",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P003",
+      "name": "قرع العسل",
+      "nameEN": "Honey Squash",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P004",
+      "name": "اللكوسة",
+      "nameEN": "Zucchini",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P005",
+      "name": "المشروم - الفطر",
+      "nameEN": "Mushrooms",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P006",
+      "name": "البلوبيف - لحم بقري",
+      "nameEN": "Beef - Blue Meat",
+      "category": "لحوم",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P007",
+      "name": "التفاح - بإزالة القشرة",
+      "nameEN": "Apple (peeled)",
+      "category": "فواكه",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P008",
+      "name": "الكمّثرى - بإزالة القشرة",
+      "nameEN": "Pear (peeled)",
+      "category": "فواكه",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P009",
+      "name": "اللوز",
+      "nameEN": "Almonds",
+      "category": "مكسرات",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P010",
+      "name": "الذرة المشوية",
+      "nameEN": "Roasted Corn",
+      "category": "خضار",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P011",
+      "name": "البهارات المفرومة - البودرة",
+      "nameEN": "Ground Spices",
+      "category": "تتبيلات",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P012",
+      "name": "المستردة",
+      "nameEN": "Mustard",
+      "category": "تتبيلات",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P013",
+      "name": "المايونيز النباتي",
+      "nameEN": "Vegetable Mayonnaise",
+      "category": "تتبيلات",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P014",
+      "name": "الكاتشب",
+      "nameEN": "Ketchup",
+      "category": "تتبيلات",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "P015",
+      "name": "الجبنة التركي - الرومي",
+      "nameEN": "Turkish Cheese (Rumi)",
+      "category": "أجبان",
+      "color": "purple",
+      "rating": 2,
+      "frequency": "نادر جدا - للأصحاء فقط",
+      "notes": "ممنوع للحالات المرضية"
+    },
+    {
+      "id": "R001",
+      "name": "البيض",
+      "nameEN": "Eggs",
+      "category": "بروتينات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R002",
+      "name": "الفراخ - الدجاج",
+      "nameEN": "Chicken",
+      "category": "لحوم",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R003",
+      "name": "البط",
+      "nameEN": "Duck",
+      "category": "لحوم",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R004",
+      "name": "الديك الرومي",
+      "nameEN": "Turkey",
+      "category": "لحوم",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R005",
+      "name": "سمك المزارع",
+      "nameEN": "Farmed Fish",
+      "category": "سمك",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R006",
+      "name": "سمك المياه العذبة",
+      "nameEN": "Freshwater Fish",
+      "category": "سمك",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R007",
+      "name": "الجمبري",
+      "nameEN": "Shrimp",
+      "category": "بحريات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R008",
+      "name": "السبيط",
+      "nameEN": "Squid",
+      "category": "بحريات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R009",
+      "name": "البلطي",
+      "nameEN": "Tilapia",
+      "category": "سمك",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R010",
+      "name": "البوري",
+      "nameEN": "Mullet",
+      "category": "سمك",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R011",
+      "name": "البطارخ",
+      "nameEN": "Fish Roe",
+      "category": "بحريات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R012",
+      "name": "اللانشون",
+      "nameEN": "Luncheon Meat",
+      "category": "لحوم معالجة",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R013",
+      "name": "الثوم",
+      "nameEN": "Garlic",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا تماما",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R014",
+      "name": "البصل",
+      "nameEN": "Onion",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا تماما",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R015",
+      "name": "الفلفل",
+      "nameEN": "Pepper",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R016",
+      "name": "الطماطم",
+      "nameEN": "Tomato",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R017",
+      "name": "الخضرة",
+      "nameEN": "Greens",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "جميع أنواع الخضرة الورقية"
+    },
+    {
+      "id": "R018",
+      "name": "الورقيات",
+      "nameEN": "Leafy Vegetables",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "جميع الخضار الورقية"
+    },
+    {
+      "id": "R019",
+      "name": "الباذنجان",
+      "nameEN": "Eggplant",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R020",
+      "name": "الجزر",
+      "nameEN": "Carrot",
+      "category": "خضار",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R021",
+      "name": "الفول",
+      "nameEN": "Fava Beans",
+      "category": "بقوليات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R022",
+      "name": "العدس",
+      "nameEN": "Lentils",
+      "category": "بقوليات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R023",
+      "name": "الفاصوليا",
+      "nameEN": "Beans",
+      "category": "بقوليات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R024",
+      "name": "اللوبيا",
+      "nameEN": "Black-eyed Peas",
+      "category": "بقوليات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R025",
+      "name": "الحمص",
+      "nameEN": "Chickpeas",
+      "category": "بقوليات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R026",
+      "name": "السوداني",
+      "nameEN": "Peanuts",
+      "category": "بقوليات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R027",
+      "name": "فول الصويا",
+      "nameEN": "Soy",
+      "category": "بقوليات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R028",
+      "name": "الدقيق الأبيض",
+      "nameEN": "White Flour",
+      "category": "حبوب",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R029",
+      "name": "العيش البلدي",
+      "nameEN": "Egyptian Bread",
+      "category": "خبز",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R030",
+      "name": "العيش السن",
+      "nameEN": "White Bread",
+      "category": "خبز",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R031",
+      "name": "المكرونة التقليدية",
+      "nameEN": "Regular Pasta",
+      "category": "حبوب",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R032",
+      "name": "الشوفان المدلفن",
+      "nameEN": "Rolled Oats",
+      "category": "حبوب",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R033",
+      "name": "البقسماط",
+      "nameEN": "Biscuit",
+      "category": "حبوب",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R034",
+      "name": "اللكيك",
+      "nameEN": "Cake",
+      "category": "معجنات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R035",
+      "name": "اللبن الجاموسي",
+      "nameEN": "Buffalo Milk",
+      "category": "ألبان",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R036",
+      "name": "اللبن البقري",
+      "nameEN": "Cow Milk",
+      "category": "ألبان",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R037",
+      "name": "الأجبان البيضاء الطازجة",
+      "nameEN": "White Fresh Cheese",
+      "category": "أجبان",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R038",
+      "name": "الجبنة القديمة",
+      "nameEN": "Old Cheese",
+      "category": "أجبان",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R039",
+      "name": "جبنة كيري",
+      "nameEN": "Kiri Cheese",
+      "category": "أجبان",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R040",
+      "name": "كريمة مبيّض القهوة",
+      "nameEN": "Coffee Whitener",
+      "category": "ألبان",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R041",
+      "name": "البطيخ",
+      "nameEN": "Watermelon",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R042",
+      "name": "الحمضيات - عام",
+      "nameEN": "Citrus",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "جميع الحمضيات"
+    },
+    {
+      "id": "R043",
+      "name": "الليمون",
+      "nameEN": "Lemon",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R044",
+      "name": "اللكيوي",
+      "nameEN": "Kiwi",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R045",
+      "name": "الأناناس",
+      "nameEN": "Pineapple",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R046",
+      "name": "المانجو",
+      "nameEN": "Mango",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R047",
+      "name": "الكانتالوب",
+      "nameEN": "Cantaloupe",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R048",
+      "name": "الكاكا",
+      "nameEN": "Persimmon",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R049",
+      "name": "البابا",
+      "nameEN": "Papaya",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R050",
+      "name": "الأفوكادو",
+      "nameEN": "Avocado",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R051",
+      "name": "الدوم - أكل",
+      "nameEN": "Doum (eating)",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R052",
+      "name": "الخروب - أكل",
+      "nameEN": "Carob (eating)",
+      "category": "فواكه",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R053",
+      "name": "الصودا",
+      "nameEN": "Soda",
+      "category": "مشروبات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R054",
+      "name": "مشروبات الطاقة",
+      "nameEN": "Energy Drinks",
+      "category": "مشروبات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R055",
+      "name": "شراب الشعير",
+      "nameEN": "Barley Drink",
+      "category": "مشروبات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R056",
+      "name": "الصويا",
+      "nameEN": "Soy",
+      "category": "مشروبات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R057",
+      "name": "الزنجبيل",
+      "nameEN": "Ginger",
+      "category": "مشروبات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    },
+    {
+      "id": "R058",
+      "name": "الشطة الحارة",
+      "nameEN": "Hot Chili",
+      "category": "مشروبات",
+      "color": "red",
+      "rating": 1,
+      "frequency": "ممنوع نهائيا",
+      "notes": "حتى داخل المنتجات الأخرى"
+    }
+  ],
+  "summary": {
+    "totalItems": 174,
+    "byColor": {
+      "green": 10,
+      "yellow": 39,
+      "orange": 39,
+      "purple": 15,
+      "red": 58
+    },
+    "byCategory": {
+      "حبوب": 12,
+      "خضار": 25,
+      "فواكه": 28,
+      "لحوم": 15,
+      "سمك": 12,
+      "بحريات": 5,
+      "ألبان": 18,
+      "أجبان": 15,
+      "مشروبات": 22,
+      "عصائر": 8,
+      "حلويات": 12,
+      "مسليات": 15,
+      "معجنات": 8,
+      "مكملات": 1,
+      "تتبيلات": 12,
+      "زيوت": 3,
+      "محليات": 3,
+      "بقوليات": 7
+    }
+  },
+  "notes": {
+    "important": "هذه القاعدة البيانات شاملة لجميع الأطعمة المذكورة في نظام الطيّبات",
+    "version": "1.0",
+    "lastUpdated": "2025-05-02",
+    "source": "دليل الطيّبات - نظام الدكتور ضياء العوضي رحمه الله"
+  }
+}

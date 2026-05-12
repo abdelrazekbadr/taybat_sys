@@ -1,0 +1,248 @@
+/* الطيبات — design tokens
+   Inspired by sample screenshots: emerald green primary on soft slate background.
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&family=Tajawal:wght@400;500;700;800&display=swap');
+
+:root {
+  /* Brand */
+  --tb-green: #10B981;           /* primary emerald */
+  --tb-green-deep: #059669;
+  --tb-green-soft: #DCFCE7;
+  --tb-green-tint: #E8F7F0;
+  --tb-green-grad-from: #1ED49A;
+  --tb-green-grad-to:   #0CA170;
+
+  /* Zone colors (the 5 healing zones) */
+  --tb-zone-green:  #10B981;
+  --tb-zone-yellow: #F5C24A;
+  --tb-zone-orange: #F08A4B;
+  --tb-zone-purple: #9B7AC8;
+  --tb-zone-red:    #E36A6A;
+
+  /* Neutrals */
+  --tb-bg:       #F1F5F9;        /* page bg */
+  --tb-bg-tint:  #EAF0F6;
+  --tb-card:     #FFFFFF;
+  --tb-line:     #E5EBF1;
+  --tb-line-soft:#EEF2F6;
+
+  --tb-ink:      #0F2A36;        /* deep navy text */
+  --tb-ink-2:    #1E293B;
+  --tb-muted:    #64748B;
+  --tb-muted-2:  #94A3B8;
+
+  /* Accents */
+  --tb-honey:    #F5C24A;
+  --tb-rose:     #FB7185;
+
+  /* Shape */
+  --tb-r-sm: 10px;
+  --tb-r:    14px;
+  --tb-r-lg: 20px;
+  --tb-r-xl: 28px;
+
+  /* Shadows */
+  --tb-shadow-1: 0 1px 2px rgba(15,42,54,0.04), 0 4px 14px rgba(15,42,54,0.05);
+  --tb-shadow-2: 0 4px 14px rgba(15,42,54,0.06), 0 18px 40px rgba(15,42,54,0.08);
+  --tb-shadow-green: 0 8px 22px rgba(16,185,129,0.30);
+
+  /* Type */
+  --tb-font-ar: 'Cairo', 'Tajawal', 'Segoe UI Arabic', system-ui, sans-serif;
+  --tb-font-en: 'Cairo', system-ui, -apple-system, sans-serif;
+}
+
+.tb-app {
+  font-family: var(--tb-font-ar);
+  direction: rtl;
+  color: var(--tb-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.tb-screen {
+  width: 100%;
+  height: 100%;
+  background: var(--tb-bg);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.tb-scroll {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.tb-scroll::-webkit-scrollbar { display: none; }
+
+/* Buttons */
+.tb-btn {
+  height: 54px;
+  border-radius: 14px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: transform .15s ease, box-shadow .2s ease;
+  user-select: none;
+}
+.tb-btn:active { transform: scale(0.985); }
+
+.tb-btn-primary {
+  background: linear-gradient(180deg, var(--tb-green-grad-from), var(--tb-green-grad-to));
+  color: #fff;
+  box-shadow: var(--tb-shadow-green);
+}
+.tb-btn-ghost {
+  background: transparent;
+  color: var(--tb-green-deep);
+  border: 1.5px solid var(--tb-green);
+}
+.tb-btn-soft {
+  background: #fff;
+  color: var(--tb-ink);
+  border: 1px solid var(--tb-line);
+}
+
+/* Inputs */
+.tb-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.tb-field label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tb-muted);
+  padding: 0 4px;
+}
+.tb-input {
+  height: 54px;
+  background: #fff;
+  border: 1px solid var(--tb-line);
+  border-radius: 14px;
+  padding: 0 18px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--tb-ink);
+  font-weight: 500;
+  text-align: right;
+  outline: none;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.tb-input:focus {
+  border-color: var(--tb-green);
+  box-shadow: 0 0 0 4px rgba(16,185,129,0.10);
+}
+
+/* Cards */
+.tb-card {
+  background: var(--tb-card);
+  border-radius: var(--tb-r-lg);
+  box-shadow: var(--tb-shadow-1);
+}
+
+/* Pills / chips */
+.tb-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--tb-muted);
+  border: 1px solid var(--tb-line);
+}
+
+/* Soft tile (rounded inset for stat numbers etc) */
+.tb-stat {
+  background: #fff;
+  border-radius: 18px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: var(--tb-shadow-1);
+}
+.tb-stat .v { font-weight: 800; font-size: 24px; color: var(--tb-ink); letter-spacing: -0.5px; }
+.tb-stat .l { font-size: 11.5px; color: var(--tb-muted); font-weight: 600; }
+
+/* Section header */
+.tb-section-h {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 4px;
+  margin-bottom: 12px;
+}
+.tb-section-h h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--tb-ink);
+}
+.tb-section-h a {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--tb-green-deep);
+  text-decoration: none;
+}
+
+/* Bottom nav (shared) */
+.tb-tabbar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  align-items: center;
+  background: #fff;
+  border-top: 1px solid var(--tb-line-soft);
+  padding: 10px 8px 22px;
+}
+.tb-tab {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--tb-muted-2);
+}
+.tb-tab.active { color: var(--tb-green-deep); }
+.tb-tab .badge-dot {
+  position: absolute;
+  width: 8px; height: 8px; border-radius: 999px; background: var(--tb-rose);
+  top: -2px; left: -4px; border: 2px solid #fff;
+}
+.tb-fab-tab {
+  width: 56px; height: 56px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--tb-green-grad-from), var(--tb-green-grad-to));
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  margin-top: -28px;
+  box-shadow: var(--tb-shadow-green);
+}
+
+/* Utility */
+.tb-leaf-watermark {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.06;
+  color: var(--tb-ink);
+}
+
+/* tap-style placeholder image (subtle stripes) */
+.tb-placeholder {
+  background:
+    repeating-linear-gradient(135deg, rgba(15,42,54,0.04) 0 8px, rgba(15,42,54,0.02) 8px 16px),
+    var(--tb-green-tint);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--tb-muted);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  letter-spacing: 0.2px;
+}

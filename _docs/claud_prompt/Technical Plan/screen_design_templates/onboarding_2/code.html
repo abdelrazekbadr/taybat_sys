@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="ar"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "inverse-surface": "#2b322d",
+                    "surface": "#f4fbf4",
+                    "secondary-container": "#76dcff",
+                    "secondary-fixed": "#b7eaff",
+                    "surface-container-high": "#e3eae3",
+                    "on-secondary-fixed-variant": "#004e61",
+                    "on-secondary": "#ffffff",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#bbcabf",
+                    "on-background": "#161d19",
+                    "surface-variant": "#dde4dd",
+                    "inverse-on-surface": "#ebf3eb",
+                    "surface-container-highest": "#dde4dd",
+                    "primary-fixed-dim": "#4edea3",
+                    "on-secondary-container": "#006077",
+                    "on-tertiary-fixed-variant": "#3c475a",
+                    "surface-container": "#e8f0e9",
+                    "tertiary-fixed": "#d8e3fb",
+                    "on-surface": "#161d19",
+                    "inverse-primary": "#4edea3",
+                    "background": "#f4fbf4",
+                    "error": "#ba1a1a",
+                    "surface-bright": "#f4fbf4",
+                    "surface-dim": "#d4dcd5",
+                    "on-tertiary": "#ffffff",
+                    "primary-container": "#10b981",
+                    "secondary-fixed-dim": "#6cd3f7",
+                    "surface-container-low": "#eef6ee",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-container": "#2e394c",
+                    "primary": "#006c49",
+                    "tertiary-container": "#98a3ba",
+                    "secondary": "#006780",
+                    "on-error": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed-variant": "#005236",
+                    "tertiary": "#545f73",
+                    "on-surface-variant": "#3c4a42",
+                    "on-secondary-fixed": "#001f28",
+                    "primary-fixed": "#6ffbbe",
+                    "tertiary-fixed-dim": "#bcc7de",
+                    "on-primary-container": "#00422b",
+                    "surface-tint": "#006c49",
+                    "on-primary-fixed": "#002113",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#111c2d",
+                    "outline": "#6c7a71"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "gutter": "16px",
+                    "stack-lg": "32px",
+                    "base": "8px",
+                    "stack-md": "20px",
+                    "stack-sm": "12px",
+                    "container-padding": "24px"
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h2": ["24px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "700"}],
+                    "h1": ["32px", {"lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400"}],
+                    "h3": ["20px", {"lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "caption": ["12px", {"lineHeight": "1.2", "letterSpacing": "0", "fontWeight": "400"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #f4fbf4;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col overflow-hidden">
+<!-- Content Canvas -->
+<main class="flex-grow flex flex-col px-container-padding pt-12 pb-stack-lg max-w-md mx-auto w-full relative">
+<!-- Header Section with Brand Identity -->
+<header class="mb-stack-lg flex justify-between items-center">
+<div class="w-12 h-1 bg-primary-container rounded-full opacity-30"></div>
+<div class="flex gap-2">
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+<div class="w-6 h-2 rounded-full bg-primary-container"></div>
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+</div>
+<button class="text-primary font-label-md text-label-md">تخطي</button>
+</header>
+<!-- Illustration Section -->
+<section class="flex-grow flex flex-col items-center justify-center text-center">
+<div class="relative w-full aspect-square mb-stack-lg flex items-center justify-center">
+<!-- Decorative background elements -->
+<div class="absolute inset-0 bg-primary-container/10 rounded-full blur-3xl scale-75"></div>
+<div class="absolute top-10 left-10 w-16 h-16 bg-secondary-container/20 rounded-full blur-xl"></div>
+<div class="relative z-10 w-full max-w-[280px] h-full flex items-center justify-center">
+<img alt="Person feeling relieved" class="w-full h-full object-contain rounded-3xl mix-blend-multiply opacity-90" data-alt="A person sitting in a peaceful meditative pose, eyes closed with a gentle smile, surrounded by soft glowing green and blue light rays, minimal artistic style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrIfknnAcp3seGtFWiJESXRgr97Kj1vYsmbJMdg8qeuGQ2qmxJ1IR1nJjWFdCSlRLP9CUOJ-UcmInzJcjpHzRGZfma5kp_NHIt9umpaX5h6EPflpJoEfKudJCfuXdF7RJW7HumbprsSq2aCJpHmc7rz9fR7zLeTOApNPvW5gwgwKUGPivy62tvGf45FaAPGsrb6jPWIxLBfEr8F2Wn8clWsNV7rxDyScuSCF5w8UI0gQXU9Y3slq8Ml8j2EDnxGfao5PEuvU7JfoGy"/>
+</div>
+</div>
+<!-- Typography Content -->
+<div class="space-y-stack-sm text-right w-full">
+<h1 class="font-h1 text-h1 text-on-surface tracking-tight">راقب شعورك يتحسن</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant opacity-80 leading-relaxed">
+                    كل أسبوع سنسأل عن شعورك ونقيس تحسنك من خلال الراحة والعافية، ليس الأرقام.
+                </p>
+</div>
+<!-- Features Bento-lite Grid -->
+<div class="mt-stack-lg grid grid-cols-1 gap-4 w-full text-right">
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-surface-container-high flex items-center gap-4 transition-all hover:shadow-sm">
+<div class="bg-primary-container/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">تقييمات أسبوعية بسيطة</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-surface-container-high flex items-center gap-4 transition-all hover:shadow-sm">
+<div class="bg-primary-container/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">military_tech</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">شارات التحفيز لتشجيعك</span>
+</div>
+<div class="bg-surface-container-lowest p-4 rounded-xl border border-surface-container-high flex items-center gap-4 transition-all hover:shadow-sm">
+<div class="bg-primary-container/10 p-2 rounded-lg text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">analytics</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">رسوم بيانية توضح تحسنك</span>
+</div>
+</div>
+</section>
+<!-- Action Footer -->
+<footer class="mt-auto pt-stack-lg">
+<button class="w-full h-14 bg-primary text-on-primary rounded-xl font-h3 text-h3 flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-[0.98] transition-all">
+                التالي
+                <span class="material-symbols-outlined">arrow_back</span>
+</button>
+</footer>
+</main>
+<!-- Support Elements: Decorative Grain Overlays -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.03] mix-blend-overlay">
+<svg viewbox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+<filter id="noiseFilter">
+<feturbulence basefrequency="0.65" numoctaves="3" stitchtiles="stitch" type="fractalNoise"></feturbulence>
+</filter>
+<rect filter="url(#noiseFilter)" height="100%" width="100%"></rect>
+</svg>
+</div>
+</body></html>
