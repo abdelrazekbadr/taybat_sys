@@ -1,0 +1,23 @@
+
+
+create plan for stats screen 
+the goal:
+- user can submit weekly health evaluation and can review his health timeline 
+- user can open screen by notification card exist in home screen or open by click bottom navigation menu 
+- consider easy selection , modern design  on the reply without  many data inputs entry
+
+
+screen description:
+screen contain 2 filter badget button work as tabs centerlized in mobile screen
+- first tab content  screen give us the next  weekly evaluation date and stats question 
+all items aprear but user cannot select or sumbit untill open evaluation
+you can view the data structure and enhancement based on knowledge base if we needed 
+"WeeklyRating" 
+at "/Users/abadr/Documents/Abadr/Projects/taybat_sys/taybat_app/types/index.ts"
+
+- second tab contain chart indicate general enhancement rating timeline for current user
+for weakly rating and yearly rating per month mke empty template if no assined rating 
+
+include in paning best chart performance in react native mobile app
+save plan in dir "/Users/abadr/Documents/Abadr/Projects/taybat_sys/taybat_app/_docs/analysis"
+

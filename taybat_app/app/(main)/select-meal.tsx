@@ -1,16 +1,19 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, ScrollView, TouchableOpacity, ActivityIndicator, Image, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from 'react-native-paper';
 
-import { ChevronLeft, ChevronRight, Plus } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, LayersPlus } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { StarRating } from '@/components/common/StarRating';
 import { useRTL } from '@/hooks/useRTL';
 import { useMealsStore } from '@/stores/meals.store';
+import { useUserMealsStore } from '@/stores/userMeals.store';
+import { useUserStore } from '@/stores/user.store';
 import type { Meal } from '@/types';
 import { getZoneMeta, toArabicNumerals } from '@/utils/zoneUtils';
 
@@ -24,93 +27,158 @@ const TABS = [
 
 type TabKey = (typeof TABS)[number]['key'];
 
-const MEAL_SLOT_MAP: Record<number, TabKey> = {
-  1: 'breakfast',
-  2: 'lunch',
-  3: 'dinner',
+const TAB_TYPE_NUM: Record<TabKey, string> = {
+  breakfast: '1',
+  lunch: '2',
+  dinner: '3',
 };
 
+const defaultFoodImage = require('../../assets/images/food/risotto.png');
+
 export default function SelectMealScreen() {
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const { initialTab, replaceUserMealId } = useLocalSearchParams<{
+    initialTab?: string;
+    replaceUserMealId?: string;
+  }>();
   const { meals, initializeMeals, isLoading } = useMealsStore();
-  const [activeTab, setActiveTab] = useState<TabKey>('breakfast');
+  const { userMeals, initializeUserMeals } = useUserMealsStore();
+  const { user, initializeUser } = useUserStore();
+  const initialTabValue = Array.isArray(initialTab) ? initialTab[0] : initialTab;
+  const resolvedInitialTab: TabKey =
+    initialTabValue === 'lunch' ? 'lunch' : initialTabValue === 'dinner' ? 'dinner' : 'breakfast';
+  const [activeTab, setActiveTab] = useState<TabKey>(resolvedInitialTab);
   const { isRTL, rowDir } = useRTL();
 
   useEffect(() => {
     if (!meals.length) initializeMeals();
   }, [meals.length, initializeMeals]);
 
-  const filteredMeals: Meal[] = meals.filter((m) => MEAL_SLOT_MAP[m.id] === activeTab);
+  useEffect(() => {
+    if (!user) initializeUser();
+  }, [initializeUser, user]);
+
+  useEffect(() => {
+    if (!userMeals.length) initializeUserMeals();
+  }, [initializeUserMeals, userMeals.length]);
+
+  const activeTypeNum = TAB_TYPE_NUM[activeTab];
+  const filteredMeals: Meal[] = meals.filter((m) =>
+    m.meal_type_ids.split(',').map((s) => s.trim()).includes(activeTypeNum)
+  );
+
+  const lastWeekCountsByMealId = useMemo(() => {
+    const now = new Date();
+    const end = new Date(now);
+    end.setHours(23, 59, 59, 999);
+
+    const start = new Date(now);
+    start.setDate(start.getDate() - 6);
+    start.setHours(0, 0, 0, 0);
+
+    const counts: Record<number, number> = {};
+    for (const log of userMeals) {
+      const logDate = log.date ? new Date(`${log.date}T00:00:00.000Z`) : new Date(log.datetime);
+      if (Number.isNaN(logDate.getTime())) continue;
+      if (logDate < start || logDate > end) continue;
+      counts[log.meal_id] = (counts[log.meal_id] ?? 0) + 1;
+    }
+    return counts;
+  }, [userMeals]);
+
+  const isReplaceFlow = typeof replaceUserMealId === 'string' && replaceUserMealId.length > 0;
+  const headerTitle = isReplaceFlow ? 'قم بتبديل وجبتك' : 'اختر وجبتك';
 
   return (
-    <View style={styles.screen}>
+    <View className="flex-1 bg-app-background">
       {/* header */}
-      <View style={[styles.header, { paddingTop: insets.top + 12, flexDirection: rowDir }]}>
-        <TouchableOpacity style={styles.backBtn} onPress={() => router.back()} activeOpacity={0.7}>
-          {isRTL ? <ChevronRight size={22} color="#0F2A36" strokeWidth={2.5} /> : <ChevronLeft size={22} color="#0F2A36" strokeWidth={2.5} />}
+      <View className="flex-row items-center justify-between px-[20px] pb-2" style={{ paddingTop: insets.top + 12, flexDirection: rowDir }}>
+        <TouchableOpacity
+          className="h-10 w-10 items-center justify-center rounded-full border border-app-line bg-app-surface"
+          onPress={() => router.back()}
+          activeOpacity={0.7}
+        >
+          {isRTL ? (
+            <ChevronRight size={22} color={theme.colors.onSurface} strokeWidth={2.5} />
+          ) : (
+            <ChevronLeft size={22} color={theme.colors.onSurface} strokeWidth={2.5} />
+          )}
         </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <AppText style={styles.headerSub}>من نظام الطيّبات</AppText>
-          <AppText variant="bold" style={styles.headerTitle}>اختار وجبتك</AppText>
+        <View className="items-center gap-0.5">
+          <AppText variant="bold" className="text-center text-[17px] leading-6 text-app-navy">{headerTitle}</AppText>
         </View>
-        <View style={styles.headerSpacer} />
+        <View className="w-10" />
       </View>
 
       {/* tabs */}
-      <View style={styles.tabsWrapper}>
-        <View style={[styles.tabsContainer, { flexDirection: rowDir }]}>
-          {TABS.map((t) => {
-            const isActive = t.key === activeTab;
-            return (
-              <TouchableOpacity
-                key={t.key}
-                style={styles.tabBtn}
-                onPress={() => setActiveTab(t.key)}
-                activeOpacity={0.8}
-              >
-                {isActive ? (
-                  <LinearGradient
-                    colors={['#1ED49A', '#0CA170']}
-                    style={styles.tabBtnActive}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                  >
-                    <AppText variant="bold" style={styles.tabLabelActive}>{t.label}</AppText>
-                  </LinearGradient>
-                ) : (
-                  <View style={styles.tabBtnInactive}>
-                    <AppText variant="bold" style={styles.tabLabelInactive}>{t.label}</AppText>
-                  </View>
-                )}
-              </TouchableOpacity>
-            );
-          })}
+      <View className="px-[22px] py-3">
+        <View
+          className="self-center"
+          style={{ width: '100%', maxWidth: 380 }}
+        >
+          <View className="flex-row gap-2" style={{ flexDirection: rowDir }}>
+            {TABS.map((t) => {
+              const isActive = t.key === activeTab;
+              return (
+                <TouchableOpacity
+                  key={t.key}
+                  onPress={() => setActiveTab(t.key)}
+                  activeOpacity={0.85}
+                  className="flex-1 overflow-hidden rounded-full"
+                >
+                  {isActive ? (
+                    <LinearGradient
+                      colors={[theme.colors.secondary, theme.colors.primary]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 0 }}
+                      style={{ borderRadius: 999 }}
+                    >
+                      <View className="items-center justify-center rounded-full px-5 py-2.5 shadow-sm shadow-black/10">
+                        <AppText variant="bold" className="text-[13px] leading-5 text-white">
+                          {t.label}
+                        </AppText>
+                      </View>
+                    </LinearGradient>
+                  ) : (
+                    <View className="items-center justify-center rounded-full border border-app-lineSoft bg-app-surface px-5 py-2.5">
+                      <AppText variant="bold" className="text-[13px] leading-5 text-app-textSoft">
+                        {t.label}
+                      </AppText>
+                    </View>
+                  )}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
         </View>
       </View>
 
       {/* list */}
       {isLoading ? (
-        <View style={styles.loading}>
-          <ActivityIndicator color="#10B981" />
+        <View className="flex-1 items-center justify-center">
+          <ActivityIndicator color={theme.colors.primary} />
         </View>
       ) : (
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-        >
-          <AppText style={styles.countLabel}>
-            {toArabicNumerals(filteredMeals.length)} اقتراحات مناسبة لمرحلتك الحالية
-          </AppText>
-          {filteredMeals.map((meal) => (
-            <MealCard
-              key={meal.id}
-              meal={meal}
-              onPress={() =>
-                router.push({ pathname: '/(main)/meal-detail', params: { mealId: String(meal.id) } })
-              }
-            />
-          ))}
+        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+          <View className="px-[22px] pb-6">
+            <AppText className="mb-2 text-[12px] leading-[18px] text-app-textSoft">
+              {toArabicNumerals(filteredMeals.length)} اقتراحات مناسبة لمرحلتك الحالية
+            </AppText>
+            <View className="gap-2.5">
+              {filteredMeals.map((meal) => (
+                <MealCard
+                  key={meal.id}
+                  meal={meal}
+                  lastWeekCount={lastWeekCountsByMealId[meal.id] ?? 0}
+                  replaceUserMealId={Array.isArray(replaceUserMealId) ? replaceUserMealId[0] : replaceUserMealId}
+                  onPress={() =>
+                    router.push({ pathname: '/(main)/meal-detail', params: { mealId: String(meal.id) } })
+                  }
+                />
+              ))}
+            </View>
+          </View>
         </ScrollView>
       )}
 
@@ -119,183 +187,93 @@ export default function SelectMealScreen() {
   );
 }
 
-function MealCard({ meal, onPress }: { meal: Meal; onPress: () => void }) {
+function MealCard({
+  meal,
+  lastWeekCount,
+  replaceUserMealId,
+  onPress,
+}: {
+  meal: Meal;
+  lastWeekCount: number;
+  replaceUserMealId?: string;
+  onPress: () => void;
+}) {
+  const theme = useTheme();
   const zoneMeta = getZoneMeta(meal.dominant_zone);
   const { rowDir } = useRTL();
+  const logMeal = useUserMealsStore((s) => s.logMeal);
+  const replaceMeal = useUserMealsStore((s) => s.replaceMeal);
+  const [isAdding, setIsAdding] = useState(false);
+  const imageSource = meal.image_url ? { uri: meal.image_url } : defaultFoodImage;
+  const ingredientsCount =
+    typeof meal.meal_item_ids === 'string' && meal.meal_item_ids.trim().length > 0
+      ? meal.meal_item_ids.split(',').filter(Boolean).length
+      : 0;
+
+  const handleAdd = async () => {
+    if (isAdding) return;
+    setIsAdding(true);
+    const replaceId = replaceUserMealId ? Number(replaceUserMealId) : Number.NaN;
+    const ok = Number.isFinite(replaceId) ? await replaceMeal(replaceId, meal.id) : await logMeal(meal.id);
+    if (ok) {
+      router.back();
+      return;
+    }
+    setIsAdding(false);
+    const message = useUserMealsStore.getState().errorMessage;
+    Alert.alert(replaceUserMealId ? 'تعذّر استبدال الوجبة' : 'تعذّر تسجيل الوجبة', message || 'حاول مرة أخرى');
+  };
 
   return (
-    <TouchableOpacity style={[styles.card, { flexDirection: rowDir }]} onPress={onPress} activeOpacity={0.7}>
-      {/* image placeholder */}
-      <View style={[styles.imgPlaceholder, { backgroundColor: zoneMeta.softBg }]}>
-        <AppText style={styles.imgEmoji}>{zoneMeta.emoji}</AppText>
+    <TouchableOpacity
+      className="relative flex-row items-center gap-3.5 rounded-[18px] border border-app-lineSoft bg-app-surface p-3.5 shadow-sm shadow-black/10"
+      style={{ flexDirection: rowDir }}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
+      <View className="h-[54px] w-[54px] flex-shrink-0 overflow-hidden rounded-[16px] border border-app-line bg-app-surfaceAlt">
+        <Image source={imageSource} className="h-full w-full" resizeMode="cover" />
       </View>
 
-      <View style={styles.cardBody}>
-        <StarRating value={zoneMeta.stars} size={13} gap={2} />
-        <AppText variant="bold" style={styles.mealName}>{meal.name}</AppText>
-        <AppText style={styles.mealSub}>
-          {meal.meal_item_ids.split(',').length} مكوّنات
+      <View className="flex-1 gap-0.5" style={{ minWidth: 0 }}>
+        <AppText variant="bold" className="text-[12px] leading-5 text-app-navy" numberOfLines={1}>
+          {meal.name}
         </AppText>
+
+        <View className="flex-row items-center gap-1" style={{ flexDirection: rowDir }}>
+          <AppText variant="bold" className="text-[10.5px] leading-4 text-app-textSoft">
+            تناولت آخر أسبوع: {toArabicNumerals(lastWeekCount)} {lastWeekCount === 1 ? 'مرة' : 'مرات'}
+          </AppText>
+          <View className="h-[3px] w-[3px] rounded-full bg-app-muted2" />
+          <AppText className="text-[10.5px] leading-4 text-app-textSoft">
+            {ingredientsCount} مكوّنات
+          </AppText>
+        </View>
+
+        <View className="flex-row items-center" style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}>
+          <StarRating value={zoneMeta.stars} size={13} gap={2} />
+        </View>
       </View>
 
-      <TouchableOpacity style={styles.addCircle} onPress={onPress} activeOpacity={0.8}>
-        <Plus size={20} color="#059669" strokeWidth={2.5} />
+      <TouchableOpacity
+        className="h-[38px] w-[38px] flex-shrink-0 overflow-hidden rounded-full shadow-sm shadow-black/10"
+        onPress={handleAdd}
+        activeOpacity={0.85}
+        disabled={isAdding}
+      >
+        <LinearGradient
+          colors={[theme.colors.secondary, theme.colors.primary]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}
+        >
+          {isAdding ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <LayersPlus size={20} color="white" strokeWidth={2.5} />
+          )}
+        </LinearGradient>
       </TouchableOpacity>
     </TouchableOpacity>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F1F5F9',
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 22,
-    paddingBottom: 8,
-  },
-  backBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 999,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#E5EBF1',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerCenter: {
-    alignItems: 'center',
-    gap: 2,
-  },
-  headerSub: {
-    fontSize: 11,
-    color: '#64748B',
-    lineHeight: 16,
-    textAlign: 'center',
-  },
-  headerTitle: {
-    fontSize: 17,
-    color: '#0F2A36',
-    lineHeight: 24,
-    textAlign: 'center',
-  },
-  headerSpacer: {
-    width: 40,
-  },
-  tabsWrapper: {
-    paddingHorizontal: 22,
-    paddingVertical: 12,
-  },
-  tabsContainer: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 14,
-    padding: 4,
-    gap: 4,
-    borderWidth: 1,
-    borderColor: '#EEF2F6',
-  },
-  tabBtn: {
-    flex: 1,
-  },
-  tabBtnActive: {
-    paddingVertical: 10,
-    borderRadius: 11,
-    alignItems: 'center',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  tabBtnInactive: {
-    paddingVertical: 10,
-    borderRadius: 11,
-    alignItems: 'center',
-  },
-  tabLabelActive: {
-    fontSize: 13.5,
-    color: '#fff',
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-  tabLabelInactive: {
-    fontSize: 13.5,
-    color: '#64748B',
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-  loading: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scroll: {
-    flex: 1,
-  },
-  listContent: {
-    paddingHorizontal: 22,
-    paddingBottom: 24,
-    gap: 10,
-  },
-  countLabel: {
-    fontSize: 12,
-    color: '#64748B',
-    lineHeight: 18,
-    marginBottom: 2,
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 18,
-    padding: 14,
-    borderWidth: 1,
-    borderColor: '#EEF2F6',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  imgPlaceholder: {
-    width: 64,
-    height: 64,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-  imgEmoji: {
-    fontSize: 28,
-    lineHeight: 36,
-    textAlign: 'center',
-  },
-  cardBody: {
-    flex: 1,
-    gap: 3,
-    minWidth: 0,
-  },
-  cardTop: {
-    marginBottom: 2,
-  },
-  mealName: {
-    fontSize: 14.5,
-    color: '#0F2A36',
-    lineHeight: 20,
-  },
-  mealSub: {
-    fontSize: 11.5,
-    color: '#64748B',
-    lineHeight: 16,
-  },
-  addCircle: {
-    width: 34,
-    height: 34,
-    borderRadius: 999,
-    backgroundColor: '#DCFCE7',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexShrink: 0,
-  },
-});

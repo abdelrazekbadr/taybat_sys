@@ -14,6 +14,7 @@ export type SubmitWeeklyRatingPayload = {
   sleep_improved: boolean;
   digestion_improved: boolean;
   mood_improved: boolean;
+  mental_health_improved: boolean;
 };
 
 interface WeeklyRatingState {
@@ -90,7 +91,13 @@ export const useWeeklyRatingStore = create<WeeklyRatingState>((set, get) => ({
   checkPendingRating: () => {
     const ratings = get().ratings;
     if (!ratings.length) {
-      set({ pendingRating: true });
+      const user = useUserStore.getState().user;
+      if (!user?.plan_start_date) {
+        set({ pendingRating: true });
+        return;
+      }
+      const days = daysBetween(user.plan_start_date, new Date().toISOString());
+      set({ pendingRating: days >= 7 });
       return;
     }
 

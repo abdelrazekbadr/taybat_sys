@@ -1,6 +1,5 @@
 import { router } from 'expo-router';
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlatList, Image, Platform, Pressable, View, useWindowDimensions, type ImageSourcePropType } from 'react-native';
 
@@ -9,35 +8,97 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { AppText } from '@/components/common/AppText';
 import { useAppStore } from '@/stores/app.store';
+import slidesJson from '@/data/onboarding/onboardingSlides.json';
 
 const onboarding1_img = require('../../assets/images/onboarding1_woman_listen.png');
 const onboarding2_img = require('../../assets/images/onboarding2_woman_heart.png');
 const onboarding3_img = require('../../assets/images/onboarding3_man_wellness.jpg');
 const onboarding4_img = require('../../assets/images/onboarding4_family.png');
 
-
-
-type SlideId = 'onboarding1' | 'onboarding2' | 'onboarding3' | 'welcome';
-
-type Slide = {
-  id: SlideId;
-};
-
-const slides: Slide[] = [
-  { id: 'onboarding1' },
-  { id: 'onboarding2' },
-  { id: 'onboarding3' },
-  { id: 'welcome' },
-];
-
 type IconName = keyof typeof MaterialCommunityIcons.glyphMap;
 
+type SlideImageKey = 'onboarding1' | 'onboarding2' | 'onboarding3' | 'welcome';
+
+type LocalizedText = {
+  ar: string;
+  en: string;
+};
+
+type SlideFeature = {
+  icon: IconName;
+  tone?: 'default' | 'error';
+  text: LocalizedText;
+};
+
+type SlideFooter = {
+  action: 'login';
+  label: LocalizedText;
+  route: '/(main)';
+};
+
+type SlideConfig = {
+  id: SlideImageKey;
+  image: SlideImageKey;
+  title: LocalizedText;
+  description: LocalizedText;
+  features?: SlideFeature[];
+  footer?: SlideFooter;
+};
+
+function resolveLocalizedText(value: LocalizedText, language: string) {
+  return language === 'ar' ? value.ar : value.en;
+}
+
+function resolveSlideImage(key: SlideImageKey): ImageSourcePropType {
+  switch (key) {
+    case 'onboarding1':
+      return onboarding1_img;
+    case 'onboarding2':
+      return onboarding2_img;
+    case 'onboarding3':
+      return onboarding3_img;
+    case 'welcome':
+      return onboarding4_img;
+  }
+}
+
+function withAlpha(color: string, alpha: number) {
+  const clamped = Math.max(0, Math.min(1, alpha));
+  const value = color.trim();
+
+  if (value.startsWith('#')) {
+    const hex = value.slice(1);
+    const normalized =
+      hex.length === 3
+        ? hex
+            .split('')
+            .map((c) => `${c}${c}`)
+            .join('')
+        : hex.length >= 6
+          ? hex.slice(0, 6)
+          : '';
+    if (normalized.length === 6) {
+      const r = parseInt(normalized.slice(0, 2), 16);
+      const g = parseInt(normalized.slice(2, 4), 16);
+      const b = parseInt(normalized.slice(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${clamped})`;
+    }
+  }
+
+  const rgbMatch = value.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)(?:\s*,\s*[\d.]+)?\s*\)$/i);
+  if (rgbMatch) {
+    return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${clamped})`;
+  }
+
+  return value;
+}
+
 export default function OnboardingScreen() {
-  const { t } = useTranslation();
   const theme = useTheme();
   const { width } = useWindowDimensions();
   const language = useAppStore((s) => s.language);
-  const listRef = React.useRef<FlatList<Slide>>(null);
+  const listRef = React.useRef<FlatList<SlideConfig>>(null);
+  const slides = React.useMemo(() => slidesJson as unknown as SlideConfig[], []);
   const [activeIndex, setActiveIndex] = React.useState(0);
   const shouldRTL = language === 'ar';
   const shouldInvertSwipe = shouldRTL && Platform.OS === 'ios';
@@ -75,10 +136,14 @@ export default function OnboardingScreen() {
         })}
       </View>
     );
-  }, [activeIndex]);
+  }, [activeIndex, slides]);
 
   const renderFeatureRow = React.useCallback(
-    (params: { icon: IconName; text: string }, key: string) => {
+    (params: { icon: IconName; text: string; tone?: 'default' | 'error' }, key: string) => {
+      const isError = params.tone === 'error';
+      const iconColor = isError ? theme.colors.error : theme.colors.primary;
+      const iconBgColor = withAlpha(iconColor, 0.14);
+      const textColor = isError ? theme.colors.error : theme.colors.onSurface;
       return (
         <View
           key={key}
@@ -86,14 +151,21 @@ export default function OnboardingScreen() {
             shouldReverseFeatureRow ? 'flex-row-reverse' : 'flex-row'
           }`}
         >
-          <View className="h-8 w-8 items-center justify-center rounded-full bg-app-primary/10">
-            <MaterialCommunityIcons name={params.icon} size={18} color={theme.colors.primary} />
+          <View className="h-8 w-8 items-center justify-center rounded-full" style={{ backgroundColor: iconBgColor }}>
+            <MaterialCommunityIcons name={params.icon} size={18} color={iconColor} />
           </View>
-          <AppText className="flex-1 text-[13px] leading-5 text-app-text">{params.text}</AppText>
+          <AppText className="flex-1 text-[13px] leading-5 text-app-text" style={{ color: textColor }}>
+            {params.text}
+          </AppText>
         </View>
       );
     },
-    [shouldReverseFeatureRow, theme.colors.primary],
+    [
+      shouldReverseFeatureRow,
+      theme.colors.error,
+      theme.colors.onSurface,
+      theme.colors.primary,
+    ],
   );
 
   const renderSlideShell = React.useCallback(
@@ -101,7 +173,7 @@ export default function OnboardingScreen() {
       imageSource: ImageSourcePropType;
       title: string;
       description: string;
-      features?: { icon: IconName; text: string }[];
+      features?: { icon: IconName; text: string; tone?: 'default' | 'error' }[];
       headerLeft?: React.ReactNode;
       headerRight?: React.ReactNode;
       footer?: React.ReactNode;
@@ -168,63 +240,28 @@ export default function OnboardingScreen() {
           setActiveIndex(nextIndex);
         }}
         renderItem={({ item }) => {
-          if (item.id === 'onboarding1') {
-            return renderSlideShell({
-              imageSource: onboarding1_img,
-              title: t('onboarding_1_title'),
-              description: t('onboarding_1_description'),
-              features: [
-                { icon: 'check-circle', text: t('onboarding_1_feature_1') },
-                { icon: 'check-circle', text: t('onboarding_1_feature_2') },
-                { icon: 'check-circle', text: t('onboarding_1_feature_3') },
-              ],
-            });
-          }
-          if (item.id === 'onboarding2') {
-            return renderSlideShell({
-              imageSource: onboarding2_img,
-              title: t('onboarding_2_title'),
-              description: t('onboarding_2_description'),
-              features: [
-                { icon: 'check-bold', text: t('onboarding_2_feature_1') },
-                { icon: 'check-bold', text: t('onboarding_2_feature_2') },
-                { icon: 'check-bold', text: t('onboarding_2_feature_3') },
-              ],
-            });
-          }
-          if (item.id === 'onboarding3') {
-            return renderSlideShell({
-              imageSource: onboarding3_img,
-              title: t('onboarding_3_title'),
-              description: t('onboarding_3_description'),
-              features: [
-                { icon: 'check-bold', text: t('onboarding_3_feature_1') },
-                { icon: 'check-bold', text: t('onboarding_3_feature_2') },
-                { icon: 'check-bold', text: t('onboarding_3_feature_3') },
-              ],
-            });
-          }
           return renderSlideShell({
-            imageSource: onboarding4_img,
-            title: t('welcome_title'),
-            description: t('welcome_description'),
-            features: [
-              { icon: 'silverware-fork-knife', text: `${t('welcome_card_1_title')}\n${t('welcome_card_1_desc')}` },
-              { icon: 'brain', text: `${t('welcome_card_2_title')}\n${t('welcome_card_2_desc')}` },
-              { icon: 'account-group', text: `${t('welcome_card_3_title')}\n${t('welcome_card_3_desc')}` },
-            ],
-            footer: (
-              <View className="gap-3">
-                <Pressable
-                  onPress={() => router.replace('/(main)')}
-                  className="h-12 w-full items-center justify-center rounded-xl border-2 border-app-muted/30 bg-transparent"
-                >
-                  <AppText variant="semibold" className="text-[16px] text-app-primary">
-                    {t('welcome_login')}
-                  </AppText>
-                </Pressable>
-              </View>
-            ),
+            imageSource: resolveSlideImage(item.image),
+            title: resolveLocalizedText(item.title, language),
+            description: resolveLocalizedText(item.description, language),
+            features: item.features?.map((f) => ({
+              icon: f.icon,
+              tone: f.tone,
+              text: resolveLocalizedText(f.text, language),
+            })),
+            footer:
+              item.footer?.action === 'login' ? (
+                <View className="gap-3">
+                  <Pressable
+                    onPress={() => router.replace(item.footer?.route ?? '/(main)')}
+                    className="h-12 w-full items-center justify-center rounded-xl border-2 border-app-muted/30 bg-transparent"
+                  >
+                    <AppText variant="semibold" className="text-[16px] text-app-primary">
+                      {resolveLocalizedText(item.footer.label, language)}
+                    </AppText>
+                  </Pressable>
+                </View>
+              ) : null,
           });
         }}
       />

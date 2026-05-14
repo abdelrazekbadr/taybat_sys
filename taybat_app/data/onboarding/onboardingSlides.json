@@ -1,0 +1,135 @@
+[
+  {
+    "id": "onboarding1",
+    "image": "onboarding1",
+    "title": {
+      "ar": "اسمع جسدك، لا تعد السعرات",
+      "en": "Listen to your body, not calories"
+    },
+    "description": {
+      "ar": "نظام الطيبات يركز على الأكل عند الجوع الحقيقي واختيار أطعمة تشفي الجسم من الالتهاب ، يقدم التطبيق الخصائص التالية",
+      "en": "Al-Taybat focuses on eating when truly hungry and choosing foods that help your body heal from inflammation."
+    },
+    "features": [
+      {
+        "icon": "check-circle",
+        "text": { "ar": "أطعمة مسموحة مقترحة محددة بوضوح", "en": "Clear allowed foods list" }
+      },
+      {
+        "icon": "check-circle",
+        "text": { "ar": "الأكل عند الجوع الفعلي، لا على جدول", "en": "Eat by real hunger, not schedules" }
+      },
+      {
+        "icon": "book-open-variant",
+        "text": {
+          "ar": "مكتبة بها جميع المعلومات اللتي تخص نظام الطيبات",
+          "en": "A library with all information related to the Al-Taybat system"
+        }
+      },
+       {
+        "icon": "alert-circle",
+        "tone": "error",
+        "text": { "ar": "لا تترك الدواء إلا باستشارة الطبيب", "en": "Do not stop medication without consulting your doctor" }
+      }
+    ]
+  },
+  {
+    "id": "onboarding2",
+    "image": "onboarding2",
+    "title": {
+      "ar": "راقب شعورك يتحسن",
+      "en": "Track how you feel improving"
+    },
+    "description": {
+      "ar": "كل أسبوع سنسأل عن شعورك ونقيس تحسنك من خلال الراحة والعافية، ليس الأرقام.",
+      "en": "Each week we’ll ask how you feel and measure progress through comfort and wellbeing, not numbers."
+    },
+    "features": [
+      {
+        "icon": "check-bold",
+        "text": { "ar": "تقييمات أسبوعية بسيطة", "en": "Simple weekly check-ins" }
+      },
+      {
+        "icon": "check-bold",
+        "text": { "ar": "شارات الالتزام والمشاركة المجتمعية", "en": "Motivation badges" }
+      },
+      {
+        "icon": "check-bold",
+        "text": { "ar": "رسوم بيانية توضح تحسنك", "en": "Charts showing your improvement" }
+      }
+    ]
+  },
+  {
+    "id": "onboarding3",
+    "image": "onboarding3",
+    "title": {
+      "ar": "راقب شعورك يتحسن",
+      "en": "Track how you feel improving"
+    },
+    "description": {
+      "ar": "كل أسبوع سنسأل عن شعورك ونقيس تحسنك من خلال الراحة والعافية، ليس الأرقام.",
+      "en": "Each week we’ll ask how you feel and measure progress through comfort and wellbeing, not numbers."
+    },
+    "features": [
+      {
+        "icon": "check-bold",
+        "text": { "ar": "تقييمات أسبوعية بسيطة", "en": "Simple weekly check-ins" }
+      },
+      {
+        "icon": "check-bold",
+        "text": { "ar": "شارات التحفيز لتشجيعك", "en": "Motivation badges" }
+      },
+      {
+        "icon": "check-bold",
+        "text": { "ar": "رسوم بيانية توضح تحسنك", "en": "Charts showing your improvement" }
+      }
+    ]
+  },
+  {
+    "id": "welcome",
+    "image": "welcome",
+    "title": {
+      "ar": "لماذا تنضم إلى عائلة الطيبات؟",
+      "en": "Why join Al-Taybat?"
+    },
+    "description": {
+      "ar": "رحلتك نحو الشفاء والراحة تبدأ هنا، بأسلوب حياة يفهم لغة جسدك.",
+      "en": "Your journey to recovery and comfort starts here, with a lifestyle that understands your body."
+    },
+    "features": [
+      {
+        "icon": "silverware-fork-knife",
+        "text": {
+          "ar": "مراقبة فاعلية نظامك الغذائي\nنحن لا نعد السعرات، بل نراقب كيف يستعيد جسدك حيويته وتختفي آلامك تدريجياً.",
+          "en": "Measure your diet effectiveness\nWe don’t count calories — we track how your body regains vitality and pain fades over time."
+        }
+      },
+      {
+        "icon": "shuffle",
+        "text": {
+          "ar": "نسهّل عليك مقترحات الأطعمة\nونذكّرك بعدد مرات تكرارها خلال الأسبوع مع تفضيل الوجبات المتاحة عندك.",
+          "en": "We make meal suggestions easier\nand remind you how often to repeat them weekly, prioritizing meals you already have."
+        }
+      },
+      {
+        "icon": "chart-line",
+        "text": {
+          "ar": "بالمشاركة والالتزام نبني نظامًا قابلًا للقياس والتحقق\nوقابلًا للتنبؤ والتحسّن مع الوقت.",
+          "en": "Through participation and consistency, we build a measurable and verifiable system\nthat becomes more predictable and improves over time."
+        }
+      },
+      {
+        "icon": "account-group",
+        "text": {
+          "ar": "مجتمع ملهم للتعافي\nكن جزءاً من مجتمع ملهم يشارك تجارب التحسن والتعافي لرفع المعنويات وتبادل الخبرات",
+          "en": "Inspiring recovery community\nBe part of a supportive community that shares improvement and recovery experiences to boost morale and exchange knowledge."
+        }
+      }
+    ],
+    "footer": {
+      "action": "login",
+      "label": { "ar": "تسجيل الدخول", "en": "Log in" },
+      "route": "/(main)"
+    }
+  }
+]

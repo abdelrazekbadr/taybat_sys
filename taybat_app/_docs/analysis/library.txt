@@ -1,0 +1,10 @@
+create plan for  my app library design screen
+which click library menu open grid view 2 colums screen with icons to display topics list
+when click on one topic open another screen topic detail 
+i will share some idea and you complete my idea consider simplicity to make standard knowledge base for my app 
+topic detail structure screen component order
+- image: from url or fixed assets // display in top part of image and fit to content
+- title : display under the image
+- description: muti lines
+- items : [] // item cards contains // {icon , title , description}
+

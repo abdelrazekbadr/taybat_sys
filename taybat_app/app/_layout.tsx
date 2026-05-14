@@ -6,10 +6,11 @@ import React from 'react';
 import { ThemeProvider } from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { I18nextProvider } from 'react-i18next';
-import { DevSettings, I18nManager, Platform, View, useColorScheme } from 'react-native';
+import { DevSettings, I18nManager, Platform, useColorScheme } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import i18n from '@/localization/i18n';
 import { useAppStore } from '@/stores/app.store';
@@ -145,7 +146,7 @@ export default function RootLayout() {
             }}
           >
             <ThemeProvider value={navigationTheme}>
-              <View style={{ flex: 1, backgroundColor: paperTheme.colors.background }}>
+              <GestureHandlerRootView style={{ flex: 1, backgroundColor: paperTheme.colors.background }}>
                 <StatusBar
                   style={paperTheme.dark ? 'light' : 'dark'}
                   backgroundColor={paperTheme.colors.background}
@@ -162,7 +163,7 @@ export default function RootLayout() {
                   <Stack.Screen name="(main)" />
                   <Stack.Screen name="+not-found" />
                 </Stack>
-              </View>
+              </GestureHandlerRootView>
             </ThemeProvider>
           </PaperProvider>
         </SafeAreaProvider>

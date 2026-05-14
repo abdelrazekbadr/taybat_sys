@@ -1,10 +1,12 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect } from 'react';
-import { View, ScrollView, TouchableOpacity, StyleSheet, Share } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Dimensions, Easing, View, TouchableOpacity, Share, Image, ScrollView, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTheme } from 'react-native-paper';
 
-import { ChevronLeft, ChevronRight, Heart, Share2 } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Share2, Trash2 } from 'lucide-react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { AppText } from '@/components/common/AppText';
 import { StarRating } from '@/components/common/StarRating';
@@ -13,40 +15,66 @@ import { useMealItemsStore } from '@/stores/mealItems.store';
 import { useMealsStore } from '@/stores/meals.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import type { MealItem, ZoneColor } from '@/types';
-import { getZoneMeta, toArabicNumerals } from '@/utils/zoneUtils';
+import { getZoneMeta } from '@/utils/zoneUtils';
+
+const defaultFoodImage = require('../../assets/images/food/risotto.png');
+const defaultDishImage = require('../../assets/images/food/dish.png');
 
 export default function MealDetailScreen() {
-  const { mealId } = useLocalSearchParams<{ mealId: string }>();
+  const theme = useTheme();
+  const { mealId, userMealId } = useLocalSearchParams<{ mealId: string; userMealId?: string }>();
   const insets = useSafeAreaInsets();
   const { isRTL, rowDir } = useRTL();
+  const sheetEntrance = useRef(new Animated.Value(0)).current;
+  const screenHeight = Dimensions.get('window').height/2;
 
   const { getMealById, meals, initializeMeals } = useMealsStore();
   const { mealItems, initializeMealItems, getMealItemById } = useMealItemsStore();
-  const { logMeal } = useUserMealsStore();
+  const { logMeal, deleteMeal } = useUserMealsStore();
 
   useEffect(() => {
     if (!meals.length) initializeMeals();
     if (!mealItems.length) initializeMealItems();
   }, [meals.length, mealItems.length, initializeMeals, initializeMealItems]);
 
+  useEffect(() => {
+    sheetEntrance.setValue(0);
+    Animated.timing(sheetEntrance, {
+      toValue: 1,
+      duration: 800,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: true,
+    }).start();
+  }, [mealId, sheetEntrance]);
+
   const meal = mealId ? getMealById(Number(mealId)) : undefined;
 
   if (!meal) {
     return (
-      <View style={styles.screen}>
-        <View style={[styles.heroArea, { paddingTop: insets.top + 12 }]}>
-          <TouchableOpacity style={styles.overlayBtn} onPress={() => router.back()}>
-            {isRTL ? <ChevronRight size={24} color="#0F2A36" strokeWidth={2.5} /> : <ChevronLeft size={24} color="#0F2A36" strokeWidth={2.5} />}
+      <View className="flex-1 bg-app-background">
+        <View className="h-[280px] bg-app-background" style={{ paddingTop: insets.top + 12 }}>
+          <TouchableOpacity
+            className="h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface shadow-lg shadow-black/10"
+            style={{ elevation: 5, marginLeft: 22 }}
+            onPress={() => router.back()}
+            activeOpacity={0.8}
+          >
+            {isRTL ? (
+              <ChevronRight size={24} color={theme.colors.onSurface} strokeWidth={2.5} />
+            ) : (
+              <ChevronLeft size={24} color={theme.colors.onSurface} strokeWidth={2.5} />
+            )}
           </TouchableOpacity>
         </View>
-        <View style={styles.notFound}>
-          <AppText variant="bold" style={styles.notFoundText}>الوجبة غير موجودة</AppText>
+        <View className="flex-1 items-center justify-center">
+          <AppText variant="bold" className="text-[16px] text-app-textSoft">الوجبة غير موجودة</AppText>
         </View>
       </View>
     );
   }
 
   const zoneMeta = getZoneMeta(meal.dominant_zone);
+  const imageSource = meal.image_url ? { uri: meal.image_url } : defaultFoodImage;
   const itemIds = meal.meal_item_ids.split(',').map(Number);
   const items: MealItem[] = itemIds
     .map((id) => getMealItemById(id))
@@ -63,73 +91,144 @@ export default function MealDetailScreen() {
     router.back();
   };
 
+  const canDeleteLog = typeof userMealId === 'string' && userMealId.length > 0;
+
+  const handleDeleteLog = async () => {
+    if (!canDeleteLog) return;
+    Alert.alert('حذف الوجبة', 'هل تريد حذف هذه الوجبة من سجل اليوم؟', [
+      { text: 'إلغاء', style: 'cancel' },
+      {
+        text: 'حذف',
+        style: 'destructive',
+        onPress: async () => {
+          const ok = await deleteMeal(Number(userMealId));
+          if (ok) {
+            router.back();
+            return;
+          }
+          const message = useUserMealsStore.getState().errorMessage;
+          Alert.alert('تعذّر حذف الوجبة', message || 'حاول مرة أخرى');
+        },
+      },
+    ]);
+  };
+
+  const sheetAnimatedStyle = {
+    opacity: sheetEntrance,
+    transform: [
+      {
+        translateY: sheetEntrance.interpolate({
+          inputRange: [0, 1],
+          outputRange: [screenHeight, 0],
+        }),
+      },
+    ],
+  };
+
   return (
-    <View style={styles.screen}>
-      {/* Hero image area */}
-      <View style={[styles.heroArea, { backgroundColor: zoneMeta.softBg }]}>
-        <View style={[styles.heroBtns, { top: insets.top + 12, flexDirection: rowDir }]}>
-          <TouchableOpacity style={styles.overlayBtn} onPress={() => router.back()} activeOpacity={0.8}>
-            {/* chevron points toward "back" direction — right in RTL, left in LTR */}
-            {isRTL ? <ChevronRight size={24} color="#0F2A36" strokeWidth={2.5} /> : <ChevronLeft size={24} color="#0F2A36" strokeWidth={2.5} />}
+    <View className="flex-1 bg-app-background">
+      <View className="relative h-[280px] bg-app-background">
+        <Image source={imageSource} className="absolute inset-0 h-full w-full" resizeMode="contain" />
+        <View
+          className="absolute left-[22px] right-[22px] flex-row justify-between"
+          style={{ top: insets.top + 12, flexDirection: rowDir }}
+        >
+          <TouchableOpacity
+            className="h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface shadow-lg shadow-black/10"
+            style={{ elevation: 5 }}
+            onPress={() => router.back()}
+            activeOpacity={0.8}
+          >
+            {isRTL ? (
+              <ChevronRight size={24} color={theme.colors.onSurface} strokeWidth={2.5} />
+            ) : (
+              <ChevronLeft size={24} color={theme.colors.onSurface} strokeWidth={2.5} />
+            )}
           </TouchableOpacity>
-          <TouchableOpacity style={styles.overlayBtn} activeOpacity={0.8}>
-            <Heart size={20} color="#0F2A36" strokeWidth={2} />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.heroContent}>
-          <AppText style={styles.heroPlaceholderText}>{meal.name}</AppText>
+          <View className="flex-row items-center gap-2" style={{ flexDirection: rowDir }}>
+            {canDeleteLog ? (
+              <TouchableOpacity
+                className="h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface shadow-lg shadow-black/10"
+                style={{ elevation: 5 }}
+                onPress={handleDeleteLog}
+                activeOpacity={0.8}
+                accessibilityRole="button"
+                accessibilityLabel="حذف الوجبة"
+              >
+                <Trash2 size={20} color={theme.colors.onSurface} strokeWidth={2} />
+              </TouchableOpacity>
+            ) : null}
+            <TouchableOpacity
+              className="h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface shadow-lg shadow-black/10"
+              style={{ elevation: 5 }}
+              onPress={handleShare}
+              activeOpacity={0.8}
+            >
+              <Share2 size={20} color={theme.colors.onSurface} strokeWidth={2} />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
-      {/* Content sheet */}
-      <ScrollView
-        style={styles.sheet}
-        contentContainerStyle={[styles.sheetContent, { paddingBottom: insets.bottom + 24 }]}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* title + stars */}
-        <AppText variant="bold" style={styles.mealTitle}>{meal.name}</AppText>
-        <View style={[styles.starsRow, { flexDirection: rowDir }]}>
-          <StarRating value={zoneMeta.stars} size={18} gap={3} />
-          <AppText style={styles.starsLabel}>تقييم نظام الطيّبات</AppText>
-        </View>
-
-        <AppText style={styles.description}>
-          وجبة من نظام الطيّبات — {toArabicNumerals(items.length)} مكوّنات
-        </AppText>
-
-        {/* ingredients */}
-        {items.length > 0 && (
-          <View style={styles.ingredientsSection}>
-            <View style={styles.sectionHeader}>
-              <AppText variant="bold" style={styles.sectionTitle}>المكوّنات وتقييم كل عنصر</AppText>
+      <Animated.View className="-mt-7 flex-1 rounded-t-[28px] bg-app-surface" style={sheetAnimatedStyle}>
+        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 24 }}>
+          <View className="px-[22px] pt-4">
+            <View className="self-end">
+              <StarRating value={zoneMeta.stars} size={18} gap={3} />
             </View>
-            <View style={styles.ingredientList}>
-              {items.map((item) => (
-                <IngredientRow key={item.id} item={item} />
-              ))}
+
+            <AppText variant="bold" className="mt-2 text-[24px] leading-[34px] text-app-navy">
+              {meal.name}
+            </AppText>
+
+            {items.length > 0 && (
+              <View className="mt-5">
+                <AppText variant="bold" className="mb-3 px-1 text-[17px] leading-6 text-app-navy">
+                  المكوّنات
+                </AppText>
+                <View className="gap-2">
+                  {items.map((item) => (
+                    <IngredientRow key={item.id} item={item} />
+                  ))}
+                </View>
+              </View>
+            )}
+
+            <TouchableOpacity
+              className="mt-[22px] h-[54px] items-center justify-center rounded-[14px] border-2 border-app-primary bg-app-surface shadow-sm shadow-black/10"
+              style={{ flexDirection: rowDir, gap: 10, elevation: 3 }}
+              onPress={handleShare}
+              activeOpacity={0.8}
+            >
+              <View className="h-[34px] w-[34px] items-center justify-center rounded-full border border-app-line bg-app-surfaceAlt">
+                <Share2 size={18} color={theme.colors.onSurface} strokeWidth={2} />
+              </View>
+              <AppText variant="bold" className="text-[14.5px] leading-5 text-app-navy">
+                شارك الوجبة على السوشيال ميديا
+              </AppText>
+            </TouchableOpacity>
+
+            <View className="mt-3 flex-row justify-center gap-3" style={{ flexDirection: rowDir }}>
+              <MaterialCommunityIcons name="facebook" size={16} color={theme.colors.onSurface} />
+              <MaterialCommunityIcons name="twitter" size={16} color={theme.colors.onSurface} />
+              <MaterialCommunityIcons name="whatsapp" size={16} color={theme.colors.onSurface} />
             </View>
+
+            <TouchableOpacity className="mt-3" onPress={handleAddToday} activeOpacity={0.9}>
+              <LinearGradient
+                colors={[theme.colors.secondary, theme.colors.primary]}
+                style={{ height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+              >
+                <AppText variant="bold" className="text-[15px] leading-5 text-white">
+                  أضف إلى وجبات اليوم
+                </AppText>
+              </LinearGradient>
+            </TouchableOpacity>
           </View>
-        )}
-
-        {/* share button */}
-        <TouchableOpacity style={[styles.shareBtn, { flexDirection: rowDir }]} onPress={handleShare} activeOpacity={0.8}>
-          <Share2 size={18} color="#0F2A36" strokeWidth={2} />
-          <AppText variant="bold" style={styles.shareBtnText}>شارك الوجبة على السوشيال ميديا</AppText>
-        </TouchableOpacity>
-
-        {/* add to today */}
-        <TouchableOpacity onPress={handleAddToday} activeOpacity={0.9} style={styles.addBtnWrapper}>
-          <LinearGradient
-            colors={['#1ED49A', '#0CA170']}
-            style={styles.addBtn}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-          >
-            <AppText variant="bold" style={styles.addBtnText}>أضف إلى وجبات اليوم</AppText>
-          </LinearGradient>
-        </TouchableOpacity>
-      </ScrollView>
+        </ScrollView>
+      </Animated.View>
     </View>
   );
 }
@@ -137,181 +236,29 @@ export default function MealDetailScreen() {
 function IngredientRow({ item }: { item: MealItem }) {
   const zoneMeta = getZoneMeta(item.zone as ZoneColor);
   const { rowDir } = useRTL();
+  const imageSource = item.image_url ? { uri: item.image_url } : defaultDishImage;
 
   return (
-    <View style={[styles.ingredientRow, { flexDirection: rowDir }]}>
-      <View style={styles.ingredientBody}>
-        <View style={styles.ingredientTop}>
-          <AppText variant="bold" style={styles.ingredientName}>{item.name}</AppText>
-          {item.notes ? (
-            <AppText style={styles.ingredientNote}>{item.notes}</AppText>
-          ) : null}
-        </View>
+    <View
+      className="flex-row items-center gap-3 rounded-[16px] border border-app-lineSoft bg-app-surface p-3"
+      style={{ flexDirection: rowDir }}
+    >
+      <View className="h-11 w-11 flex-shrink-0 overflow-hidden rounded-[14px] border border-app-line bg-app-surfaceAlt">
+        <Image source={imageSource} className="h-full w-full" resizeMode="cover" />
       </View>
-      <StarRating value={zoneMeta.stars} size={13} gap={2} />
+      <View className="flex-1 gap-0.5" style={{ minWidth: 0 }}>
+        <AppText variant="bold" className="text-[14px] leading-5 text-app-navy" numberOfLines={1}>
+          {item.name}
+        </AppText>
+        {item.notes ? (
+          <AppText className="text-[11.5px] leading-4 text-app-textSoft" numberOfLines={2}>
+            {item.notes}
+          </AppText>
+        ) : null}
+      </View>
+      <View className="flex-shrink-0">
+        <StarRating value={zoneMeta.stars} size={13} gap={2} />
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F1F5F9',
-  },
-  heroArea: {
-    height: 280,
-    flexShrink: 0,
-    position: 'relative',
-  },
-  heroBtns: {
-    position: 'absolute',
-    left: 22,
-    right: 22,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    zIndex: 5,
-  },
-  heroContent: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  heroPlaceholderText: {
-    fontSize: 14,
-    color: '#64748B',
-    fontFamily: 'monospace',
-    fontWeight: '700',
-  },
-  overlayBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 999,
-    backgroundColor: 'rgba(255,255,255,0.92)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sheet: {
-    flex: 1,
-    marginTop: -28,
-    backgroundColor: '#F1F5F9',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-  },
-  sheetContent: {
-    padding: 22,
-    gap: 0,
-  },
-  mealTitle: {
-    fontSize: 24,
-    color: '#0F2A36',
-    lineHeight: 34,
-    letterSpacing: -0.3,
-  },
-  starsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    marginTop: 8,
-  },
-  starsLabel: {
-    fontSize: 12,
-    color: '#64748B',
-    lineHeight: 18,
-  },
-  description: {
-    marginTop: 12,
-    fontSize: 13.5,
-    color: '#64748B',
-    lineHeight: 22,
-  },
-  ingredientsSection: {
-    marginTop: 20,
-  },
-  sectionHeader: {
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    color: '#0F2A36',
-    lineHeight: 24,
-  },
-  ingredientList: {
-    gap: 8,
-  },
-  ingredientRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: '#fff',
-    borderRadius: 16,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: '#EEF2F6',
-  },
-  ingredientBody: {
-    flex: 1,
-    minWidth: 0,
-    gap: 2,
-  },
-  ingredientTop: {
-    gap: 2,
-  },
-  ingredientName: {
-    fontSize: 14,
-    color: '#0F2A36',
-    lineHeight: 20,
-  },
-  ingredientNote: {
-    fontSize: 11.5,
-    color: '#64748B',
-    lineHeight: 16,
-  },
-  shareBtn: {
-    marginTop: 22,
-    height: 54,
-    borderRadius: 14,
-    backgroundColor: '#fff',
-    borderWidth: 1.5,
-    borderColor: '#10B981',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 10,
-  },
-  shareBtnText: {
-    fontSize: 14.5,
-    color: '#0F2A36',
-    lineHeight: 20,
-  },
-  addBtnWrapper: {
-    marginTop: 12,
-  },
-  addBtn: {
-    height: 52,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#10B981',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 14,
-    elevation: 6,
-  },
-  addBtnText: {
-    fontSize: 15,
-    color: '#fff',
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-  notFound: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  notFoundText: {
-    fontSize: 16,
-    color: '#64748B',
-  },
-});

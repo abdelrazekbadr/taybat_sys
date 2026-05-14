@@ -1,4 +1,5 @@
 export * from './app.store';
+export * from './community.store';
 export * from './mealItems.store';
 export * from './meals.store';
 export * from './theme.store';

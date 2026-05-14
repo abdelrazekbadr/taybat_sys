@@ -1,0 +1,30 @@
+
+
+* generate plan community screen
+Navigation Menu "عائلتنا"
+screen title: "عائلة الطيبات"
+the google :
+- push post or feeds in first phase by system user to share community news 
+- second phase the users can share automated post like emprovement , commitment or meals sharing 
+- third phase the user can manually write posts to share feeeling words , community comments
+- sharing community stats for active users 
+
+make analysis to consider sacaling in next phases but focus in UI to implement only first phase
+by system user only , contain feaure ,simple implementaion consider storage scalling to save menory usage in this phase
+- write post
+- edit post
+- delete post
+- view posts
+- make follow user
+- make love reaction on post 
+
+UI Descrption 
+ 2 filter bttons like badge button tabs
+
+- fisrt tab contain posts or app feeads threads by system user
+- second tab contain last community charts  monthly stats or monthly active users  
+can add mockup data 
+ if no data handle default views like  comming soon 
+
+ create analysis then write plan included data structure compaitable with supabase backend  save out put in
+ "/Users/abadr/Documents/Abadr/Projects/taybat_sys/taybat_app/_docs/analysis"

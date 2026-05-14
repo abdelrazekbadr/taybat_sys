@@ -17,6 +17,8 @@ export interface Meal {
   meal_item_ids: string;
   dominant_zone: ZoneColor;
   image_url: string;
+  /** comma-separated meal type ids: 1=إفطار 2=غداء 3=عشاء */
+  meal_type_ids: string;
 }
 
 export interface User {
@@ -60,4 +62,31 @@ export interface WeeklyRating {
   sleep_improved: boolean;
   digestion_improved: boolean;
   mood_improved: boolean;
+  mental_health_improved: boolean;
+}
+
+export type PostType = 'system' | 'achievement' | 'meal_share' | 'user_post';
+
+export type ReactionType = 'love';
+
+export interface CommunityPost {
+  id: number;
+  user_id: number;
+  author_name: string;
+  author_avatar: string | null;
+  content: string;
+  image_url: string | null;
+  post_type: PostType;
+  is_pinned: boolean;
+  love_count: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CommunityStats {
+  month: string;
+  active_users: number;
+  avg_health_score: number | null;
+  avg_adherence_score: number | null;
+  total_meals_logged: number;
 }

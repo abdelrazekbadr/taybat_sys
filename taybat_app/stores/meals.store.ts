@@ -66,6 +66,7 @@ export const useMealsStore = create<MealsState>((set, get) => ({
         meal_item_ids: cleanedIds.join(','),
         dominant_zone: dominantZoneFromMealItemIds(cleanedIds),
         image_url: '',
+        meal_type_ids: '1,2,3',
       };
 
       set({ meals: [...currentMeals, newMeal], isLoading: false });

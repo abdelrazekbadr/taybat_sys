@@ -13,6 +13,7 @@ interface UserMealsState {
   errorMessage: string;
   initializeUserMeals: () => Promise<void>;
   logMeal: (mealId: number) => Promise<boolean>;
+  replaceMeal: (userMealId: number, mealId: number) => Promise<boolean>;
   deleteMeal: (id: number) => Promise<boolean>;
   getMealsByDate: (date: string) => UserMeal[];
 }
@@ -96,6 +97,58 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
       set({
         isLoading: false,
         errorMessage: error instanceof Error ? error.message : 'Failed to log meal',
+      });
+      return false;
+    }
+  },
+
+  replaceMeal: async (userMealId, mealId) => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      const user = useUserStore.getState().user;
+      if (!user) {
+        set({ isLoading: false, errorMessage: 'User not initialized' });
+        return false;
+      }
+
+      const meal = useMealsStore.getState().getMealById(mealId);
+      if (!meal) {
+        set({ isLoading: false, errorMessage: 'Meal not found' });
+        return false;
+      }
+
+      const currentMeals = get().userMeals;
+      const existing = currentMeals.find((m) => m.id === userMealId);
+      if (!existing) {
+        set({ isLoading: false, errorMessage: 'Meal log not found' });
+        return false;
+      }
+
+      const today = todayIsoDate();
+      const nextUserMeals = currentMeals.map((m) =>
+        m.id === userMealId
+          ? {
+              ...m,
+              user_id: user.id,
+              meal_id: meal.id,
+              meal_item_ids: meal.meal_item_ids,
+              datetime: new Date().toISOString(),
+              date: existing.date || today,
+              zone_summary: meal.dominant_zone,
+            }
+          : m,
+      );
+
+      set({
+        userMeals: nextUserMeals,
+        todayMeals: nextUserMeals.filter((m) => m.user_id === user.id && m.date === today),
+        isLoading: false,
+      });
+      return true;
+    } catch (error: unknown) {
+      set({
+        isLoading: false,
+        errorMessage: error instanceof Error ? error.message : 'Failed to replace meal log',
       });
       return false;
     }

@@ -48,8 +48,10 @@ export function buildPaperTheme(params: {
       background: palette.background,
       surface: palette.surface,
       onSurface: palette.text,
+      onSurfaceVariant: palette.textSecondary,
       onBackground: palette.text,
       outline: palette.border,
+      outlineVariant: palette.border,
       error: brand.rose,
     },
   };

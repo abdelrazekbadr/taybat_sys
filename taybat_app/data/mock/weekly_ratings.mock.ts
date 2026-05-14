@@ -13,6 +13,7 @@ export const MOCK_WEEKLY_RATINGS: WeeklyRating[] = Object.freeze([
     sleep_improved: false,
     digestion_improved: true,
     mood_improved: false,
+    mental_health_improved: false,
   },
   {
     id: 2,
@@ -26,5 +27,6 @@ export const MOCK_WEEKLY_RATINGS: WeeklyRating[] = Object.freeze([
     sleep_improved: true,
     digestion_improved: true,
     mood_improved: true,
+    mental_health_improved: true,
   },
 ]) as unknown as WeeklyRating[];

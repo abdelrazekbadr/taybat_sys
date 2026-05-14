@@ -1,3 +1,4 @@
+export * from './community.mock';
 export * from './meal_item_preferences.mock';
 export * from './meal_items.mock';
 export * from './meals.mock';

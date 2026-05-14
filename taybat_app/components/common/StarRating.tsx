@@ -1,6 +1,8 @@
 import { Star } from 'lucide-react-native';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
+
+import { getZoneMeta } from '@/utils/zoneUtils';
 
 interface StarRatingProps {
   value: number;
@@ -8,22 +10,15 @@ interface StarRatingProps {
   gap?: number;
 }
 
-const STAR_COLORS: Record<number, string> = {
-  5: '#10B981',  // green zone
-  4: '#F5C24A',  // yellow zone
-  3: '#F08A4B',  // orange zone
-  2: '#9B7AC8',  // purple zone
-  1: '#E36A6A',  // red zone
-};
-
-const EMPTY_COLOR = '#D1D5DB';
+const EMPTY_COLOR = 'rgba(148, 163, 184, 0.55)';
 
 export function StarRating({ value = 5, size = 13, gap = 2 }: StarRatingProps) {
   const rounded = Math.min(5, Math.max(1, Math.round(value)));
-  const color = STAR_COLORS[rounded] ?? '#10B981';
+  const zone = (6 - rounded) as 1 | 2 | 3 | 4 | 5;
+  const { color } = getZoneMeta(zone);
 
   return (
-    <View style={[styles.row, { gap }]}>
+    <View className="flex-row items-center" style={{ gap }}>
       {[1, 2, 3, 4, 5].map((i) => (
         <Star
           key={i}
@@ -36,10 +31,3 @@ export function StarRating({ value = 5, size = 13, gap = 2 }: StarRatingProps) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-});

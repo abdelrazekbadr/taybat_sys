@@ -1,7 +1,22 @@
 // Tayebat — Redesigned Home + Meal Picker + Meal Detail flow
 // Builds on shared tokens & icons. RTL Arabic.
 
+import React from 'react';
+
 const { useState: useStateR, useEffect: useEffectR, useRef: useRefR } = React;
+
+const TbIcon = new Proxy(
+  {},
+  {
+    get: () => (p = {}) => (
+      <svg viewBox="0 0 24 24" width={p.size || 16} height={p.size || 16} fill="currentColor" />
+    ),
+  },
+);
+
+function HomeTabBar() {
+  return null;
+}
 
 // ─── Social icons (simple, non-branded marks) ───────────────────
 const TbSocial = {
@@ -179,7 +194,7 @@ function ReHeader({ onProfile }) {
             background: 'var(--tb-green-soft)', color: 'var(--tb-green-deep)',
             fontSize: 11, fontWeight: 800
           }}>
-            رقم الاشتراك: <SubscriberCounter to={1247} />
+            رقم المشترك: <SubscriberCounter to={1247} />
           </div>
         </div>
       </div>
@@ -310,7 +325,7 @@ function ScHomeNew({ onWantMeal = () => {}, onOpenMeal = () => {} }) {
         <div style={{ marginTop: 22 }}>
           <div className="tb-section-h">
             <h3>وجبات اليوم</h3>
-            <a>سجّل وجبة</a>
+            <a>اختر وجبة</a>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {TODAY_MEALS.map((m) =>

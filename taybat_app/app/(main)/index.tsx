@@ -1,8 +1,9 @@
 import { router } from 'expo-router';
-import React, { useEffect } from 'react';
-import { View, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, ScrollView, ActivityIndicator, RefreshControl, Alert, Pressable } from 'react-native';
+import { useTheme } from 'react-native-paper';
 
-import { Star, Utensils } from 'lucide-react-native';
+import { BarChart2, ChevronLeft, ChevronRight, Star, Utensils } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
@@ -18,17 +19,42 @@ import { useWeeklyRatingStore } from '@/stores/weeklyRating.store';
 import { currentStreak, daysOnPlan } from '@/utils/statsUtils';
 
 export default function HomeScreen() {
+  const theme = useTheme();
   const { user, initializeUser } = useUserStore();
   const { userMeals, todayMeals, initializeUserMeals } = useUserMealsStore();
   const { meals, initializeMeals, getMealById } = useMealsStore();
   const { pendingRating, initializeRatings, checkPendingRating } = useWeeklyRatingStore();
-  const { rowDir } = useRTL();
+  const { rowDir, isRTL } = useRTL();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [cardKey, setCardKey] = useState(0);
+  const deleteMeal = useUserMealsStore((s) => s.deleteMeal);
 
   useEffect(() => {
-    initializeUser();
-    initializeUserMeals();
-    initializeMeals();
+    if (!user) initializeUser();
+  }, [initializeUser, user]);
+
+  useEffect(() => {
+    if (!userMeals.length) initializeUserMeals();
+  }, [initializeUserMeals, userMeals.length]);
+
+  useEffect(() => {
+    if (!meals.length) initializeMeals();
+  }, [initializeMeals, meals.length]);
+
+  useEffect(() => {
     initializeRatings();
+  }, [initializeRatings]);
+
+  const handleRefresh = useCallback(async () => {
+    setIsRefreshing(true);
+    setCardKey((k) => k + 1);
+    await Promise.all([
+      initializeUser(),
+      initializeUserMeals(),
+      initializeMeals(),
+      initializeRatings(),
+    ]);
+    setIsRefreshing(false);
   }, [initializeUser, initializeUserMeals, initializeMeals, initializeRatings]);
 
   useEffect(() => {
@@ -37,8 +63,8 @@ export default function HomeScreen() {
 
   if (!user || !meals.length) {
     return (
-      <View style={styles.loading}>
-        <ActivityIndicator color="#10B981" size="large" />
+      <View className="flex-1 items-center justify-center bg-app-background">
+        <ActivityIndicator color={theme.colors.primary} size="large" />
       </View>
     );
   }
@@ -48,18 +74,28 @@ export default function HomeScreen() {
   const BADGE_TARGET = 7;
 
   return (
-    <View style={styles.screen}>
+    <View className="flex-1 bg-app-background">
       <HomeHeader
         name={user.name}
         subscriberId={user.subscriber_id}
+        avatarUrl={user.avatar_url}
       />
 
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        className="flex-1"
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor={theme.colors.primary}
+            colors={[theme.colors.primary]}
+          />
+        }
       >
+        <View className="px-[22px] pb-6">
         <CommitmentCard
+          key={cardKey}
           dayNumber={dayNumber}
           streakDays={streak}
           onAddMeal={() => router.push('/(main)/select-meal')}
@@ -67,28 +103,57 @@ export default function HomeScreen() {
 
         {/* Today's meals */}
         {todayMeals.length > 0 && (
-          <View style={styles.section}>
-            <View style={[styles.sectionHeader, { flexDirection: rowDir }]}>
-              <AppText variant="bold" style={styles.sectionTitle}>وجبات اليوم</AppText>
+          <View className="mt-[22px]">
+            <View className="mb-3 px-1 items-center justify-between" style={{ flexDirection: rowDir }}>
+              <AppText variant="bold" className="text-[17px] leading-6 text-app-navy">وجبات اليوم</AppText>
               <AppText
                 variant="bold"
-                style={styles.sectionLink}
+                className="text-[13px] leading-5 text-app-primaryDark"
                 onPress={() => router.push('/(main)/select-meal')}
               >
                 سجّل وجبة
               </AppText>
             </View>
-            <View style={styles.mealList}>
+            <View className="gap-2.5">
               {todayMeals.map((um) => {
                 const meal = getMealById(um.meal_id);
+                const slotIndex = um.id % 3;
+                const initialTab =
+                  slotIndex === 0 ? 'breakfast' : slotIndex === 1 ? 'lunch' : 'dinner';
                 return (
                   <TodayMealRow
                     key={um.id}
                     userMeal={um}
                     mealName={meal?.name ?? 'وجبة'}
+                    imageUrl={meal?.image_url}
                     onPress={() =>
-                      router.push({ pathname: '/(main)/meal-detail', params: { mealId: String(um.meal_id) } })
+                      router.push({
+                        pathname: '/(main)/meal-detail',
+                        params: { mealId: String(um.meal_id), userMealId: String(um.id) },
+                      })
                     }
+                    onReplacePress={() =>
+                      router.push({
+                        pathname: '/(main)/select-meal',
+                        params: { replaceUserMealId: String(um.id), initialTab },
+                      })
+                    }
+                    onDeletePress={() => {
+                      Alert.alert('حذف الوجبة', 'هل تريد حذف هذه الوجبة من سجل اليوم؟', [
+                        { text: 'إلغاء', style: 'cancel' },
+                        {
+                          text: 'حذف',
+                          style: 'destructive',
+                          onPress: async () => {
+                            const ok = await deleteMeal(um.id);
+                            if (!ok) {
+                              const message = useUserMealsStore.getState().errorMessage;
+                              Alert.alert('تعذّر حذف الوجبة', message || 'حاول مرة أخرى');
+                            }
+                          },
+                        },
+                      ]);
+                    }}
                   />
                 );
               })}
@@ -97,33 +162,61 @@ export default function HomeScreen() {
         )}
 
         {todayMeals.length === 0 && (
-          <View style={styles.section}>
-            <View style={styles.emptyMeals}>
-              <Utensils size={40} color="#94A3B8" strokeWidth={1.5} />
-              <AppText variant="bold" style={styles.emptyTitle}>لم تسجّل وجبات اليوم بعد</AppText>
-              <AppText style={styles.emptySubtitle}>سجّل أول وجبة وابدأ يومك بشكل صحيح</AppText>
+          <View className="mt-[22px]">
+            <View className="items-center gap-2 rounded-[20px] border border-app-lineSoft bg-app-surface p-6">
+              <Utensils size={40} color={theme.colors.outline} strokeWidth={1.5} />
+              <AppText variant="bold" className="text-[15px] leading-[22px] text-app-navy">لم تسجّل وجبات اليوم بعد</AppText>
+              <AppText className="text-center text-[13px] leading-5 text-app-textSoft">سجّل أول وجبة وابدأ يومك بشكل صحيح</AppText>
             </View>
           </View>
         )}
+
+        <Pressable
+          onPress={() => router.push('/(main)/stats')}
+          className="mt-3 rounded-[18px] border border-app-lineSoft bg-app-surface px-4 py-4"
+          style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
+        >
+          <View className="flex-row items-center gap-3" style={{ flexDirection: rowDir }}>
+            <View className="h-10 w-10 items-center justify-center rounded-2xl bg-app-surfaceAlt">
+              <BarChart2 size={20} color={theme.colors.primary} strokeWidth={2.4} />
+            </View>
+            <View className="flex-1">
+              <AppText variant="bold" className="text-[14px] leading-6 text-app-navy">
+                إنجازاتي
+              </AppText>
+              <AppText className="text-[12.5px] leading-5 text-app-textMuted">شاهد تقييماتك وتطورك</AppText>
+            </View>
+            {isRTL ? (
+              <ChevronLeft size={22} color={theme.colors.onSurfaceVariant} strokeWidth={2.4} />
+            ) : (
+              <ChevronRight size={22} color={theme.colors.onSurfaceVariant} strokeWidth={2.4} />
+            )}
+          </View>
+        </Pressable>
 
         {/* Weekly rating banner */}
         {pendingRating && (
-          <View style={styles.ratingBanner}>
-            <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6 }}>
-              <Star size={15} color="#F5C24A" fill="#F5C24A" strokeWidth={0} />
-              <AppText variant="bold" style={styles.ratingTitle}>حان وقت تقييم أسبوعك!</AppText>
+          <Pressable
+            onPress={() => router.push('/(main)/stats')}
+            className="mt-[22px] gap-1 rounded-[18px] border border-app-warning bg-app-warningSoft p-4"
+            style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
+          >
+            <View className="items-center gap-1.5" style={{ flexDirection: rowDir }}>
+              <Star size={15} color={theme.colors.primary} fill={theme.colors.primary} strokeWidth={0} />
+              <AppText variant="bold" className="text-[15px] leading-[22px] text-app-navy">حان وقت تقييم أسبوعك!</AppText>
             </View>
-            <AppText style={styles.ratingSubtitle}>أخبرنا كيف كانت أسبوعك الصحي</AppText>
-          </View>
+            <AppText className="text-[13px] leading-5 text-app-textSoft">أخبرنا كيف كان أسبوعك الصحي</AppText>
+          </Pressable>
         )}
 
         {/* Badge progress */}
-        <View style={styles.section}>
+        <View className="mt-[22px]">
           <BadgeProgressCard
             currentDays={streak}
             targetDays={BADGE_TARGET}
             badgeLabel="أسبوع من الالتزام"
           />
+        </View>
         </View>
       </ScrollView>
 
@@ -131,86 +224,3 @@ export default function HomeScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    backgroundColor: '#F1F5F9',
-  },
-  loading: {
-    flex: 1,
-    backgroundColor: '#F1F5F9',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingHorizontal: 22,
-    paddingBottom: 24,
-    gap: 0,
-  },
-  section: {
-    marginTop: 22,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-    paddingHorizontal: 4,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    color: '#0F2A36',
-    lineHeight: 24,
-  },
-  sectionLink: {
-    fontSize: 13,
-    color: '#059669',
-    lineHeight: 20,
-  },
-  mealList: {
-    gap: 10,
-  },
-  emptyMeals: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 24,
-    alignItems: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#EEF2F6',
-  },
-  emptyTitle: {
-    fontSize: 15,
-    color: '#0F2A36',
-    lineHeight: 22,
-  },
-  emptySubtitle: {
-    fontSize: 13,
-    color: '#64748B',
-    lineHeight: 20,
-    textAlign: 'center',
-  },
-  ratingBanner: {
-    marginTop: 22,
-    backgroundColor: '#FFF4D6',
-    borderRadius: 18,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: '#F5C24A',
-    gap: 4,
-  },
-  ratingTitle: {
-    fontSize: 15,
-    color: '#0F2A36',
-    lineHeight: 22,
-  },
-  ratingSubtitle: {
-    fontSize: 13,
-    color: '#64748B',
-    lineHeight: 20,
-  },
-});
