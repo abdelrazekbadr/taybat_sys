@@ -7,6 +7,8 @@ import { useTheme } from 'react-native-paper';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { AppText } from '@/components/common/AppText';
+import { STORAGE_KEYS } from '@/api/storage/storageKeys';
+import { storageService } from '@/api/storage/storageService';
 import { useAppStore } from '@/stores/app.store';
 import slidesJson from '@/data/onboarding/onboardingSlides.json';
 
@@ -253,7 +255,10 @@ export default function OnboardingScreen() {
               item.footer?.action === 'login' ? (
                 <View className="gap-3">
                   <Pressable
-                    onPress={() => router.replace(item.footer?.route ?? '/(main)')}
+                    onPress={async () => {
+                      await storageService.set(STORAGE_KEYS.HAS_SEEN_ONBOARDING, true);
+                      router.replace('/(auth)/auth-decision' as never);
+                    }}
                     className="h-12 w-full items-center justify-center rounded-xl border-2 border-app-muted/30 bg-transparent"
                   >
                     <AppText variant="semibold" className="text-[16px] text-app-primary">

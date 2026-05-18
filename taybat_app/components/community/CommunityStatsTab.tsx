@@ -98,7 +98,7 @@ export function CommunityStatsTab({ stats }: { stats: CommunityStats[] }) {
           <BarChart values={activeUsers} />
         </View>
       ) : (
-        <SectionEmpty title="قريباً — إحصاءات المجتمع" />
+        <SectionEmpty title="قريباً — لوحة المعلومات" />
       )}
 
       <AppText variant="bold" className="mt-6 text-[14px] leading-6 text-app-navy">

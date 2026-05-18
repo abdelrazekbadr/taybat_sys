@@ -1,0 +1,8 @@
+
+display all preferences of user inclue the current feature
+with esy edit and less inputs
+
+- my account : to edit account information , select your avatar
+- meal preferences : to  like  meal exist frequently as favorit meals 
+- security and privacy : example allow what user can share from his information , who can see post [public , followers]
+- logout

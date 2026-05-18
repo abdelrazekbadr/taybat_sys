@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Stack } from 'expo-router';
+import { router, Stack, useSegments } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -14,6 +14,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import i18n from '@/localization/i18n';
 import { useAppStore } from '@/stores/app.store';
+import { useAuthStore } from '@/stores/auth.store';
 import { useThemeStore } from '@/stores/theme.store';
 import { buildNavigationTheme, buildPaperTheme } from '@/theme';
 import './_nativewind-interop';
@@ -37,6 +38,8 @@ export default function RootLayout() {
   const { mode, initializeThemeMode } = useThemeStore();
   const { initializeApp } = useAppStore();
   const language = useAppStore((s) => s.language);
+  const authStatus = useAuthStore((s) => s.status);
+  const segments = useSegments();
   const [fontsLoaded, fontError] = useFonts({
     Cairo_400Regular: require('../assets/fonts/Cairo-Regular.ttf'),
     Cairo_600SemiBold: require('../assets/fonts/Cairo-SemiBold.ttf'),
@@ -113,6 +116,22 @@ export default function RootLayout() {
     };
     run().catch(() => setIsSplashHidden(true));
   }, [fontsLoaded, isBootstrapped, isLangReady]);
+
+  React.useEffect(() => {
+    if (authStatus === 'initializing' || authStatus === 'idle') {
+      return;
+    }
+
+    const inAuth = segments[0] === '(auth)';
+    const inMain = segments[0] === '(main)';
+    const isAccessible = authStatus === 'authenticated' || authStatus === 'guest';
+
+    if (isAccessible && inAuth) {
+      router.replace('/(main)' as never);
+    } else if (!isAccessible && inMain) {
+      router.replace('/(auth)/auth-decision' as never);
+    }
+  }, [authStatus, segments]);
 
   const paperTheme = React.useMemo(
     () => buildPaperTheme({ mode, systemIsDark }),

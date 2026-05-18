@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Community screen ("عائلة الطيبات") is the social layer of the app. It is accessed via a bottom tab bar item labeled **"عائلتنا"**. The screen has two badge-style tab buttons: **المنشورات** (posts feed) and **إحصاءات المجتمع** (community stats charts).
+The Community screen ("عائلة الطيبات") is the social layer of the app. It is accessed via a bottom tab bar item labeled **"عائلتنا"**. The screen has two badge-style tab buttons: **المنشورات** (posts feed) and **لوحة المعلومات** (community stats charts).
 
 This plan covers **Phase 1 only** (system-user posts), but the data model and architecture are designed to support all three phases without schema migration.
 
@@ -131,7 +131,7 @@ When no posts exist or fetch fails:
 
 ---
 
-## Tab 2 — إحصاءات المجتمع (Community Stats)
+## Tab 2 — لوحة المعلومات (Community Stats)
 
 Uses `react-native-gifted-charts` (same recommendation as stats screen plan).
 
@@ -151,7 +151,7 @@ Empty state per section when `stats[]` is empty:
 
 ```
 [BarChart2 icon]
-قريباً — إحصاءات المجتمع
+قريباً — لوحة المعلومات
 ستظهر هنا بعد أول شهر نشاط
 ```
 

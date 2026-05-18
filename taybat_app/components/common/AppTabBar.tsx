@@ -60,6 +60,10 @@ export function AppTabBar({ active = 'home' }: AppTabBarProps) {
       router.replace('/(main)/community');
       return;
     }
+    if (key === 'account') {
+      router.replace('/(main)/account');
+      return;
+    }
   };
 
   return (

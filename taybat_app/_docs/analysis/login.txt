@@ -1,0 +1,12 @@
+
+i want easy use of my app and fasl look view of my app to user take good expression first without registering or login so
+user can 
+authenticate feaure
+- google
+- facebook
+- custom
+- gest (fast login) - required register inside some feaures
+
+register 2 steps: 
+- basic login info from third party or custom
+- complete info some required question and answer inofrmation selection fast 

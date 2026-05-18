@@ -34,5 +34,76 @@
   "welcome_card_3_title": "Share success stories",
   "welcome_card_3_desc": "Join a supportive community that shares progress, recovery, and practical experience.",
   "welcome_start_now": "Start now",
-  "welcome_login": "Log in"
+  "welcome_login": "Log in",
+  "auth": {
+    "decision": {
+      "title": "Join Al-Taybat Community",
+      "subtitle": "Start your journey to better health",
+      "createAccount": "Create account",
+      "login": "I have an account",
+      "continueWithGoogle": "Continue with Google",
+      "browseFirst": "Browse as guest",
+      "orWith": "Or sign in with"
+    },
+    "login": {
+      "title": "Welcome back",
+      "email": "Email",
+      "password": "Password",
+      "submit": "Sign in",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "No account?",
+      "signUpLink": "Sign up"
+    },
+    "signup": {
+      "title": "Create account",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Sign in"
+    },
+    "completeProfile": {
+      "title": "Tell us about you",
+      "subtitle": "So we can personalize your experience",
+      "name": "Full name",
+      "gender": "Gender",
+      "male": "Male",
+      "female": "Female",
+      "birthYear": "Birth year",
+      "weight": "Weight (kg)",
+      "height": "Height (cm)",
+      "activityLevel": "Activity level",
+      "sedentary": "Sedentary",
+      "light": "Light",
+      "moderate": "Moderate",
+      "active": "Active",
+      "healthGoals": "Your health goal",
+      "goal_inflammation": "Reduce inflammation",
+      "goal_digestion": "Improve digestion",
+      "goal_weight": "Weight loss",
+      "goal_energy": "Improve energy",
+      "goal_condition": "Track a condition",
+      "select": "Select",
+      "skip": "Skip for now",
+      "save": "Save & continue",
+      "next": "Next",
+      "back": "Back"
+    },
+    "reset": {
+      "title": "Reset password",
+      "subtitle": "We’ll send you a link to your email",
+      "email": "Email",
+      "submit": "Send link",
+      "successMessage": "Check your email",
+      "backToLogin": "Back to login"
+    },
+    "gate": {
+      "title": "Sign in to continue",
+      "subtitle": "Create a free account to access this feature",
+      "createAccount": "Create account",
+      "login": "Sign in",
+      "cancel": "Cancel"
+    }
+  }
 }

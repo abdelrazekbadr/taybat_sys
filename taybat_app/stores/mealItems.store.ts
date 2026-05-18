@@ -10,6 +10,7 @@ interface MealItemsState {
   initializeMealItems: () => Promise<void>;
   getMealItemsByZone: (zone: ZoneColor) => MealItem[];
   getMealItemById: (id: number) => MealItem | undefined;
+  resetMealItems: () => void;
 }
 
 const initialState = {
@@ -37,4 +38,6 @@ export const useMealItemsStore = create<MealItemsState>((set, get) => ({
   getMealItemsByZone: (zone) => get().mealItems.filter((item) => item.zone === zone),
 
   getMealItemById: (id) => get().mealItems.find((item) => item.id === id),
+
+  resetMealItems: () => set({ ...initialState }),
 }));

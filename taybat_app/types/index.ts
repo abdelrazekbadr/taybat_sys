@@ -1,5 +1,17 @@
 export type ZoneColor = 1 | 2 | 3 | 4 | 5;
 
+export * from './auth.types';
+
+export type PostVisibility = 'public' | 'followers';
+export type FollowPermission = 'everyone' | 'approved';
+export type AvatarType = 'letter' | 'emoji';
+
+export interface AvatarConfig {
+  type: AvatarType;
+  value: string;
+  color?: string;
+}
+
 export interface MealItem {
   id: number;
   name: string;
@@ -25,10 +37,14 @@ export interface User {
   id: number;
   subscriber_id: number;
   name: string;
+  email: string;
   avatar_url: string | null;
+  avatar_config: AvatarConfig | null;
   plan_start_date: string;
   language: 'ar' | 'en';
   theme: 'light' | 'dark' | 'system';
+  post_visibility: PostVisibility;
+  follow_permission: FollowPermission;
 }
 
 export interface MealItemPreference {

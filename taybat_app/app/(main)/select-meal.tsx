@@ -10,6 +10,7 @@ import { ChevronLeft, ChevronRight, LayersPlus } from 'lucide-react-native';
 import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { StarRating } from '@/components/common/StarRating';
+import { useAuthGate } from '@/hooks/useAuthGate';
 import { useRTL } from '@/hooks/useRTL';
 import { useMealsStore } from '@/stores/meals.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
@@ -201,6 +202,7 @@ function MealCard({
   const theme = useTheme();
   const zoneMeta = getZoneMeta(meal.dominant_zone);
   const { rowDir } = useRTL();
+  const { requireAuth } = useAuthGate();
   const logMeal = useUserMealsStore((s) => s.logMeal);
   const replaceMeal = useUserMealsStore((s) => s.replaceMeal);
   const [isAdding, setIsAdding] = useState(false);
@@ -210,7 +212,7 @@ function MealCard({
       ? meal.meal_item_ids.split(',').filter(Boolean).length
       : 0;
 
-  const handleAdd = async () => {
+  const handleAddInternal = async () => {
     if (isAdding) return;
     setIsAdding(true);
     const replaceId = replaceUserMealId ? Number(replaceUserMealId) : Number.NaN;
@@ -223,6 +225,8 @@ function MealCard({
     const message = useUserMealsStore.getState().errorMessage;
     Alert.alert(replaceUserMealId ? 'تعذّر استبدال الوجبة' : 'تعذّر تسجيل الوجبة', message || 'حاول مرة أخرى');
   };
+
+  const handleAdd = () => requireAuth(handleAddInternal);
 
   return (
     <TouchableOpacity

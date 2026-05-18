@@ -11,6 +11,7 @@ interface MealsState {
   getMealById: (id: number) => Meal | undefined;
   createMeal: (name: string, mealItemIds: number[]) => Promise<Meal | null>;
   deleteMeal: (id: number) => Promise<boolean>;
+  resetMeals: () => void;
 }
 
 const initialState = {
@@ -95,4 +96,6 @@ export const useMealsStore = create<MealsState>((set, get) => ({
       return false;
     }
   },
+
+  resetMeals: () => set({ ...initialState }),
 }));

@@ -79,6 +79,7 @@ export default function HomeScreen() {
         name={user.name}
         subscriberId={user.subscriber_id}
         avatarUrl={user.avatar_url}
+        onProfilePress={() => router.push('/(main)/user-profile')}
       />
 
       <ScrollView

@@ -25,6 +25,7 @@ interface WeeklyRatingState {
   initializeRatings: () => Promise<void>;
   submitRating: (payload: SubmitWeeklyRatingPayload) => Promise<boolean>;
   checkPendingRating: () => void;
+  resetWeeklyRatings: () => void;
 }
 
 const initialState = {
@@ -108,4 +109,6 @@ export const useWeeklyRatingStore = create<WeeklyRatingState>((set, get) => ({
     const days = daysBetween(last.submitted_at, new Date().toISOString());
     set({ pendingRating: days >= 7 });
   },
+
+  resetWeeklyRatings: () => set({ ...initialState }),
 }));

@@ -11,6 +11,7 @@ import { AppTabBar } from '@/components/common/AppTabBar';
 import { AppText } from '@/components/common/AppText';
 import { useRTL } from '@/hooks/useRTL';
 import { useCommunityStore } from '@/stores/community.store';
+import { useUserStore } from '@/stores/user.store';
 
 type CommunityTab = 'posts' | 'stats';
 
@@ -20,7 +21,8 @@ export default function CommunityScreen() {
   const { rowDir } = useRTL();
 
   const [activeTab, setActiveTab] = useState<CommunityTab>('posts');
-  const { posts, stats, userReactions, isLoading, isLoadingMore, hasMore, errorMessage, initializeCommunity, loadMorePosts, refreshPosts, toggleReaction } =
+  const { user } = useUserStore();
+  const { posts, stats, userReactions, userFollows, isLoading, isLoadingMore, hasMore, errorMessage, initializeCommunity, loadMorePosts, refreshPosts, toggleReaction, toggleFollow } =
     useCommunityStore();
 
   useEffect(() => {
@@ -69,13 +71,13 @@ export default function CommunityScreen() {
                 style={{ paddingHorizontal: 18, paddingVertical: 10, borderRadius: 999 }}
               >
                 <AppText variant="bold" className="text-[13px] text-white">
-                  إحصاءات المجتمع
+                  لوحة المعلومات
                 </AppText>
               </LinearGradient>
             ) : (
               <View className="rounded-full border border-app-lineSoft bg-app-surface px-[18px] py-[10px]">
                 <AppText variant="bold" className="text-[13px] text-app-textMuted">
-                  إحصاءات المجتمع
+                  لوحة المعلومات
                 </AppText>
               </View>
             )}
@@ -91,11 +93,10 @@ export default function CommunityScreen() {
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{
-            paddingHorizontal: 22,
-            paddingTop: 16,
+            paddingTop: 8,
             paddingBottom: insets.bottom + 110,
-            gap: 12,
           }}
+          ItemSeparatorComponent={() => <View className="h-2 bg-app-background" />}
           onRefresh={refreshPosts}
           refreshing={isLoading}
           onEndReached={() => {
@@ -113,14 +114,23 @@ export default function CommunityScreen() {
           }
           ListHeaderComponent={
             errorMessage ? (
-              <View className="mb-2 rounded-2xl border border-app-lineSoft bg-app-surface px-4 py-3">
+              <View className="mb-2 bg-app-surface px-4 py-3">
                 <AppText className="text-[12.5px] leading-6 text-app-textMuted">{errorMessage}</AppText>
               </View>
             ) : null
           }
-          renderItem={({ item }) => (
-            <PostCard post={item} isLoved={userReactions.includes(item.id)} onLovePress={() => toggleReaction(item.id)} />
-          )}
+          renderItem={({ item }) => {
+            const isFollowable = item.user_id !== 0 && item.user_id !== (user?.id ?? -1);
+            return (
+              <PostCard
+                post={item}
+                isLoved={userReactions.includes(item.id)}
+                onLovePress={() => toggleReaction(item.id)}
+                isFollowing={isFollowable ? userFollows.includes(item.user_id) : undefined}
+                onFollowPress={isFollowable ? () => toggleFollow(item.user_id) : undefined}
+              />
+            );
+          }}
           ListFooterComponent={
             isLoadingMore ? (
               <View className="py-6">

@@ -7,7 +7,10 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 
+import { STORAGE_KEYS } from '@/api/storage/storageKeys';
+import { storageService } from '@/api/storage/storageService';
 import { useAppStore } from '@/stores/app.store';
+import { useAuthStore } from '@/stores/auth.store';
 import { AppText } from '@/components/common/AppText';
 
 const appIcon = require('../assets/images/app_icon.png');
@@ -23,25 +26,29 @@ export default function SplashRoute() {
   const { t } = useTranslation();
   const theme = useTheme();
   const { language } = useAppStore();
+  const initializeAuth = useAuthStore((s) => s.initializeAuth);
 
   const isRTL = language === 'ar' || I18nManager.isRTL;
   const [state, setState] = React.useState<SplashState>({ status: 'loading' });
+  const [redirectTo, setRedirectTo] = React.useState<string | null>(null);
 
   React.useEffect(() => {
-    const minDelayMs = 5000;
-    const startedAt = Date.now();
-
     const run = async () => {
       try {
         Image.resolveAssetSource(appIcon);
         Image.resolveAssetSource(splashBg);
 
-        const elapsed = Date.now() - startedAt;
-        if (elapsed < minDelayMs) {
-          await new Promise<void>(resolve => {
-            setTimeout(() => resolve(), minDelayMs - elapsed);
-          });
-        }
+        await initializeAuth();
+        const status = useAuthStore.getState().status;
+        const hasSeen = (await storageService.get<boolean>(STORAGE_KEYS.HAS_SEEN_ONBOARDING)) === true;
+
+        const next =
+          status === 'authenticated' || status === 'guest'
+            ? '/(main)'
+            : hasSeen
+              ? '/(auth)/auth-decision'
+              : '/(auth)/onboarding';
+        setRedirectTo(next);
         setState({ status: 'ready' });
       } catch (error: unknown) {
         const message = error instanceof Error ? error.message : 'Failed to load assets';
@@ -50,7 +57,7 @@ export default function SplashRoute() {
     };
 
     run().catch(() => setState({ status: 'error', message: 'Failed to load assets' }));
-  }, []);
+  }, [initializeAuth]);
 
   const loaderX = React.useRef(new Animated.Value(0)).current;
   React.useEffect(() => {
@@ -79,8 +86,8 @@ export default function SplashRoute() {
     outputRange: [0, 84],
   });
 
-  if (state.status === 'ready') {
-    return <Redirect href="/(auth)/onboarding" />;
+  if (state.status === 'ready' && redirectTo) {
+    return <Redirect href={redirectTo as never} />;
   }
 
   return (

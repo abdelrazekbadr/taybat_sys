@@ -13,12 +13,13 @@ interface HomeHeaderProps {
   subscriberId: number;
   avatarUrl?: string | null;
   onBellPress?: () => void;
+  onProfilePress?: () => void;
   hasNotification?: boolean;
 }
 
 const defaultAvatar = require('../../assets/images/avatar/avatar_1.png');
 
-export function HomeHeader({ name, subscriberId, avatarUrl, onBellPress, hasNotification = true }: HomeHeaderProps) {
+export function HomeHeader({ name, subscriberId, avatarUrl, onBellPress, onProfilePress, hasNotification = true }: HomeHeaderProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { isRTL, rowDir } = useRTL();
@@ -29,7 +30,13 @@ export function HomeHeader({ name, subscriberId, avatarUrl, onBellPress, hasNoti
       className="flex-row items-start justify-between px-[22px] pb-3"
       style={{ paddingTop: insets.top + 12, flexDirection: rowDir }}
     >
-      <View className="flex-row items-center gap-3" style={{ flexDirection: rowDir }}>
+      <TouchableOpacity
+        className="flex-row items-center gap-3"
+        style={{ flexDirection: rowDir }}
+        onPress={onProfilePress}
+        activeOpacity={onProfilePress ? 0.75 : 1}
+        disabled={!onProfilePress}
+      >
         <View className="relative h-[50px] w-[50px]">
           <Image source={avatarSource} className="h-[50px] w-[50px] rounded-full bg-app-surfaceAlt" resizeMode="cover" />
           <View
@@ -49,7 +56,7 @@ export function HomeHeader({ name, subscriberId, avatarUrl, onBellPress, hasNoti
             </AppText>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
 
       <TouchableOpacity
         className="relative h-[44px] w-[44px] items-center justify-center rounded-full border border-app-line bg-app-surface"

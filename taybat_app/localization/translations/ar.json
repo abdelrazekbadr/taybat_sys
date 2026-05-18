@@ -34,5 +34,76 @@
   "welcome_card_3_title": "مشاركة قصص النجاح",
   "welcome_card_3_desc": "كن جزءاً من مجتمع ملهم يشارك تجارب التحسن والتعافي لرفع المعنويات وتبادل الخبرات.",
   "welcome_start_now": "ابدأ الآن",
-  "welcome_login": "تسجيل الدخول"
+  "welcome_login": "تسجيل الدخول",
+  "auth": {
+    "decision": {
+      "title": "انضم إلى مجتمع الطيبات",
+      "subtitle": "ابدأ رحلتك نحو صحة أفضل",
+      "createAccount": "إنشاء حساب جديد",
+      "login": "لدي حساب بالفعل",
+      "continueWithGoogle": "متابعة مع Google",
+      "browseFirst": "تصفح التطبيق كزائر بدون تسجيل",
+      "orWith": "أو سجّل الدخول بـ"
+    },
+    "login": {
+      "title": "مرحباً بعودتك",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "submit": "دخول",
+      "forgotPassword": "نسيت كلمة المرور؟",
+      "noAccount": "لا تملك حساباً؟",
+      "signUpLink": "أنشئ حساباً"
+    },
+    "signup": {
+      "title": "إنشاء حساب",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "confirmPassword": "تأكيد كلمة المرور",
+      "submit": "إنشاء حساب",
+      "hasAccount": "لديك حساب بالفعل؟",
+      "loginLink": "سجّل الدخول"
+    },
+    "completeProfile": {
+      "title": "أخبرنا عن نفسك",
+      "subtitle": "حتى نخصص لك تجربة مناسبة",
+      "name": "الاسم الكامل",
+      "gender": "الجنس",
+      "male": "ذكر",
+      "female": "أنثى",
+      "birthYear": "سنة الميلاد",
+      "weight": "الوزن (كجم)",
+      "height": "الطول (سم)",
+      "activityLevel": "مستوى النشاط",
+      "sedentary": "خامل",
+      "light": "خفيف",
+      "moderate": "متوسط",
+      "active": "نشط",
+      "healthGoals": "ما هدفك الصحي؟",
+      "goal_inflammation": "تقليل الالتهابات",
+      "goal_digestion": "تحسين الهضم",
+      "goal_weight": "فقدان الوزن",
+      "goal_energy": "تحسين الطاقة",
+      "goal_condition": "متابعة حالة صحية",
+      "select": "اختر",
+      "skip": "تخطي لاحقاً",
+      "save": "حفظ والمتابعة",
+      "next": "التالي",
+      "back": "رجوع"
+    },
+    "reset": {
+      "title": "إعادة تعيين كلمة المرور",
+      "subtitle": "سنرسل لك رابطاً على بريدك",
+      "email": "البريد الإلكتروني",
+      "submit": "إرسال الرابط",
+      "successMessage": "تحقق من بريدك الإلكتروني",
+      "backToLogin": "العودة لتسجيل الدخول"
+    },
+    "gate": {
+      "title": "سجّل للمتابعة",
+      "subtitle": "أنشئ حساباً مجانياً للوصول إلى هذه الميزة",
+      "createAccount": "إنشاء حساب",
+      "login": "تسجيل الدخول",
+      "cancel": "إلغاء"
+    }
+  }
 }

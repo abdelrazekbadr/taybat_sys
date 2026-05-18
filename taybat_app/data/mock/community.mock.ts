@@ -1,6 +1,7 @@
 import type { CommunityPost, CommunityStats } from '@/types';
 
 export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
+  // ── System posts (pinned + tips) ──────────────────────────────────────
   {
     id: 1,
     user_id: 0,
@@ -58,7 +59,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
     user_id: 0,
     author_name: 'فريق الطيبات',
     author_avatar: null,
-    content: 'خبر جديد: قريباً سنضيف إحصاءات المجتمع لتشاهد متوسط الالتزام وتحسّن الصحة عبر الأشهر.',
+    content: 'خبر جديد: قريباً سنضيف لوحة المعلومات لتشاهد متوسط الالتزام وتحسّن الصحة عبر الأشهر.',
     image_url: null,
     post_type: 'system',
     is_pinned: false,
@@ -71,7 +72,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
     user_id: 0,
     author_name: 'فريق الطيبات',
     author_avatar: null,
-    content: 'اقترحنا لك اليوم خيارات من “المتاح” حسب تفضيلاتك — ابدأ بالأبسط ثم توسّع تدريجياً.',
+    content: 'اقترحنا لك اليوم خيارات من "المتاح" حسب تفضيلاتك — ابدأ بالأبسط ثم توسّع تدريجياً.',
     image_url: null,
     post_type: 'system',
     is_pinned: false,
@@ -79,9 +80,62 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
     created_at: '2026-05-13T14:10:00.000Z',
     updated_at: '2026-05-13T14:10:00.000Z',
   },
+
+  // ── User posts (different members — for testing follow feature) ───────
+  {
+    id: 7,
+    user_id: 2,
+    author_name: 'سارة العمري',
+    author_avatar: null,
+    content: 'اليوم أكملت شهرين كاملين مع الطيبات 🎉 الصداع اليومي اختفى تقريباً وطاقتي في الصباح تضاعفت. لمن يشك في البداية — استمر، النتائج تأتي.',
+    image_url: null,
+    post_type: 'user_post',
+    is_pinned: false,
+    love_count: 14,
+    created_at: '2026-05-14T07:30:00.000Z',
+    updated_at: '2026-05-14T07:30:00.000Z',
+  },
+  {
+    id: 8,
+    user_id: 3,
+    author_name: 'محمد الهاجري',
+    author_avatar: null,
+    content: 'جربت اليوم وجبة الأرز بالكوسا المسلوقة وزيت الزيتون — بصراحة أفضل مما توقعت! البساطة لها طعم مختلف لما تعرف أنها تنفعك.',
+    image_url: null,
+    post_type: 'meal_share',
+    is_pinned: false,
+    love_count: 9,
+    created_at: '2026-05-15T13:00:00.000Z',
+    updated_at: '2026-05-15T13:00:00.000Z',
+  },
+  {
+    id: 9,
+    user_id: 4,
+    author_name: 'نورة الرشيد',
+    author_avatar: null,
+    content: 'بعد ٣ أسابيع على البروتوكول: النوم أصبح أعمق، والانتفاخ بعد الأكل خف كثيراً. ما توقعت أن الغذاء وحده يصنع هذا الفرق.',
+    image_url: null,
+    post_type: 'user_post',
+    is_pinned: false,
+    love_count: 21,
+    created_at: '2026-05-16T10:15:00.000Z',
+    updated_at: '2026-05-16T10:15:00.000Z',
+  },
+  {
+    id: 10,
+    user_id: 5,
+    author_name: 'أحمد السالم',
+    author_avatar: null,
+    content: 'تعلمت أن أترك فترة ٤ ساعات بين الوجبات بدل الأكل كل ما أحسست بشيء. الجسم يحتاج وقت للهضم. من جرّب هذا؟',
+    image_url: null,
+    post_type: 'user_post',
+    is_pinned: false,
+    love_count: 6,
+    created_at: '2026-05-17T08:45:00.000Z',
+    updated_at: '2026-05-17T08:45:00.000Z',
+  },
 ]) as unknown as CommunityPost[];
 
 export const MOCK_COMMUNITY_STATS: CommunityStats[] = Object.freeze([
-  { month: '2026-05', active_users: 0, avg_health_score: null, avg_adherence_score: null, total_meals_logged: 0 },
+  { month: '2026-05', active_users: 4, avg_health_score: 3.5, avg_adherence_score: 3.2, total_meals_logged: 12 },
 ]) as unknown as CommunityStats[];
-
