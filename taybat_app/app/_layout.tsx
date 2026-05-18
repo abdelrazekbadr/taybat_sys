@@ -118,7 +118,7 @@ export default function RootLayout() {
   }, [fontsLoaded, isBootstrapped, isLangReady]);
 
   React.useEffect(() => {
-    if (authStatus === 'initializing' || authStatus === 'idle') {
+    if (authStatus === 'initializing' || authStatus === 'idle' || authStatus === 'loading') {
       return;
     }
 

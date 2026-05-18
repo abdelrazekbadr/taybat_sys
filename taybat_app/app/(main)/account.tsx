@@ -12,6 +12,7 @@ import { SegmentedToggle } from '@/components/account/SegmentedToggle';
 import { SettingsRow } from '@/components/account/SettingsRow';
 import { useRTL } from '@/hooks/useRTL';
 import { useAccountStore } from '@/stores/account.store';
+import { useAuthStore } from '@/stores/auth.store';
 import { useAppStore } from '@/stores/app.store';
 import { useMealPreferencesStore } from '@/stores/mealPreferences.store';
 import { useThemeStore } from '@/stores/theme.store';
@@ -78,6 +79,8 @@ export default function AccountScreen() {
     updateFollowPermission,
     logout,
   } = useAccountStore();
+
+  const authLogout = useAuthStore((s) => s.logout);
 
   const { favoriteMealIds, initializePreferences } = useMealPreferencesStore();
 
@@ -332,12 +335,14 @@ export default function AccountScreen() {
                   text: 'تسجيل الخروج',
                   style: 'destructive',
                   onPress: async () => {
+                    // 1. Clear all user preference data from every feature store
                     const ok = await logout();
                     if (!ok) {
                       Alert.alert('تعذّر تسجيل الخروج', useAccountStore.getState().errorMessage || 'حاول مرة أخرى');
                       return;
                     }
-                    router.replace('/(auth)/onboarding');
+                    // 2. Clear auth session — route guard in _layout.tsx handles navigation
+                    await authLogout();
                   },
                 },
               ]);

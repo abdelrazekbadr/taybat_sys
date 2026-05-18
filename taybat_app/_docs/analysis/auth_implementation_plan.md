@@ -1,24 +1,24 @@
 # Auth Implementation Plan — Al-Taybat App
 
-**Date:** 2026-05-18  
-**Branch target:** `feat/auth-flow`  
-**Status:** Ready for implementation  
+**Date:** 2026-05-18
+**Branch target:** `feat/auth-flow`
+**Status:** Ready for implementation
 **Data strategy:** Mock-first → Supabase swap (no code change outside API layer)
 
 ---
 
 ## Decision Summary
 
-| Topic | Decision | Rationale |
-| --- | --- | --- |
-| First impression | Onboarding → Auth Decision (no forced login) | Reduces friction, better conversion |
-| Guest mode | Full app access with soft gates at protected features | Best UX, avoids hard walls |
-| Registration steps | 2-step: credentials → profile completion | Reduces drop-off vs single long form |
-| OAuth | Google + Apple (Phase 1), Facebook (Phase 2) | Apple required by App Store; Facebook adds complexity |
-| Session persistence | Fake token + AsyncStorage (mock) → Supabase session (live) | Same interface, different implementation |
-| Route guarding | Store-based flag + Expo Router redirect | Clean, no navigation in stores |
-| Profile completion | Separate screen, skippable except required fields | Flexibility + data quality balance |
-| **Data layer** | **Mock implementations now, Supabase drop-in later** | **No UI/store changes needed at swap time** |
+| Topic                 | Decision                                                              | Rationale                                               |
+| --------------------- | --------------------------------------------------------------------- | ------------------------------------------------------- |
+| First impression      | Onboarding → Auth Decision (no forced login)                         | Reduces friction, better conversion                     |
+| Guest mode            | Full app access with soft gates at protected features                 | Best UX, avoids hard walls                              |
+| Registration steps    | 2-step: credentials → profile completion                             | Reduces drop-off vs single long form                    |
+| OAuth                 | Google + Apple (Phase 1), Facebook (Phase 2)                          | Apple required by App Store; Facebook adds complexity   |
+| Session persistence   | Fake token + AsyncStorage (mock) → Supabase session (live)           | Same interface, different implementation                |
+| Route guarding        | Store-based flag + Expo Router redirect                               | Clean, no navigation in stores                          |
+| Profile completion    | Separate screen, skippable except required fields                     | Flexibility + data quality balance                      |
+| **Data layer**  | **Mock implementations now, Supabase drop-in later**            | **No UI/store changes needed at swap time**       |
 | **Type naming** | **snake_case for DB-mirrored types (matches Supabase columns)** | **Zero mapping overhead when connecting real DB** |
 
 ---
@@ -216,7 +216,7 @@ Mock behaviors:
   sendPasswordReset → log to console, resolve (no actual email in mock)
 ```
 
-Session stored at: `STORAGE_KEYS.AUTH_SESSION`  
+Session stored at: `STORAGE_KEYS.AUTH_SESSION`
 Users stored at: `STORAGE_KEYS.MOCK_AUTH_USERS` (mock-only key, removed at swap)
 
 ### `api/auth/userApi.mock.ts`
@@ -366,12 +366,12 @@ Layout (RTL, full-height scroll-safe):
 
 ```text
 [Logo / Illustration]
-[Title: "انضم إلى مجتمع التايبات"]
+[Title: "انضم إلى مجتمع الطيبات"]
 [Subtitle: "ابدأ رحلتك نحو صحة أفضل"]
 
 [── سجّل الدخول بـ ──]
 [ 🅶  متابعة مع Google  ]
-[ 🍎  متابعة مع Apple   ]
+
 
 [── أو بالبريد الإلكتروني ──]
 [ إنشاء حساب جديد ]  ← primary button
@@ -385,7 +385,7 @@ Layout (RTL, full-height scroll-safe):
 
 ### 3. `/(auth)/login` — New Screen
 
-Fields: Email, Password (SecureEntry)  
+Fields: Email, Password (SecureEntry)
 Links: "لا تملك حساباً؟ أنشئ حساباً" | "نسيت كلمة المرور؟"
 
 Zod schema:
@@ -401,7 +401,7 @@ z.object({
 
 ### 4. `/(auth)/signup` — New Screen
 
-Fields: Email, Password, Confirm Password  
+Fields: Email, Password, Confirm Password
 Link: "لديك حساب بالفعل؟ سجّل الدخول"
 
 Zod schema:
@@ -450,7 +450,7 @@ Required: name only. Everything else is optional.
 
 ### 6. `/(auth)/reset-password` — New Screen
 
-Email field + submit → shows success message inline (no navigation).  
+Email field + submit → shows success message inline (no navigation).
 Mock: resolves immediately, shows confirmation text.
 
 ---
@@ -691,15 +691,15 @@ When Supabase is ready:
 
 ## New Components
 
-| Component | Location | Purpose |
-| --- | --- | --- |
-| `ChipSelector` | `components/common/` | Single/multi select chips — reused in profile + elsewhere |
-| `StepIndicator` | `components/common/` | Progress dots for multi-step forms |
-| `SocialAuthButtons` | `components/auth/` | Google + Apple buttons (reused on 3 screens) |
-| `AuthGateSheet` | `components/auth/` | Bottom sheet shown to guests on protected actions |
-| `ProfileStepBasic` | `components/auth/` | Step 1 of complete-profile |
-| `ProfileStepHealth` | `components/auth/` | Step 2 of complete-profile |
-| `ProfileStepGoals` | `components/auth/` | Step 3 of complete-profile |
+| Component             | Location               | Purpose                                                    |
+| --------------------- | ---------------------- | ---------------------------------------------------------- |
+| `ChipSelector`      | `components/common/` | Single/multi select chips — reused in profile + elsewhere |
+| `StepIndicator`     | `components/common/` | Progress dots for multi-step forms                         |
+| `SocialAuthButtons` | `components/auth/`   | Google + Apple buttons (reused on 3 screens)               |
+| `AuthGateSheet`     | `components/auth/`   | Bottom sheet shown to guests on protected actions          |
+| `ProfileStepBasic`  | `components/auth/`   | Step 1 of complete-profile                                 |
+| `ProfileStepHealth` | `components/auth/`   | Step 2 of complete-profile                                 |
+| `ProfileStepGoals`  | `components/auth/`   | Step 3 of complete-profile                                 |
 
 ---
 

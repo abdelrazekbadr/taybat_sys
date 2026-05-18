@@ -48,7 +48,7 @@ export default function LoginScreen() {
     router.replace((user?.profile_completed ? '/(main)' : '/(auth)/complete-profile') as never);
   });
 
-  return (
+return (
     <View className="flex-1 bg-app-background px-6">
       <View className="flex-1 justify-center">
         <AppText variant="bold" className="text-center text-[22px] leading-8 text-app-text">
@@ -56,24 +56,34 @@ export default function LoginScreen() {
         </AppText>
 
         <View className="mt-7 gap-4">
+          {/* Email Field */}
           <Controller
             control={control}
             name="email"
             render={({ field: { onChange, value }, fieldState }) => (
-              <View className="gap-1">
-                <AppText className="text-[13px] text-app-textMuted">{t('auth.login.email')}</AppText>
+              <View className="gap-1.5">
+                <AppText className="text-[13px] font-semibold text-app-text">
+                  {t('auth.login.email')}
+                </AppText>
                 <AppTextInput
                   value={value}
                   onChangeText={onChange}
                   keyboardType="email-address"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  placeholder={t('auth.login.email')}
-                  className="rounded-[14px] border border-app-lineSoft bg-app-surface px-4 py-3 text-[14px] text-app-text"
+                  placeholder="example@email.com"
+                  returnKeyType="next"
+                  onSubmitEditing={() => passwordRef.current?.focus()}
                   editable={!isLoading}
+                  className={`rounded-[14px] border px-4 py-3.5 text-[14px] text-app-text ${
+                    fieldState.error
+                      ? 'border-red-400 bg-red-50'
+                      : 'border-app-lineSoft bg-app-surface focus:border-app-primary'
+                  }`}
+                  style={{ opacity: isLoading ? 0.6 : 1 }}
                 />
                 {fieldState.error?.message ? (
-                  <AppText className="text-[12px]" style={{ color: theme.colors.error }}>
+                  <AppText className="text-[12px] font-medium" style={{ color: theme.colors.error }}>
                     {fieldState.error.message}
                   </AppText>
                 ) : null}
@@ -81,22 +91,33 @@ export default function LoginScreen() {
             )}
           />
 
+          {/* Password Field */}
           <Controller
             control={control}
             name="password"
             render={({ field: { onChange, value }, fieldState }) => (
-              <View className="gap-1">
-                <AppText className="text-[13px] text-app-textMuted">{t('auth.login.password')}</AppText>
+              <View className="gap-1.5">
+                <AppText className="text-[13px] font-semibold text-app-text">
+                  {t('auth.login.password')}
+                </AppText>
                 <AppTextInput
+                  ref={passwordRef}
                   value={value}
                   onChangeText={onChange}
                   secureTextEntry
-                  placeholder={t('auth.login.password')}
-                  className="rounded-[14px] border border-app-lineSoft bg-app-surface px-4 py-3 text-[14px] text-app-text"
+                  placeholder="••••••••"
+                  returnKeyType="go"
+                  onSubmitEditing={submit}
                   editable={!isLoading}
+                  className={`rounded-[14px] border px-4 py-3.5 text-[14px] text-app-text ${
+                    fieldState.error
+                      ? 'border-red-400 bg-red-50'
+                      : 'border-app-lineSoft bg-app-surface focus:border-app-primary'
+                  }`}
+                  style={{ opacity: isLoading ? 0.6 : 1 }}
                 />
                 {fieldState.error?.message ? (
-                  <AppText className="text-[12px]" style={{ color: theme.colors.error }}>
+                  <AppText className="text-[12px] font-medium" style={{ color: theme.colors.error }}>
                     {fieldState.error.message}
                   </AppText>
                 ) : null}
@@ -104,24 +125,51 @@ export default function LoginScreen() {
             )}
           />
 
+          {/* Global Error */}
           {errorMessage ? (
-            <View className="rounded-xl bg-app-surface px-4 py-3" style={{ borderLeftWidth: 3, borderLeftColor: theme.colors.error }}>
-              <AppText className="text-[13px] leading-5" style={{ color: theme.colors.error }}>
+            <View
+              className="rounded-xl bg-red-50 px-4 py-3"
+              style={{ borderLeftWidth: 3, borderLeftColor: theme.colors.error }}
+            >
+              <AppText className="text-[13px] leading-5 font-medium" style={{ color: theme.colors.error }}>
                 {errorMessage}
               </AppText>
             </View>
           ) : null}
 
-          <PrimaryButton title={t('auth.login.submit')} onPress={submit} />
+          {/* Submit Button */}
+          <View className="mt-2">
+            <PrimaryButton
+              title={t('auth.login.submit')}
+              onPress={submit}
+              loading={isLoading}
+            />
+          </View>
 
-          <View className="mt-1 items-center gap-3">
-            <Pressable onPress={() => router.push('/(auth)/reset-password' as never)} disabled={isLoading}>
-              <AppText className="text-[13px] text-app-primary">{t('auth.login.forgotPassword')}</AppText>
+          {/* Footer Links */}
+          <View className="mt-2 items-center gap-4">
+            <Pressable
+              onPress={() => router.push('/(auth)/reset-password' as never)}
+              disabled={isLoading}
+              className="py-1"
+            >
+              <AppText className="text-[13px] font-medium text-app-primary">
+                {t('auth.login.forgotPassword')}
+              </AppText>
             </Pressable>
 
-            <View className="flex-row items-center gap-1" style={{ flexDirection: rowDir, justifyContent: 'center' }}>
-              <AppText className="text-[13px] text-app-textMuted">{t('auth.login.noAccount')}</AppText>
-              <Pressable onPress={() => router.replace('/(auth)/signup' as never)} disabled={isLoading}>
+            <View
+              className="flex-row items-center gap-1.5"
+              style={{ flexDirection: rowDir, justifyContent: 'center' }}
+            >
+              <AppText className="text-[13px] text-app-textMuted">
+                {t('auth.login.noAccount')}
+              </AppText>
+              <Pressable
+                onPress={() => router.replace('/(auth)/signup' as never)}
+                disabled={isLoading}
+                className="py-1"
+              >
                 <AppText variant="semibold" className="text-[13px] text-app-primary">
                   {t('auth.login.signUpLink')}
                 </AppText>

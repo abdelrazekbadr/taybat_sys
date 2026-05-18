@@ -37,13 +37,15 @@
   "welcome_login": "Log in",
   "auth": {
     "decision": {
-      "title": "Join Al-Taybat Community",
-      "subtitle": "Start your journey to better health",
+      "title": "Log meals. Track health.",
+      "subtitle": "Join Al-Taybat and monitor your journey every day",
       "createAccount": "Create account",
       "login": "I have an account",
       "continueWithGoogle": "Continue with Google",
-      "browseFirst": "Browse as guest",
-      "orWith": "Or sign in with"
+      "browseFirst": "Explore without signing up",
+      "orWith": "Or sign in with",
+      "orWithEmail": "Or with email",
+      "trustBadge": "Join thousands of users"
     },
     "login": {
       "title": "Welcome back",
