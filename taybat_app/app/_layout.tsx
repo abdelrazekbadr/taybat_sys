@@ -129,7 +129,7 @@ export default function RootLayout() {
     if (isAccessible && inAuth) {
       router.replace('/(main)' as never);
     } else if (!isAccessible && inMain) {
-      router.replace('/(auth)/auth-decision' as never);
+      router.replace('/(auth)/login' as never);
     }
   }, [authStatus, segments]);
 

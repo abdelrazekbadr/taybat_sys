@@ -51,7 +51,7 @@ export default function CompleteProfileScreen() {
 
   React.useEffect(() => {
     if (!user) {
-      router.replace('/(auth)/auth-decision' as never);
+      router.replace('/(auth)/login' as never);
     }
   }, [user]);
 

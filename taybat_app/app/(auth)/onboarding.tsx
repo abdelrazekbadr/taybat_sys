@@ -257,7 +257,7 @@ export default function OnboardingScreen() {
                   <Pressable
                     onPress={async () => {
                       await storageService.set(STORAGE_KEYS.HAS_SEEN_ONBOARDING, true);
-                      router.replace('/(auth)/auth-decision' as never);
+                      router.replace('/(auth)/login' as never);
                     }}
                     className="h-12 w-full items-center justify-center rounded-xl border-2 border-app-muted/30 bg-transparent"
                   >

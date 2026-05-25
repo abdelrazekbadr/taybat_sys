@@ -12,7 +12,7 @@ interface AuthState {
   initializeAuth: () => Promise<void>;
   loginWithEmail: (payload: LoginPayload) => Promise<boolean>;
   signUpWithEmail: (payload: SignUpPayload) => Promise<boolean>;
-  loginWithOAuth: (provider: 'google' | 'apple') => Promise<boolean>;
+  loginWithOAuth: (provider: 'google' | 'apple' | 'facebook') => Promise<boolean>;
   completeProfile: (data: ProfileCompletionPayload) => Promise<boolean>;
   setGuestMode: () => void;
   logout: () => Promise<void>;

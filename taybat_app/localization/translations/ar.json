@@ -38,6 +38,8 @@
   "auth": {
     "decision": {
       "title": "سجّل وجباتك وتابع صحتك",
+      "titleLine1": "سجّل وجباتك",
+      "titleLine2": "وتابع صحتك",
       "subtitle": "انضم إلى مجتمع الطيبات وراقب رحلتك يوماً بيوم",
       "createAccount": "إنشاء حساب جديد",
       "login": "لدي حساب بالفعل",
@@ -48,10 +50,13 @@
       "trustBadge": "انضم إلى آلاف المستخدمين"
     },
     "login": {
-      "title": "مرحباً بعودتك",
+      "title": "مرحباً",
+      "titleLine1": "مرحباً",
+      "titleLine2": "",
       "email": "البريد الإلكتروني",
       "password": "كلمة المرور",
       "submit": "دخول",
+      "rememberMe": "تذكّرني",
       "forgotPassword": "نسيت كلمة المرور؟",
       "noAccount": "لا تملك حساباً؟",
       "signUpLink": "أنشئ حساباً"

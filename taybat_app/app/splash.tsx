@@ -46,7 +46,7 @@ export default function SplashRoute() {
           status === 'authenticated' || status === 'guest'
             ? '/(main)'
             : hasSeen
-              ? '/(auth)/auth-decision'
+              ? '/(auth)/login'
               : '/(auth)/onboarding';
         setRedirectTo(next);
         setState({ status: 'ready' });

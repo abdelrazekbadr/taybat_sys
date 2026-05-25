@@ -221,7 +221,7 @@ export default function UserProfileScreen() {
             {([
               { value: planDays, label: 'يوم في الرحلة' },
               { value: totalMeals, label: 'وجبة مسجلة' },
-              { value: earnedBadges.length, label: 'شارات مكتسبة' },
+              { value: earnedBadges.length, label: 'krhx مكتسبة' },
             ] as const).map((stat, i) => (
               <React.Fragment key={i}>
                 <View className="flex-1 items-center py-4">

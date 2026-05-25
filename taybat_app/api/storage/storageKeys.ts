@@ -14,4 +14,5 @@ export const STORAGE_KEYS = {
   HAS_SEEN_ONBOARDING: '@taybat/has_seen_onboarding',
   MOCK_AUTH_USERS: '@taybat/mock_auth_users',
   MOCK_USER_PROFILES: '@taybat/mock_user_profiles',
+  REMEMBER_ME: 'remember_me',
 } as const;

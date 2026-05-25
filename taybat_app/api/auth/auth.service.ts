@@ -46,7 +46,7 @@ class AuthService {
     }
   }
 
-  async loginWithOAuth(provider: 'google' | 'apple'): Promise<AuthResult> {
+  async loginWithOAuth(provider: 'google' | 'apple' | 'facebook'): Promise<AuthResult> {
     try {
       const { user } = await authApi.loginWithOAuth(provider);
       await this.ensureProfileRow(user.id, user.email, user.provider);

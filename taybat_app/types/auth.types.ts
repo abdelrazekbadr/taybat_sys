@@ -1,4 +1,4 @@
-export type AuthProvider = 'email' | 'google' | 'apple' | 'guest';
+export type AuthProvider = 'email' | 'google' | 'apple' | 'facebook' | 'guest';
 export type AuthStatus =
   | 'idle'
   | 'initializing'

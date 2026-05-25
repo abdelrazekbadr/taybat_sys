@@ -9,7 +9,7 @@ type MockAuthUserRecord = {
   id: string;
   email: string;
   password: string | null;
-  provider: 'email' | 'google' | 'apple';
+  provider: 'email' | 'google' | 'apple' | 'facebook';
   created_at: string;
 };
 
@@ -112,7 +112,7 @@ export const authApi: IAuthApi = {
     return { user: toAuthUser(existing, false), session };
   },
 
-  async loginWithOAuth(provider: 'google' | 'apple'): Promise<{ user: AuthUser; session: AuthSession }> {
+  async loginWithOAuth(provider: 'google' | 'apple' | 'facebook'): Promise<{ user: AuthUser; session: AuthSession }> {
     await mockDelay();
 
     const email = `mock+${provider}@taybat.app`;

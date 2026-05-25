@@ -38,6 +38,8 @@
   "auth": {
     "decision": {
       "title": "Log meals. Track health.",
+      "titleLine1": "Log your meals,",
+      "titleLine2": "track your health.",
       "subtitle": "Join Al-Taybat and monitor your journey every day",
       "createAccount": "Create account",
       "login": "I have an account",
@@ -48,10 +50,13 @@
       "trustBadge": "Join thousands of users"
     },
     "login": {
-      "title": "Welcome back",
+      "title": "Welcome",
+      "titleLine1": "Welcome",
+      "titleLine2": "",
       "email": "Email",
       "password": "Password",
       "submit": "Sign in",
+      "rememberMe": "Remember me",
       "forgotPassword": "Forgot password?",
       "noAccount": "No account?",
       "signUpLink": "Sign up"

@@ -9,7 +9,7 @@ import type {
 export interface IAuthApi {
   signUpWithEmail(payload: SignUpPayload): Promise<{ user: AuthUser; session: AuthSession }>;
   loginWithEmail(payload: LoginPayload): Promise<{ user: AuthUser; session: AuthSession }>;
-  loginWithOAuth(provider: 'google' | 'apple'): Promise<{ user: AuthUser; session: AuthSession }>;
+  loginWithOAuth(provider: 'google' | 'apple' | 'facebook'): Promise<{ user: AuthUser; session: AuthSession }>;
   logout(): Promise<void>;
   getSession(): Promise<AuthSession | null>;
   sendPasswordReset(email: string): Promise<void>;
