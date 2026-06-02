@@ -1,5 +1,5 @@
 import { LinearGradient } from 'expo-linear-gradient';
-import { Flame, Frown, Laugh, Meh, Smile, Utensils, type LucideIcon } from 'lucide-react-native';
+import { Frown, Laugh, Meh, Smile, Utensils, type LucideIcon } from 'lucide-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Platform, View, TouchableOpacity } from 'react-native';
 import { useTheme } from 'react-native-paper';
@@ -8,9 +8,19 @@ import { AppText } from '@/components/common/AppText';
 import { useRTL } from '@/hooks/useRTL';
 import { toArabicNumerals } from '@/utils/zoneUtils';
 
+const AR_MONTHS = [
+  'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
+  'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+];
+
+function formatStartDateAr(iso: string): string {
+  const d = new Date(iso);
+  return `${toArabicNumerals(d.getDate())} ${AR_MONTHS[d.getMonth()]}`;
+}
+
 interface CommitmentCardProps {
   dayNumber: number;
-  streakDays: number;
+  planStartDate?: string | null;
   onAddMeal: () => void;
 }
 
@@ -23,7 +33,7 @@ const MOODS: MoodItem[] = [
   { Icon: Laugh, label: 'شبعان' },
 ];
 
-export function CommitmentCard({ dayNumber, streakDays, onAddMeal }: CommitmentCardProps) {
+export function CommitmentCard({ dayNumber, planStartDate, onAddMeal }: CommitmentCardProps) {
   const theme = useTheme();
   const [selectedMood, setSelectedMood] = useState(1);
   const { isRTL, rowDir } = useRTL();
@@ -93,24 +103,25 @@ export function CommitmentCard({ dayNumber, streakDays, onAddMeal }: CommitmentC
         <View className="absolute bottom-[-60px] h-[150px] w-[150px] rounded-full bg-white/10" style={androidRTL ? { right: -50 } : { left: -50 }} />
 
         <View className="gap-0">
-          <View className="mb-3 flex-row flex-wrap items-center gap-2" style={{ flexDirection: rowDir }}>
-            <View className="rounded-full bg-white/25 px-2.5 py-1">
-              <AppText variant="bold" className="text-[11px] leading-4 text-white">
+          <View className="items-center justify-between" style={{ flexDirection: rowDir }}>
+            <View className="rounded-full bg-white/25 px-2.5 ">
+              <AppText variant="bold" className="text-[11px]  text-white">
                 اليوم {toArabicNumerals(dayNumber)} من رحلتك
               </AppText>
             </View>
-            <View className="flex-row items-center gap-1 rounded-full bg-white/25 px-2.5 py-1">
-              <Flame size={11} color={theme.colors.surface} fill={theme.colors.surface} strokeWidth={0} />
-              <AppText variant="bold" className="text-[11px] leading-4 text-white">
-                {toArabicNumerals(streakDays)} أيام التزام
-              </AppText>
-            </View>
+            {planStartDate ? (
+              <View className="rounded-full bg-white/15 px-2.5 ">
+                <AppText className="text-[11px]  text-white/80">
+                  بدأت {formatStartDateAr(planStartDate)}
+                </AppText>
+              </View>
+            ) : null}
           </View>
 
-          <AppText variant="bold" className="mb-1 text-[20px] leading-8 text-white">هل تشعر بالجوع الآن؟</AppText>
+          <AppText variant="bold" className="mb-1 text-[20px]  text-white">هل تشعر بالجوع الآن؟</AppText>
           <AppText className="mb-4 text-[13px] leading-5 text-white/90">توقّف وأنصت. استمع لجسدك قبل كل وجبة.</AppText>
 
-          <View className="mb-3.5 flex-row gap-2" style={{ flexDirection: rowDir }}>
+          <View className="mb-2 flex-row gap-2" style={{ flexDirection: rowDir }}>
             {MOODS.map((m, i) => {
               const MoodIcon = m.Icon;
               const isActive = i === selectedMood;
@@ -129,7 +140,7 @@ export function CommitmentCard({ dayNumber, streakDays, onAddMeal }: CommitmentC
                   />
                   <AppText
                     variant="bold"
-                    className="text-center text-[10.5px] leading-[14px]"
+                    className="text-center text-[10.5px] leading-[16px]"
                     style={isActive ? { color: theme.colors.onSurface } : { color: theme.colors.surface }}
                   >
                     {m.label}
@@ -146,7 +157,7 @@ export function CommitmentCard({ dayNumber, streakDays, onAddMeal }: CommitmentC
           >
             <View className="flex-row items-center gap-2" style={{ flexDirection: rowDir }}>
               <Utensils size={16} color={theme.colors.primary} strokeWidth={2} />
-              <AppText variant="bold" className="text-[14px] leading-5 text-app-primaryDark">اختر وجبة من الطيبات</AppText>
+              <AppText variant="bold" className="text-[14px]  text-app-primaryDark">اختر وجبة من الطيبات</AppText>
             </View>
           </TouchableOpacity>
         </View>

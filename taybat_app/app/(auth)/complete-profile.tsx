@@ -23,11 +23,13 @@ import { StepIndicator } from '@/components/common/StepIndicator';
 import { ProfileStepBasic } from '@/components/auth/ProfileStepBasic';
 import { ProfileStepHealth } from '@/components/auth/ProfileStepHealth';
 import { ProfileStepGoals } from '@/components/auth/ProfileStepGoals';
+import { ProfileStepHealthConditions } from '@/components/auth/ProfileStepHealthConditions';
 import { createLogger } from '@/lib/logger';
 import { useAuthStore } from '@/stores/auth.store';
+import { useHealthConditionsStore } from '@/stores/healthConditions.store';
 import { useHealthGoalsStore } from '@/stores/healthGoals.store';
 import { useRTL } from '@/hooks/useRTL';
-import { parseCsvNumberList, parseISODateParts, toFiniteNumber } from '@/utils/parseUtils';
+import { parseCsvStringList, parseISODateParts, toFiniteNumber } from '@/utils/parseUtils';
 import type { ActivityLevel, Gender } from '@/types';
 
 const log = createLogger('CompleteProfile');
@@ -45,13 +47,15 @@ type FormValues = {
   weight_kg?: number;
   height_cm?: number;
   activity_level?: ActivityLevel;
-  health_gools_ids: number[];
+  health_goals_codes: string[];
+  health_conditions_codes: string[];
 };
 
 const STEP_META = [
   { title: 'بياناتك الأساسية',     subtitle: 'نبدأ بالتعرف عليك' },
   { title: 'بياناتك الصحية',       subtitle: 'لتخصيص تجربة أفضل مع النظام' },
   { title: 'أهدافك الصحية',        subtitle: 'ما الذي تسعى لتحقيقه؟' },
+  { title: 'حالاتك الصحية',        subtitle: 'حدد حالتك الصحيه لمتابعتها' },
 ] as const;
 
 export default function CompleteProfileScreen() {
@@ -63,6 +67,8 @@ export default function CompleteProfileScreen() {
   const profile = useAuthStore((s) => s.profile);
   const goals = useHealthGoalsStore((s) => s.goals);
   const fetchGoals = useHealthGoalsStore((s) => s.fetchGoals);
+  const conditions = useHealthConditionsStore((s) => s.conditions);
+  const fetchConditions = useHealthConditionsStore((s) => s.fetchConditions);
 
   const [step, setStep] = React.useState(0);
   const { setValue, watch, setError, clearErrors, formState } = useForm<FormValues>({
@@ -75,7 +81,8 @@ export default function CompleteProfileScreen() {
       weight_kg: undefined,
       height_cm: undefined,
       activity_level: undefined,
-      health_gools_ids: [],
+      health_goals_codes: [],
+      health_conditions_codes: [],
     },
   });
 
@@ -112,9 +119,14 @@ export default function CompleteProfileScreen() {
       setValue('activity_level', profile.activity_level, { shouldDirty: false });
     }
 
-    if (!dirty.health_gools_ids) {
-      const ids = parseCsvNumberList(profile.health_gools_ids);
-      if (ids.length > 0) setValue('health_gools_ids', ids, { shouldDirty: false });
+    if (!dirty.health_goals_codes) {
+      const codes = parseCsvStringList(profile.health_goals_codes);
+      if (codes.length > 0) setValue('health_goals_codes', codes, { shouldDirty: false });
+    }
+
+    if (!dirty.health_conditions_codes) {
+      const codes = parseCsvStringList(profile.health_conditions_codes);
+      if (codes.length > 0) setValue('health_conditions_codes', codes, { shouldDirty: false });
     }
   }, [formState.dirtyFields, profile, setValue]);
 
@@ -123,6 +135,12 @@ export default function CompleteProfileScreen() {
       fetchGoals();
     }
   }, [fetchGoals, goals.length]);
+
+  React.useEffect(() => {
+    if (conditions.length === 0) {
+      fetchConditions();
+    }
+  }, [conditions.length, fetchConditions]);
 
   React.useEffect(() => {
     if (!user) {
@@ -149,7 +167,7 @@ export default function CompleteProfileScreen() {
     return () => sub.remove();
   }, [isLoading, step]);
 
-  const goNext = () => setStep((s) => Math.min(2, s + 1));
+  const goNext = () => setStep((s) => Math.min(3, s + 1));
   const goBack = () => setStep((s) => Math.max(0, s - 1));
 
   const buildBirthDate = (y?: number, m?: number, d?: number) => {
@@ -203,8 +221,8 @@ export default function CompleteProfileScreen() {
       return ok;
     }
 
-    if (values.health_gools_ids.length === 0) {
-      setError('health_gools_ids', { type: 'manual', message: 'اختر هدفاً واحداً على الأقل' });
+    if (stepIndex === 2 && values.health_goals_codes.length === 0) {
+      setError('health_goals_codes', { type: 'manual', message: 'اختر هدفاً واحداً على الأقل' });
       return false;
     }
 
@@ -254,7 +272,8 @@ export default function CompleteProfileScreen() {
       weight_kg: values.weight_kg!,
       height_cm: values.height_cm!,
       activity_level: values.activity_level!,
-      health_gools_ids: values.health_gools_ids.join(','),
+      health_goals_codes: values.health_goals_codes.join(','),
+      health_conditions_codes: values.health_conditions_codes.length > 0 ? values.health_conditions_codes.join(',') : undefined,
     };
 
     const ok = await completeProfile(payload);
@@ -267,7 +286,7 @@ export default function CompleteProfileScreen() {
     }
   };
 
-  const isLastStep = step === 2;
+  const isLastStep = step === 3;
   const meta = STEP_META[step];
 
   const androidRTL = Platform.OS === 'android' && isRTL;
@@ -323,7 +342,7 @@ export default function CompleteProfileScreen() {
         className="flex-1 -mt-7 rounded-t-[28px] bg-app-surface overflow-hidden"
       >
         <View className="px-6 pt-6 pb-2">
-          <StepIndicator steps={3} activeIndex={step} />
+            <StepIndicator steps={4} activeIndex={step} />
         </View>
 
         <ScrollView
@@ -368,9 +387,18 @@ export default function CompleteProfileScreen() {
           {step === 2 && (
             <ProfileStepGoals
               goals={goals}
-              value={values.health_gools_ids}
-              onChange={(v) => { clearErrors('health_gools_ids'); setValue('health_gools_ids', v, { shouldDirty: true }); }}
-              error={formState.errors.health_gools_ids?.message}
+              value={values.health_goals_codes}
+              onChange={(v) => { clearErrors('health_goals_codes'); setValue('health_goals_codes', v, { shouldDirty: true }); }}
+              error={formState.errors.health_goals_codes?.message}
+              disabled={isLoading}
+            />
+          )}
+
+          {step === 3 && (
+            <ProfileStepHealthConditions
+              conditions={conditions}
+              value={values.health_conditions_codes}
+              onChange={(v) => { setValue('health_conditions_codes', v, { shouldDirty: true }); }}
               disabled={isLoading}
             />
           )}

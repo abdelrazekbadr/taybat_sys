@@ -89,6 +89,7 @@
       "moderate": "متوسط",
       "active": "نشط",
       "healthGoals": "ما هدفك الصحي؟",
+      "healthConditions": "المشاكل الصحية التي تعاني منها",
       "goal_inflammation": "تقليل الالتهابات",
       "goal_digestion": "تحسين الهضم",
       "goal_weight": "فقدان الوزن",

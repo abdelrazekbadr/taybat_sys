@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, ActivityIndicator, Pressable, ScrollView, View } from 'react-native';
+import { Alert, ActivityIndicator, Image, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
 import { Check, Pencil, User, X } from 'lucide-react-native';
-
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { AppText, AppTextInput } from '@/components/common/AppText';
 import { AvatarPickerSheet } from '@/components/account/AvatarPickerSheet';
+import { getDefaultAvatarSource } from '@/utils/avatarUtils';
 import { SettingsRow } from '@/components/account/SettingsRow';
 import { useRTL } from '@/hooks/useRTL';
 import { useAccountStore } from '@/stores/account.store';
@@ -126,14 +126,24 @@ export default function AccountScreen() {
             className="mt-5 flex-row items-center gap-4 rounded-[22px] border border-app-lineSoft bg-app-surface p-4"
             style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1, flexDirection: rowDir }]}
           >
-            <View
-              className="h-[80px] w-[80px] items-center justify-center rounded-[28px]"
-              style={{ backgroundColor: avatarBg }}
-            >
-              <AppText variant="bold" className="text-[34px] leading-[50px]" style={{ color: theme.colors.onSurface }}>
-                {avatarLabel}
-              </AppText>
-            </View>
+            {resolvedAvatar ? (
+              <View
+                className="h-[80px] w-[80px] items-center justify-center rounded-[28px]"
+                style={{ backgroundColor: avatarBg }}
+              >
+                <AppText variant="bold" className="text-[34px] leading-[50px]" style={{ color: theme.colors.onSurface }}>
+                  {avatarLabel}
+                </AppText>
+              </View>
+            ) : (
+              <View className="h-[80px] w-[80px] overflow-hidden rounded-[28px]">
+                <Image
+                  source={getDefaultAvatarSource(user.gender)}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
+              </View>
+            )}
 
             <View className="flex-1">
               <AppText variant="bold" className="text-[16px] leading-6 text-app-navy">

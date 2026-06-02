@@ -2,9 +2,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import { ArrowLeft, ArrowRight, Award, CheckCircle, UserCheck, UserPlus, Users } from 'lucide-react-native';
 import React, { useMemo } from 'react';
-import { Platform, Pressable, ScrollView, View } from 'react-native';
+import { Image, Platform, Pressable, ScrollView, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getDefaultAvatarSource } from '@/utils/avatarUtils';
 
 import { AppText } from '@/components/common/AppText';
 import { PrimaryButton } from '@/components/common/PrimaryButton';
@@ -157,12 +158,14 @@ export default function UserProfileScreen() {
               </View>
             ) : (
               <View
-                className="mb-3 h-20 w-20 items-center justify-center rounded-full"
-                style={{ backgroundColor: 'rgba(255,255,255,0.25)', borderWidth: 3, borderColor: 'rgba(255,255,255,0.5)' }}
+                className="mb-3 h-20 w-20 overflow-hidden rounded-full"
+                style={{ borderWidth: 3, borderColor: 'rgba(255,255,255,0.5)' }}
               >
-                <AppText variant="bold" style={{ fontSize: 34, lineHeight: 40, color: 'white' }}>
-                  {displayName.slice(0, 1)}
-                </AppText>
+                <Image
+                  source={getDefaultAvatarSource(isOwnProfile ? (user?.gender ?? null) : null)}
+                  style={{ width: '100%', height: '100%' }}
+                  resizeMode="cover"
+                />
               </View>
             )}
 
@@ -238,12 +241,6 @@ export default function UserProfileScreen() {
             ))}
           </View>
         )}
-
-        {isOwnProfile && user !== null && !isSystemUser ? (
-          <View className="mx-5 mt-4">
-            <PrimaryButton title="Complete profile" onPress={() => router.push('/(auth)/complete-profile' as never)} />
-          </View>
-        ) : null}
 
         {/* ── Badges ── */}
         {isOwnProfile && (
@@ -366,6 +363,12 @@ export default function UserProfileScreen() {
             </AppText>
           </View>
         )}
+
+        {isOwnProfile && user !== null && !isSystemUser ? (
+          <View className="mx-5 mt-6">
+            <PrimaryButton title="استكمال الملف الشخصي" onPress={() => router.push('/(auth)/complete-profile' as never)} />
+          </View>
+        ) : null}
       </ScrollView>
     </View>
   );

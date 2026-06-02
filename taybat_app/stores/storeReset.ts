@@ -6,6 +6,7 @@ import { STORAGE_KEYS } from '@/shared/storage/storageKeys';
 import { storageService } from '@/shared/storage/storageService';
 
 import { useCommunityStore } from './community.store';
+import { useHealthConditionsStore } from './healthConditions.store';
 import { useHealthGoalsStore } from './healthGoals.store';
 import { useMealItemsStore } from './mealItems.store';
 import { useMealPreferencesStore } from './mealPreferences.store';
@@ -29,6 +30,7 @@ export async function resetAllAppStores(): Promise<void> {
   ]);
 
   useCommunityStore.getState().resetCommunity();
+  useHealthConditionsStore.getState().resetHealthConditions();
   useHealthGoalsStore.getState().resetHealthGoals();
   useMealsStore.getState().resetMeals();
   useMealItemsStore.getState().resetMealItems();

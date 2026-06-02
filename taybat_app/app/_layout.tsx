@@ -6,7 +6,7 @@ import React from 'react';
 import { ThemeProvider } from '@react-navigation/native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { I18nextProvider } from 'react-i18next';
-import { DevSettings, I18nManager, Platform, useColorScheme } from 'react-native';
+import { DevSettings, I18nManager, Platform, Text, TextInput, useColorScheme } from 'react-native';
 import { PaperProvider } from 'react-native-paper';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { useFonts } from 'expo-font';
@@ -22,6 +22,16 @@ import './_nativewind-interop';
 import './global.css';
 
 const log = createLogger('Layout');
+
+// Disable system font scaling globally so font sizes are identical on Android and iOS.
+// AppText already sets allowFontScaling={false}, but third-party library components
+// (React Native Paper, Expo, etc.) use raw <Text> and would still scale otherwise.
+const TextWithDefaults = Text as unknown as { defaultProps?: Record<string, unknown> };
+TextWithDefaults.defaultProps ??= {};
+TextWithDefaults.defaultProps.allowFontScaling = false;
+const TextInputWithDefaults = TextInput as unknown as { defaultProps?: Record<string, unknown> };
+TextInputWithDefaults.defaultProps ??= {};
+TextInputWithDefaults.defaultProps.allowFontScaling = false;
 
 // iOS: all RTL is handled via explicit JS styles (row-reverse, textAlign).
 // Disable native RTL flip so it never conflicts with those explicit overrides.

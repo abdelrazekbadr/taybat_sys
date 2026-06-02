@@ -10,6 +10,7 @@ import {
 } from '@react-navigation/native';
 
 import { themeTokens } from './tokens';
+import { nf, nlh } from '@/utils/normalizeFont';
 
 export type ThemeMode = 'system' | 'light' | 'dark';
 
@@ -34,7 +35,18 @@ export function buildPaperTheme(params: {
     Object.entries(base.fonts).map(([key, value]) => {
       const fontWeight = typeof value.fontWeight === 'string' ? Number(value.fontWeight) : undefined;
       const family = fontWeight && fontWeight >= 700 ? bold : fontWeight && fontWeight >= 600 ? semiBold : regular;
-      return [key, { ...value, fontFamily: family }];
+      const metrics = value as unknown as { fontSize?: number; lineHeight?: number };
+      const fontSize = metrics.fontSize;
+      const lineHeight = metrics.lineHeight;
+      return [
+        key,
+        {
+          ...value,
+          fontFamily: family,
+          ...(typeof fontSize === 'number' ? { fontSize: nf(fontSize) } : null),
+          ...(typeof lineHeight === 'number' ? { lineHeight: nlh(lineHeight) } : null),
+        },
+      ];
     }),
   ) as MD3Theme['fonts'];
 

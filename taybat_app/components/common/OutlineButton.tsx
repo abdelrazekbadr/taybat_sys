@@ -2,6 +2,7 @@ import React from 'react';
 import { ActivityIndicator, Image, type ImageSourcePropType, Pressable } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
+import { useRTL } from '@/hooks/useRTL';
 import { AppText } from './AppText';
 
 interface OutlineButtonProps {
@@ -33,6 +34,7 @@ export function OutlineButton({
   textColor,
 }: OutlineButtonProps) {
   const theme = useTheme();
+  const { rowDir } = useRTL();
   const isDark = theme.dark;
   const isInactive = Boolean(loading || disabled);
   const labelColor = textColor ?? (theme.colors.onSurface as string);
@@ -42,6 +44,7 @@ export function OutlineButton({
       onPress={onPress}
       disabled={isInactive}
       className={`flex-row items-center justify-center gap-2 rounded-xl border  py-1 px-4 ${isDark ? 'bg-app-navy border-[#334155]' : 'bg-white border-[#d1d5db]'}`}
+      style={{ flexDirection: rowDir }}
     >
       {loading ? (
         <ActivityIndicator size="small" color={theme.colors.primary} />

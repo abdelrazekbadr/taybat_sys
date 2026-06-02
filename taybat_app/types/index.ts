@@ -1,3 +1,5 @@
+import type { Gender } from './auth.types';
+
 export type ZoneColor = 1 | 2 | 3 | 4 | 5;
 
 export * from './auth.types';
@@ -50,6 +52,7 @@ export interface User {
   id: string;                     // UUID from Supabase auth.users
   email: string;
   name: string | null;
+  gender: Gender | null;
   avatar_url: string | null;
   avatar_config: AvatarConfig | null;
   plan_start_date: string | null;
@@ -97,6 +100,15 @@ export interface WeeklyRating {
 
 export interface HealthGoal {
   id: number;
+  code: string;
+  name: string;
+  name_en: string | null;
+  active: boolean;
+  image: string | null;
+}
+
+export interface HealthCondition {
+  code: string;
   name: string;
   name_en: string | null;
   active: boolean;

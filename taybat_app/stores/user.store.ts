@@ -27,6 +27,7 @@ export const useUserStore = create<UserState>((set) => ({
         id: profile.id,
         email: profile.email,
         name: profile.name,
+        gender: profile.gender,
         avatar_url: null,
         avatar_config: null as AvatarConfig | null,
         plan_start_date: profile.plan_start_date ?? null,

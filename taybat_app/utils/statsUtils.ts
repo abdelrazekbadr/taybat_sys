@@ -2,9 +2,11 @@ import type { UserMeal, WeeklyRating } from '@/types';
 
 export const daysOnPlan = (planStartDate: string | null | undefined): number => {
   if (!planStartDate) return 0;
-  const start = new Date(planStartDate).getTime();
-  const now = Date.now();
-  return Math.max(0, Math.floor((now - start) / 86_400_000));
+  // Compare calendar dates only (strip time) so the first day is always Day 1
+  const startDate = planStartDate.slice(0, 10);
+  const todayDate = new Date().toISOString().slice(0, 10);
+  const diffMs = new Date(todayDate).getTime() - new Date(startDate).getTime();
+  return Math.max(1, Math.floor(diffMs / 86_400_000) + 1);
 };
 
 export const currentStreak = (userMeals: UserMeal[]): number => {

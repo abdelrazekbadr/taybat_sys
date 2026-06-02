@@ -4,14 +4,16 @@ import { useTheme } from 'react-native-paper';
 import { Check } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
+import { useRTL } from '@/hooks/useRTL';
 
 export function StepIndicator(props: { steps: number; activeIndex: number }) {
   const theme = useTheme();
+  const { rowDir } = useRTL();
 
   return (
     <View style={{ alignItems: 'center', gap: 10 }}>
       {/* Numbered circles + connecting lines */}
-      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <View style={{ flexDirection: rowDir, alignItems: 'center' }}>
         {Array.from({ length: props.steps }).map((_, idx) => {
           const isActive = idx === props.activeIndex;
           const isDone = idx < props.activeIndex;

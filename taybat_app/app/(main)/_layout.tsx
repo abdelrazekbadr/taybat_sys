@@ -17,6 +17,7 @@ export default function MainLayout() {
         <Stack.Screen name="account" />
         <Stack.Screen name="meal-preferences" />
         <Stack.Screen name="user-profile" />
+        <Stack.Screen name="meal-history" />
       </Stack>
       <AuthGateSheet />
     </>

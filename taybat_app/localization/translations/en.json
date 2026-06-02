@@ -89,6 +89,7 @@
       "moderate": "Moderate",
       "active": "Active",
       "healthGoals": "Your health goal",
+      "healthConditions": "Health conditions",
       "goal_inflammation": "Reduce inflammation",
       "goal_digestion": "Improve digestion",
       "goal_weight": "Weight loss",

@@ -11,7 +11,8 @@
  *   weight_kg       numeric
  *   height_cm       numeric
  *   activity_level  text         -- 'sedentary' | 'light' | 'moderate' | 'active'
- *   health_gools_ids text        -- CSV of goal ids (e.g. "1,2,3")
+ *   health_goals_codes text      -- CSV of goal codes (e.g. "HG01,HG02")
+ *   health_conditions_codes text -- CSV of condition codes (e.g. "HC01,HC08")
  *   provider        text not null
  *   profile_completed boolean default false
  *   created_at      timestamptz default now()

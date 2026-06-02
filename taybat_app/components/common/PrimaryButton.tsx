@@ -3,6 +3,7 @@ import React from 'react';
 import { ActivityIndicator, Pressable, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
+import { useRTL } from '@/hooks/useRTL';
 import { AppText } from './AppText';
 
 interface PrimaryButtonProps {
@@ -17,6 +18,7 @@ interface PrimaryButtonProps {
 
 export function PrimaryButton({ title, onPress, loading, disabled, gradientColors, leadingIcon, trailingIcon }: PrimaryButtonProps) {
   const theme = useTheme();
+  const { rowDir } = useRTL();
   const isInactive = Boolean(loading || disabled);
   const colors: [string, string] = gradientColors ?? [theme.colors.primary, theme.colors.secondary];
 
@@ -35,7 +37,7 @@ export function PrimaryButton({ title, onPress, loading, disabled, gradientColor
         {loading ? (
           <ActivityIndicator size="small" color={theme.colors.onPrimary} />
         ) : (
-          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+          <View style={{ flexDirection: rowDir, alignItems: 'center', justifyContent: 'center', gap: 8 }}>
             {leadingIcon ?? null}
             <AppText variant="bold" className="text-[15px] text-white">
               {title}

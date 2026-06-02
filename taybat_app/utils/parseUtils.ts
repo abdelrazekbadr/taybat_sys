@@ -27,3 +27,11 @@ export const parseCsvNumberList = (csv: string | null | undefined): number[] => 
     .map((s) => Number(s.trim()))
     .filter((n) => Number.isFinite(n));
 };
+
+export const parseCsvStringList = (csv: string | null | undefined): string[] => {
+  if (!csv) return [];
+  return csv
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+};

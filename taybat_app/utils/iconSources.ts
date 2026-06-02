@@ -19,5 +19,13 @@ export const ICON_SOURCES: Record<string, ImageSourcePropType> = {
   goal_power:      require('../assets/icons/goal_power.png'),
   goal_digestive:  require('../assets/icons/goal_digestive.png'),
   goal_worry:      require('../assets/icons/goal_worry.png'),
+  hc_diabetes:       require('../assets/icons/hc_diabetes.png'),
+  hc_blood_pressure: require('../assets/icons/hc_blood_pressure.png'),
+  hc_colesterol:     require('../assets/icons/hc_colesterol.png'),
+  hc_intestine:      require('../assets/icons/hc_intestine.png'),
+  hc_joint:          require('../assets/icons/hc_joint.png'),
+  hc_sinus:          require('../assets/icons/hc_sinus.png'),
+  hc_obesity:        require('../assets/icons/hc_obesity.png'),
+  hc_other:          require('../assets/icons/hc_other.png'),
 
 };

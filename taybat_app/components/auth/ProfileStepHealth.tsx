@@ -76,15 +76,19 @@ export function ProfileStepHealth(props: {
               flexDirection: rowDir,
               alignItems: 'center',
               paddingHorizontal: 14,
-              gap: 6,
+              gap: 10,
               opacity: pressed ? 0.85 : 1,
             })}
           >
-            <Scale size={16} color={labelColor} strokeWidth={1.5} />
-            <AppText style={{ flex: 1, fontSize: 14, color: props.weightKg ? theme.colors.onSurface : labelColor }}>
-              {typeof props.weightKg === 'number' ? `${props.weightKg}   كجم` : '--- كجم'}
+            <View style={{ width: 18, alignItems: 'center' }}>
+              <ChevronDown size={14} color={labelColor} strokeWidth={1.5} />
+            </View>
+            <AppText style={{ flex: 1, fontSize: 14, color: props.weightKg ? theme.colors.onSurface : labelColor, textAlign: 'center' }}>
+              {typeof props.weightKg === 'number' ? `${props.weightKg} كجم` : '--- كجم'}
             </AppText>
-            <ChevronDown size={14} color={labelColor} strokeWidth={1.5} />
+            <View style={{ width: 18, alignItems: 'center' }}>
+              <Scale size={16} color={labelColor} strokeWidth={1.5} />
+            </View>
           </Pressable>
           {props.weightError ? (
             <AppText style={{ fontSize: 12, marginStart: 8, color: theme.colors.error }}>
@@ -110,15 +114,19 @@ export function ProfileStepHealth(props: {
               flexDirection: rowDir,
               alignItems: 'center',
               paddingHorizontal: 14,
-              gap: 6,
+              gap: 10,
               opacity: pressed ? 0.85 : 1,
             })}
           >
-            <Ruler size={16} color={labelColor} strokeWidth={1.5} />
-            <AppText style={{ flex: 1, fontSize: 14, color: props.heightCm ? theme.colors.onSurface : labelColor }}>
-              {typeof props.heightCm === 'number' ? `${props.heightCm}   سم` : '--- سم'}
+            <View style={{ width: 18, alignItems: 'center' }}>
+              <Ruler size={16} color={labelColor} strokeWidth={1.5} />
+            </View>
+            <AppText style={{ flex: 1, fontSize: 14, color: props.heightCm ? theme.colors.onSurface : labelColor, textAlign: 'center' }}>
+              {typeof props.heightCm === 'number' ? `${props.heightCm} سم` : '--- سم'}
             </AppText>
-            <ChevronDown size={14} color={labelColor} strokeWidth={1.5} />
+            <View style={{ width: 18, alignItems: 'center' }}>
+              <ChevronDown size={14} color={labelColor} strokeWidth={1.5} />
+            </View>
           </Pressable>
           {props.heightError ? (
             <AppText style={{ fontSize: 12, marginStart: 8, color: theme.colors.error }}>

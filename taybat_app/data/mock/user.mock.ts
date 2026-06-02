@@ -6,6 +6,7 @@ export const MOCK_USER: User = Object.freeze({
   id: MOCK_USER_ID,
   email: 'user@example.com',
   name: 'عبد الرازق',
+  gender: null,
   avatar_url: null,
   avatar_config: null,
   plan_start_date: '2026-04-01',

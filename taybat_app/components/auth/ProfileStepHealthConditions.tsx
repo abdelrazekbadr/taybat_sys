@@ -7,34 +7,32 @@ import { BadgeCheck } from 'lucide-react-native';
 import { AppText } from '@/components/common/AppText';
 import { OptionSelector, type OptionItem } from '@/components/common/OptionSelector';
 import { useRTL } from '@/hooks/useRTL';
-import type { HealthGoal } from '@/types';
+import type { HealthCondition } from '@/types';
 
-export function ProfileStepGoals(props: {
-  goals: HealthGoal[];
+export function ProfileStepHealthConditions(props: {
+  conditions: HealthCondition[];
   value: string[];
   onChange: (v: string[]) => void;
   error?: string;
   disabled?: boolean;
 }) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const theme = useTheme();
   const { rowDir } = useRTL();
 
   const isEnglish = i18n.language?.startsWith('en');
-  const options: OptionItem<string>[] = props.goals.map((g) => ({
-    key: g.code,
-    label: isEnglish && g.name_en ? g.name_en : g.name,
-    icon: { kind: 'image', name: g.image ?? 'dish', tint: false },
+  const options: OptionItem<string>[] = props.conditions.map((c) => ({
+    key: c.code,
+    label: isEnglish && c.name_en ? c.name_en : c.name,
+    icon: { kind: 'image', name: c.image ?? 'dish', tint: false },
   }));
 
   return (
     <View style={{ gap: 20 }}>
-
-      {/* Info card */}
       <View
         style={{
           borderRadius: 16,
-          backgroundColor: theme.colors.primaryContainer,
+          backgroundColor: theme.colors.surfaceVariant ?? theme.colors.surface,
           paddingHorizontal: 16,
           paddingVertical: 12,
           flexDirection: rowDir,
@@ -42,13 +40,12 @@ export function ProfileStepGoals(props: {
           gap: 10,
         }}
       >
-        <BadgeCheck size={20} color={theme.colors.primary} strokeWidth={1.75} />
-        <AppText style={{ flex: 1, fontSize: 13, color: theme.colors.primary, lineHeight: 20 }}>
-           لتجربة افضل  اختر هدف او اكثر
+        <BadgeCheck size={20} color={theme.colors.onSurfaceVariant ?? theme.colors.onSurface} strokeWidth={1.75} />
+        <AppText style={{ flex: 1, fontSize: 13, color: theme.colors.onSurfaceVariant ?? theme.colors.onSurface, lineHeight: 20 }}>
+          {t('auth.completeProfile.healthConditions')}
         </AppText>
       </View>
 
-      {/* Badge grid */}
       <OptionSelector
         mode="multiple"
         layout="iconStart"
@@ -68,7 +65,6 @@ export function ProfileStepGoals(props: {
         </AppText>
       ) : null}
 
-      {/* Selected count */}
       {props.value.length > 0 && (
         <AppText
           style={{
@@ -77,9 +73,7 @@ export function ProfileStepGoals(props: {
             textAlign: 'center',
           }}
         >
-          {props.value.length === 1
-            ? 'هدف واحد محدد'
-            : `${props.value.length} أهداف محددة`}
+          {props.value.length === 1 ? 'حالة واحدة محددة' : `${props.value.length} حالات محددة`}
         </AppText>
       )}
     </View>

@@ -8,15 +8,15 @@ import { BarChart2, ChevronLeft, ChevronRight, Star, Utensils } from 'lucide-rea
 import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { useRTL } from '@/hooks/useRTL';
-import { BadgeProgressCard } from '@/components/home/BadgeProgressCard';
 import { CommitmentCard } from '@/components/home/CommitmentCard';
 import { HomeHeader } from '@/components/home/HomeHeader';
 import { TodayMealRow } from '@/components/home/TodayMealRow';
+import { WeeklyProgressBar } from '@/components/home/WeeklyProgressBar';
 import { useMealsStore } from '@/stores/meals.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import { useUserStore } from '@/stores/user.store';
 import { useWeeklyRatingStore } from '@/stores/weeklyRating.store';
-import { currentStreak, daysOnPlan } from '@/utils/statsUtils';
+import { daysOnPlan } from '@/utils/statsUtils';
 
 export default function HomeScreen() {
   const theme = useTheme();
@@ -74,31 +74,31 @@ export default function HomeScreen() {
 
   if (mealsError && !meals.length) {
     return (
-      <View className="flex-1 items-center justify-center bg-app-background" style={{ paddingHorizontal: 32, gap: 16 }}>
-        <AppText variant="bold" style={{ fontSize: 16, color: theme.colors.error, textAlign: 'center' }}>
+      <View className="flex-1 items-center justify-center gap-4 bg-app-background px-8">
+        <AppText variant="bold" className="text-center text-[16px]" style={{ color: theme.colors.error }}>
           تعذّر تحميل البيانات
         </AppText>
-        <AppText style={{ fontSize: 13, color: '#64748B', textAlign: 'center', lineHeight: 20 }}>
+        <AppText className="text-center text-[13px] leading-5 text-app-textMuted">
           {mealsError}
         </AppText>
         <Pressable
           onPress={() => { void initializeMeals(); }}
-          style={{ marginTop: 8, paddingHorizontal: 24, paddingVertical: 10, borderRadius: 20, backgroundColor: theme.colors.primary }}
+          className="mt-2 rounded-full px-6 py-2.5"
+          style={{ backgroundColor: theme.colors.primary }}
         >
-          <AppText variant="semibold" style={{ fontSize: 14, color: '#fff' }}>إعادة المحاولة</AppText>
+          <AppText variant="semibold" className="text-[14px] text-white">إعادة المحاولة</AppText>
         </Pressable>
       </View>
     );
   }
 
   const dayNumber = daysOnPlan(user.plan_start_date);
-  const streak = currentStreak(userMeals);
-  const BADGE_TARGET = 7;
 
   return (
     <View className="flex-1 bg-app-background">
       <HomeHeader
         name={user.name}
+        gender={user.gender}
         avatarUrl={user.avatar_url}
         onProfilePress={() => router.push('/(main)/user-profile')}
       />
@@ -116,129 +116,145 @@ export default function HomeScreen() {
         }
       >
         <View className="px-[22px] pb-6">
-        <CommitmentCard
-          key={cardKey}
-          dayNumber={dayNumber}
-          streakDays={streak}
-          onAddMeal={() => router.push('/(main)/select-meal')}
-        />
+          <CommitmentCard
+            key={cardKey}
+            dayNumber={dayNumber}
+            planStartDate={user.plan_start_date}
+            onAddMeal={() => router.push('/(main)/select-meal')}
+          />
 
-        {/* Today's meals */}
-        {todayMeals.length > 0 && (
-          <View className="mt-[22px]">
-            <View className="mb-3 px-1 items-center justify-between" style={{ flexDirection: rowDir }}>
-              <AppText variant="bold" className="text-[17px] leading-6 text-app-navy">وجبات اليوم</AppText>
-              <AppText
-                variant="bold"
-                className="text-[13px] leading-5 text-app-primaryDark"
-                onPress={() => router.push('/(main)/select-meal')}
+          {/* Today's meals */}
+          {todayMeals.length > 0 && (
+            <View className="mt-[22px]">
+              <View
+                className="mb-3 items-center justify-between px-1"
+                style={{ flexDirection: rowDir }}
               >
-                سجّل وجبة
-              </AppText>
-            </View>
-            <View className="gap-2.5">
-              {todayMeals.map((um) => {
-                const meal = getMealById(um.meal_id);
-                const slotIndex = um.id % 3;
-                const initialTab =
-                  slotIndex === 0 ? 'breakfast' : slotIndex === 1 ? 'lunch' : 'dinner';
-                return (
-                  <TodayMealRow
-                    key={um.id}
-                    userMeal={um}
-                    mealName={meal?.name ?? 'وجبة'}
-                    imageUrl={meal?.image_url}
-                    onPress={() =>
-                      router.push({
-                        pathname: '/(main)/meal-detail',
-                        params: { mealId: String(um.meal_id), userMealId: String(um.id) },
-                      })
-                    }
-                    onReplacePress={() =>
-                      router.push({
-                        pathname: '/(main)/select-meal',
-                        params: { replaceUserMealId: String(um.id), initialTab },
-                      })
-                    }
-                    onDeletePress={() => {
-                      Alert.alert('حذف الوجبة', 'هل تريد حذف هذه الوجبة من سجل اليوم؟', [
-                        { text: 'إلغاء', style: 'cancel' },
-                        {
-                          text: 'حذف',
-                          style: 'destructive',
-                          onPress: async () => {
-                            const ok = await deleteMeal(um.id);
-                            if (!ok) {
-                              const message = useUserMealsStore.getState().errorMessage;
-                              Alert.alert('تعذّر حذف الوجبة', message || 'حاول مرة أخرى');
-                            }
+                <AppText variant="bold" className="text-[17px]  text-app-navy">
+                  وجبات اليوم
+                </AppText>
+                <AppText
+                  variant="bold"
+                  className="text-[13px]  text-app-primaryDark"
+                  onPress={() => router.push('/(main)/select-meal')}
+                >
+                  سجّل وجبة
+                </AppText>
+              </View>
+              <View className="gap-2.5">
+                {todayMeals.map((um) => {
+                  const meal = getMealById(um.meal_id);
+                  const slotIndex = um.id % 3;
+                  const initialTab =
+                    slotIndex === 0 ? 'breakfast' : slotIndex === 1 ? 'lunch' : 'dinner';
+                  return (
+                    <TodayMealRow
+                      key={um.id}
+                      userMeal={um}
+                      mealName={meal?.name ?? 'وجبة'}
+                      imageUrl={meal?.image_url}
+                      onPress={() =>
+                        router.push({
+                          pathname: '/(main)/meal-detail',
+                          params: { mealId: String(um.meal_id), userMealId: String(um.id) },
+                        })
+                      }
+                      onReplacePress={() =>
+                        router.push({
+                          pathname: '/(main)/select-meal',
+                          params: { replaceUserMealId: String(um.id), initialTab },
+                        })
+                      }
+                      onDeletePress={() => {
+                        Alert.alert('حذف الوجبة', 'هل تريد حذف هذه الوجبة من سجل اليوم؟', [
+                          { text: 'إلغاء', style: 'cancel' },
+                          {
+                            text: 'حذف',
+                            style: 'destructive',
+                            onPress: async () => {
+                              const ok = await deleteMeal(um.id);
+                              if (!ok) {
+                                const message = useUserMealsStore.getState().errorMessage;
+                                Alert.alert('تعذّر حذف الوجبة', message || 'حاول مرة أخرى');
+                              }
+                            },
                           },
-                        },
-                      ]);
-                    }}
-                  />
-                );
-              })}
+                        ]);
+                      }}
+                    />
+                  );
+                })}
+              </View>
             </View>
-          </View>
-        )}
+          )}
 
-        {todayMeals.length === 0 && (
-          <View className="mt-[22px]">
-            <View className="items-center gap-2 rounded-[20px] border border-app-lineSoft bg-app-surface p-6">
-              <Utensils size={40} color={theme.colors.outline} strokeWidth={1.5} />
-              <AppText variant="bold" className="text-[15px] leading-[22px] text-app-navy">لم تسجّل وجبات اليوم بعد</AppText>
-              <AppText className="text-center text-[13px] leading-5 text-app-textSoft">سجّل أول وجبة وابدأ يومك بشكل صحيح</AppText>
+          {todayMeals.length === 0 && (
+            <View className="mt-[22px]">
+              <View className="items-center gap-2 rounded-[20px] border border-app-lineSoft bg-app-surface p-6">
+                <Utensils size={40} color={theme.colors.outline} strokeWidth={1.5} />
+                <AppText variant="bold" className="text-[15px] leading-[22px] text-app-navy">
+                  لم تسجّل وجبات اليوم بعد
+                </AppText>
+                <AppText className="text-center text-[13px] leading-5 text-app-textSoft">
+                  سجّل أول وجبة وابدأ يومك بشكل صحيح
+                </AppText>
+              </View>
             </View>
-          </View>
-        )}
+          )}
 
-        <Pressable
-          onPress={() => router.push('/(main)/stats')}
-          className="mt-3 rounded-[18px] border border-app-lineSoft bg-app-surface px-4 py-4"
-          style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
-        >
-          <View className="flex-row items-center gap-3" style={{ flexDirection: rowDir }}>
-            <View className="h-10 w-10 items-center justify-center rounded-2xl bg-app-surfaceAlt">
-              <BarChart2 size={20} color={theme.colors.primary} strokeWidth={2.4} />
-            </View>
-            <View className="flex-1">
-              <AppText variant="bold" className="text-[14px] leading-6 text-app-navy">
-                إنجازاتي
-              </AppText>
-              <AppText className="text-[12.5px] leading-5 text-app-textMuted">شاهد تقييماتك وتطورك</AppText>
-            </View>
-            {isRTL ? (
-              <ChevronLeft size={22} color={theme.colors.onSurfaceVariant} strokeWidth={2.4} />
-            ) : (
-              <ChevronRight size={22} color={theme.colors.onSurfaceVariant} strokeWidth={2.4} />
-            )}
-          </View>
-        </Pressable>
-
-        {/* Weekly rating banner */}
-        {pendingRating && (
+          {/* Stats link */}
           <Pressable
             onPress={() => router.push('/(main)/stats')}
-            className="mt-[22px] gap-1 rounded-[18px] border border-app-warning bg-app-warningSoft p-4"
+            className="mt-3 rounded-[18px] border border-app-lineSoft bg-app-surface px-4 py-4"
             style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
           >
-            <View className="items-center gap-1.5" style={{ flexDirection: rowDir }}>
-              <Star size={15} color={theme.colors.primary} fill={theme.colors.primary} strokeWidth={0} />
-              <AppText variant="bold" className="text-[15px] leading-[22px] text-app-navy">حان وقت تقييم أسبوعك!</AppText>
+            <View className="items-center gap-3" style={{ flexDirection: rowDir }}>
+              <View className="h-10 w-10 items-center justify-center rounded-2xl bg-app-surfaceAlt">
+                <BarChart2 size={20} color={theme.colors.primary} strokeWidth={2.4} />
+              </View>
+              <View className="flex-1">
+                <AppText variant="bold" className="text-[14px] leading-6 text-app-navy">
+                  إنجازاتي
+                </AppText>
+                <AppText className="text-[12.5px] leading-5 text-app-textMuted">
+                  شاهد تقييماتك وتطورك
+                </AppText>
+              </View>
+              {isRTL ? (
+                <ChevronLeft size={22} color={theme.colors.onSurfaceVariant} strokeWidth={2.4} />
+              ) : (
+                <ChevronRight size={22} color={theme.colors.onSurfaceVariant} strokeWidth={2.4} />
+              )}
             </View>
-            <AppText className="text-[13px] leading-5 text-app-textSoft">أخبرنا كيف كان أسبوعك الصحي</AppText>
           </Pressable>
-        )}
 
-        {/* Badge progress */}
-        <View className="mt-[22px]">
-          <BadgeProgressCard
-            currentDays={streak}
-            targetDays={BADGE_TARGET}
-            badgeLabel="أسبوع من الالتزام"
-          />
-        </View>
+          {/* Weekly rating banner */}
+          {pendingRating && (
+            <Pressable
+              onPress={() => router.push('/(main)/stats')}
+              className="mt-[22px] gap-1 rounded-[18px] border border-app-warning bg-app-warningSoft p-4"
+              style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
+            >
+              <View className="items-center gap-1.5" style={{ flexDirection: rowDir }}>
+                <Star size={15} color={theme.colors.primary} fill={theme.colors.primary} strokeWidth={0} />
+                <AppText variant="bold" className="text-[15px] leading-[22px] text-app-navy">
+                  حان وقت تقييم أسبوعك!
+                </AppText>
+              </View>
+              <AppText className="text-[13px] leading-5 text-app-textSoft">
+                أخبرنا كيف كان أسبوعك الصحي
+              </AppText>
+            </Pressable>
+          )}
+
+          {/* Weekly commitment progress */}
+          <View className="mt-[22px]">
+            <WeeklyProgressBar
+              userMeals={userMeals}
+              planStartDate={user.plan_start_date}
+              onPress={() => router.push('/(main)/meal-history' as never)}
+            />
+          </View>
         </View>
       </ScrollView>
 

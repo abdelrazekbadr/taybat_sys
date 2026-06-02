@@ -21,7 +21,8 @@ export interface UserProfile {
   weight_kg: number | null;
   height_cm: number | null;
   activity_level: ActivityLevel | null;
-  health_gools_ids: string | null;
+  health_goals_codes: string | null;
+  health_conditions_codes: string | null;
   provider: AuthProvider;
   profile_completed: boolean;
   plan_start_date: string | null;
@@ -55,7 +56,8 @@ export interface ProfileCompletionPayload {
   weight_kg?: number;
   height_cm?: number;
   activity_level?: ActivityLevel;
-  health_gools_ids?: string;
+  health_goals_codes?: string;
+  health_conditions_codes?: string;
 }
 
 export interface AuthResult {

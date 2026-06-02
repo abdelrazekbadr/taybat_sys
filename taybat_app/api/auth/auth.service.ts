@@ -143,7 +143,8 @@ class AuthService {
       weight_kg: null,
       height_cm: null,
       activity_level: null,
-      health_gools_ids: null,
+      health_goals_codes: null,
+        health_conditions_codes: null,
       plan_start_date: null,
       profile_completed: false,
     });

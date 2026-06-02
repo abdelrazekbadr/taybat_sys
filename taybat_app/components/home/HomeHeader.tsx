@@ -6,22 +6,30 @@ import { useTheme } from 'react-native-paper';
 
 import { AppText } from '@/components/common/AppText';
 import { useRTL } from '@/hooks/useRTL';
+import type { Gender } from '@/types';
+import { getDefaultAvatarSource } from '@/utils/avatarUtils';
 
 interface HomeHeaderProps {
   name: string | null;
+  gender?: Gender | null;
   avatarUrl?: string | null;
+  isGuest?: boolean;
   onBellPress?: () => void;
   onProfilePress?: () => void;
   hasNotification?: boolean;
 }
 
-const defaultAvatar = require('../../assets/images/avatar/avatar_1.png');
+function getGreeting() {
+  const hour = new Date().getHours();
+  return hour >= 5 && hour < 12 ? 'صباح الخير،' : 'مساء الخير،';
+}
 
-export function HomeHeader({ name, avatarUrl, onBellPress, onProfilePress, hasNotification = true }: HomeHeaderProps) {
+export function HomeHeader({ name, gender, avatarUrl, isGuest = false, onBellPress, onProfilePress, hasNotification = true }: HomeHeaderProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { isRTL, rowDir } = useRTL();
-  const avatarSource = avatarUrl ? { uri: avatarUrl } : defaultAvatar;
+  const avatarSource = avatarUrl ? { uri: avatarUrl } : getDefaultAvatarSource(gender, isGuest);
+  const greeting = getGreeting();
 
   return (
     <View
@@ -46,7 +54,7 @@ export function HomeHeader({ name, avatarUrl, onBellPress, onProfilePress, hasNo
         </View>
 
         <View className="gap-0.5">
-          <AppText className="text-[12.5px] leading-[18px] text-app-textSoft">صباح الخير،</AppText>
+          <AppText className="text-[12.5px] leading-[18px] text-app-textSoft">{greeting}</AppText>
           <AppText variant="bold" className="text-[16.5px] leading-[22px] text-app-navy">{name}</AppText>
         </View>
       </TouchableOpacity>
