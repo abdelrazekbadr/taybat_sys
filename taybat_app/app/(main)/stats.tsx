@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import {
   Activity,
@@ -13,7 +12,6 @@ import {
   PartyPopper,
   Smile,
   Zap,
-  type LucideIcon,
 } from 'lucide-react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, View } from 'react-native';
@@ -24,9 +22,11 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 import { AppText } from '@/components/common/AppText';
+import { GradientTabs } from '@/components/common/GradientTabs';
+import { OptionSelector, type OptionItem } from '@/components/common/OptionSelector';
+import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { useRTL } from '@/hooks/useRTL';
-import { useUserStore } from '@/stores/user.store';
 import { useWeeklyRatingStore } from '@/stores/weeklyRating.store';
 import type { WeeklyRating, WeeklyScore } from '@/types';
 import { daysUntilNextRating, nextRatingDate, toMonthlyChartData, toWeeklyChartData } from '@/utils/statsUtils';
@@ -37,25 +37,28 @@ type ForceMode = 'pending' | 'locked';
 type EvaluationFormValues = {
   health_score: WeeklyScore | null;
   adherence_score: WeeklyScore | null;
-  pain_reduced: boolean;
-  energy_improved: boolean;
-  sleep_improved: boolean;
-  digestion_improved: boolean;
-  mood_improved: boolean;
-  mental_health_improved: boolean;
+  improvements: ImprovementKey[];
 };
 
 const weeklyScoreSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]);
 
+const improvementKeys = [
+  'pain_reduced',
+  'energy_improved',
+  'sleep_improved',
+  'digestion_improved',
+  'mood_improved',
+  'mental_health_improved',
+] as const;
+
+type ImprovementKey = (typeof improvementKeys)[number];
+
+const improvementKeySchema = z.enum(improvementKeys);
+
 const evaluationSchema = z.object({
   health_score: weeklyScoreSchema,
   adherence_score: weeklyScoreSchema,
-  pain_reduced: z.boolean(),
-  energy_improved: z.boolean(),
-  sleep_improved: z.boolean(),
-  digestion_improved: z.boolean(),
-  mood_improved: z.boolean(),
-  mental_health_improved: z.boolean(),
+  improvements: z.array(improvementKeySchema),
 });
 
 function formatArabicDate(isoDate: string) {
@@ -67,115 +70,27 @@ function formatArabicDate(isoDate: string) {
   }
 }
 
-type ScoreOption = { value: WeeklyScore; Icon: LucideIcon; label: string };
-
-const SCORE_OPTIONS: ScoreOption[] = [
-  { value: 1, Icon: Frown, label: 'سيء جداً' },
-  { value: 2, Icon: Meh, label: 'سيء' },
-  { value: 3, Icon: Smile, label: 'محايد' },
-  { value: 4, Icon: Laugh, label: 'جيد' },
-  { value: 5, Icon: PartyPopper, label: 'ممتاز' },
+const SCORE_OPTIONS: OptionItem<WeeklyScore>[] = [
+  { key: 1, icon: { kind: 'lucide', Icon: Frown }, label: 'سيء جداً' },
+  { key: 2, icon: { kind: 'lucide', Icon: Meh }, label: 'سيء' },
+  { key: 3, icon: { kind: 'lucide', Icon: Smile }, label: 'محايد' },
+  { key: 4, icon: { kind: 'lucide', Icon: Laugh }, label: 'جيد' },
+  { key: 5, icon: { kind: 'lucide', Icon: PartyPopper }, label: 'ممتاز' },
 ];
 
-type ImprovementKey =
-  | 'pain_reduced'
-  | 'energy_improved'
-  | 'sleep_improved'
-  | 'digestion_improved'
-  | 'mood_improved'
-  | 'mental_health_improved';
-
-const IMPROVEMENTS: { key: ImprovementKey; Icon: LucideIcon; label: string }[] = [
-  { key: 'pain_reduced', Icon: Zap, label: 'تحسّن الألم' },
-  { key: 'energy_improved', Icon: Battery, label: 'طاقة أفضل' },
-  { key: 'sleep_improved', Icon: Moon, label: 'نوم أفضل' },
-  { key: 'digestion_improved', Icon: Activity, label: 'هضم أفضل' },
-  { key: 'mood_improved', Icon: Smile, label: 'مزاج أفضل' },
-  { key: 'mental_health_improved', Icon: Brain, label: 'صحة نفسية أفضل' },
+const IMPROVEMENT_OPTIONS: OptionItem<ImprovementKey>[] = [
+  { key: 'pain_reduced', icon: { kind: 'lucide', Icon: Zap }, label: 'تحسّن الألم' },
+  { key: 'energy_improved', icon: { kind: 'lucide', Icon: Battery }, label: 'طاقة أفضل' },
+  { key: 'sleep_improved', icon: { kind: 'lucide', Icon: Moon }, label: 'نوم أفضل' },
+  { key: 'digestion_improved', icon: { kind: 'lucide', Icon: Activity }, label: 'هضم أفضل' },
+  { key: 'mood_improved', icon: { kind: 'lucide', Icon: Smile }, label: 'مزاج أفضل' },
+  { key: 'mental_health_improved', icon: { kind: 'lucide', Icon: Brain }, label: 'صحة نفسية أفضل' },
 ];
 
-function ScoreSelector(props: {
-  value: WeeklyScore | null;
-  onChange: (v: WeeklyScore) => void;
-  disabled?: boolean;
-}) {
-  const theme = useTheme();
-  const { rowDir } = useRTL();
-
-  return (
-    <View className="mt-2 flex-row gap-2" style={{ flexDirection: rowDir }}>
-      {SCORE_OPTIONS.map((opt) => {
-        const isSelected = props.value === opt.value;
-        const Icon = opt.Icon;
-        return (
-          <Pressable
-            key={opt.value}
-            onPress={() => props.onChange(opt.value)}
-            disabled={props.disabled}
-            className="flex-1"
-            style={({ pressed }) => [{ opacity: props.disabled ? 0.4 : pressed ? 0.85 : 1 }]}
-          >
-            <View
-              className="items-center justify-center rounded-[16px] border p-2.5"
-              style={{
-                borderColor: isSelected ? theme.colors.primary : theme.colors.outlineVariant,
-                backgroundColor: isSelected ? theme.colors.primaryContainer : theme.colors.surface,
-              }}
-            >
-              <Icon size={22} color={isSelected ? theme.colors.primary : theme.colors.onSurfaceVariant} strokeWidth={2.4} />
-              <AppText
-                variant="semibold"
-                className="mt-1 text-center text-[10.5px] leading-4"
-                style={{ color: isSelected ? theme.colors.primary : theme.colors.onSurfaceVariant }}
-              >
-                {opt.label}
-              </AppText>
-            </View>
-          </Pressable>
-        );
-      })}
-    </View>
-  );
-}
-
-function ImprovementToggle(props: {
-  Icon: LucideIcon;
-  label: string;
-  value: boolean;
-  onChange: (v: boolean) => void;
-  disabled?: boolean;
-}) {
-  const theme = useTheme();
-  const { rowDir } = useRTL();
-  const Icon = props.Icon;
-  const isActive = props.value;
-  return (
-    <Pressable
-      onPress={() => props.onChange(!props.value)}
-      disabled={props.disabled}
-      className="w-[48%]"
-      style={({ pressed }) => [{ opacity: props.disabled ? 0.4 : pressed ? 0.9 : 1 }]}
-    >
-      <View
-        className="flex-row items-center gap-2 rounded-[14px] border px-3 py-3"
-        style={{
-          flexDirection: rowDir,
-          borderColor: isActive ? theme.colors.primary : theme.colors.outlineVariant,
-          backgroundColor: isActive ? theme.colors.primary : theme.colors.surface,
-        }}
-      >
-        <Icon size={18} color={isActive ? theme.colors.surface : theme.colors.onSurfaceVariant} strokeWidth={2.4} />
-        <AppText
-          variant="semibold"
-          className="flex-1 text-[12.5px] leading-5"
-          style={{ color: isActive ? theme.colors.surface : theme.colors.onSurfaceVariant }}
-        >
-          {props.label}
-        </AppText>
-      </View>
-    </Pressable>
-  );
-}
+const STATS_TABS = [
+  { key: 'evaluation', label: 'التقييم' },
+  { key: 'timeline', label: 'إنجازاتي' },
+] as const;
 
 function WeeklyMiniChart({ ratings }: { ratings: WeeklyRating[] }) {
   const theme = useTheme();
@@ -300,7 +215,6 @@ export default function StatsScreen() {
   const { isRTL, rowDir } = useRTL();
   const { force } = useLocalSearchParams<{ force?: ForceMode }>();
 
-  const { user, initializeUser } = useUserStore();
   const { ratings, pendingRating, isLoading, errorMessage, initializeRatings, submitRating } = useWeeklyRatingStore();
   const [activeTab, setActiveTab] = useState<'evaluation' | 'timeline'>('evaluation');
   const [localError, setLocalError] = useState('');
@@ -314,9 +228,8 @@ export default function StatsScreen() {
   const sheetEntrance = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    if (!user) initializeUser();
     initializeRatings();
-  }, [initializeRatings, initializeUser, user]);
+  }, [initializeRatings]);
 
   useEffect(() => {
     sheetEntrance.setValue(0);
@@ -343,12 +256,7 @@ export default function StatsScreen() {
     defaultValues: {
       health_score: null,
       adherence_score: null,
-      pain_reduced: false,
-      energy_improved: false,
-      sleep_improved: false,
-      digestion_improved: false,
-      mood_improved: false,
-      mental_health_improved: false,
+      improvements: [],
     },
   });
 
@@ -363,9 +271,17 @@ export default function StatsScreen() {
       setLocalError('اختر تقييم الصحة والالتزام قبل الإرسال');
       return;
     }
+    const improvements = new Set(parsed.data.improvements);
     const ok = await submitRating({
       period_start: new Date().toISOString().slice(0, 10),
-      ...parsed.data,
+      health_score: parsed.data.health_score,
+      adherence_score: parsed.data.adherence_score,
+      pain_reduced: improvements.has('pain_reduced'),
+      energy_improved: improvements.has('energy_improved'),
+      sleep_improved: improvements.has('sleep_improved'),
+      digestion_improved: improvements.has('digestion_improved'),
+      mood_improved: improvements.has('mood_improved'),
+      mental_health_improved: improvements.has('mental_health_improved'),
     });
     if (!ok) {
       setLocalError(errorMessage || 'تعذّر إرسال التقييم');
@@ -392,48 +308,8 @@ export default function StatsScreen() {
           <View className="w-11" />
         </View>
 
-        <View className="mt-4 flex-row justify-center gap-3" style={{ flexDirection: rowDir }}>
-          <Pressable onPress={() => setActiveTab('evaluation')} style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}>
-            {activeTab === 'evaluation' ? (
-              <LinearGradient
-                colors={[theme.colors.primary, theme.colors.secondary]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ paddingHorizontal: 18, paddingVertical: 10, borderRadius: 999 }}
-              >
-                <AppText variant="bold" className="text-[13px] text-white">
-                  التقييم
-                </AppText>
-              </LinearGradient>
-            ) : (
-              <View className="rounded-full border border-app-lineSoft bg-app-surface px-[18px] py-[10px]">
-                <AppText variant="bold" className="text-[13px] text-app-textSoft">
-                  التقييم
-                </AppText>
-              </View>
-            )}
-          </Pressable>
-
-          <Pressable onPress={() => setActiveTab('timeline')} style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}>
-            {activeTab === 'timeline' ? (
-              <LinearGradient
-                colors={[theme.colors.primary, theme.colors.secondary]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ paddingHorizontal: 18, paddingVertical: 10, borderRadius: 999 }}
-              >
-                <AppText variant="bold" className="text-[13px] text-white">
-                  إنجازاتي
-                </AppText>
-              </LinearGradient>
-            ) : (
-              <View className="rounded-full border border-app-lineSoft bg-app-surface px-[18px] py-[10px]">
-                <AppText variant="bold" className="text-[13px] text-app-textSoft">
-                  إنجازاتي
-                </AppText>
-              </View>
-            )}
-          </Pressable>
+        <View className="mt-4">
+          <GradientTabs options={STATS_TABS} value={activeTab} onChange={setActiveTab} />
         </View>
       </View>
 
@@ -473,7 +349,17 @@ export default function StatsScreen() {
                   control={form.control}
                   name="health_score"
                   render={({ field }) => (
-                    <ScoreSelector value={field.value} onChange={(v) => field.onChange(v)} disabled={!canSubmit} />
+                    <OptionSelector
+                      mode="single"
+                      layout="iconTop"
+                      variant="soft"
+                      options={SCORE_OPTIONS}
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={!canSubmit}
+                      wrapperClassName="mt-2 flex-row gap-2"
+                      itemClassName="flex-1"
+                    />
                   )}
                 />
               </View>
@@ -486,7 +372,17 @@ export default function StatsScreen() {
                   control={form.control}
                   name="adherence_score"
                   render={({ field }) => (
-                    <ScoreSelector value={field.value} onChange={(v) => field.onChange(v)} disabled={!canSubmit} />
+                    <OptionSelector
+                      mode="single"
+                      layout="iconTop"
+                      variant="soft"
+                      options={SCORE_OPTIONS}
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={!canSubmit}
+                      wrapperClassName="mt-2 flex-row gap-2"
+                      itemClassName="flex-1"
+                    />
                   )}
                 />
               </View>
@@ -495,44 +391,28 @@ export default function StatsScreen() {
                 <AppText variant="bold" className="text-[13px] leading-6 text-app-navy">
                   التحسينات الملحوظة
                 </AppText>
-                <View className="mt-3 flex-row flex-wrap justify-between gap-y-3" style={{ flexDirection: rowDir }}>
-                  {IMPROVEMENTS.map((imp) => (
-                    <Controller
-                      key={imp.key}
-                      control={form.control}
-                      name={imp.key}
-                      render={({ field }) => (
-                        <ImprovementToggle
-                          Icon={imp.Icon}
-                          label={imp.label}
-                          value={field.value}
-                          onChange={field.onChange}
-                          disabled={!canSubmit}
-                        />
-                      )}
+                <Controller
+                  control={form.control}
+                  name="improvements"
+                  render={({ field }) => (
+                    <OptionSelector
+                      mode="multiple"
+                      layout="iconStart"
+                      variant="solid"
+                      options={IMPROVEMENT_OPTIONS}
+                      value={field.value}
+                      onChange={field.onChange}
+                      disabled={!canSubmit}
+                      wrapperClassName="mt-3 flex-row flex-wrap justify-between gap-y-3"
+                      itemClassName="w-[48%]"
                     />
-                  ))}
-                </View>
+                  )}
+                />
               </View>
             </View>
 
             <View className="mt-6">
-              <Pressable
-                onPress={handleSubmit}
-                disabled={!canSubmit || isLoading}
-                style={({ pressed }) => [{ opacity: !canSubmit || isLoading ? 0.4 : pressed ? 0.9 : 1 }]}
-              >
-                <LinearGradient
-                  colors={[theme.colors.primary, theme.colors.secondary]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={{ borderRadius: 16, paddingVertical: 14, alignItems: 'center' }}
-                >
-                  <AppText variant="bold" className="text-[15px] text-white">
-                    أرسل التقييم
-                  </AppText>
-                </LinearGradient>
-              </Pressable>
+              <PrimaryButton title="أرسل التقييم" onPress={handleSubmit} disabled={!canSubmit || isLoading} loading={isLoading} />
 
               {localError || errorMessage ? (
                 <AppText className="mt-2 text-center text-[12.5px] leading-5 text-app-danger">

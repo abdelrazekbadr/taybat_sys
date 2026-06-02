@@ -4,7 +4,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   // ── System posts (pinned + tips) ──────────────────────────────────────
   {
     id: 1,
-    user_id: 0,
+    user_id: 'system',
     author_name: 'فريق الطيبات',
     author_avatar: null,
     content: 'أهلاً بكم في عائلة الطيبات! نسعد بانضمامكم لهذه الرحلة الصحية المميزة.',
@@ -17,7 +17,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   },
   {
     id: 2,
-    user_id: 0,
+    user_id: 'system',
     author_name: 'فريق الطيبات',
     author_avatar: null,
     content: 'نصيحة اليوم: الأرز مع زيت الزيتون وجبة مثالية للمستوى الأول. بسيطة، مغذية، ومضادة للالتهابات.',
@@ -30,7 +30,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   },
   {
     id: 3,
-    user_id: 0,
+    user_id: 'system',
     author_name: 'فريق الطيبات',
     author_avatar: null,
     content: 'تذكير: سجّل وجباتك يومياً لتحصل على نتائج أدق في تقييم الالتزام الأسبوعي.',
@@ -43,7 +43,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   },
   {
     id: 4,
-    user_id: 0,
+    user_id: 'system',
     author_name: 'فريق الطيبات',
     author_avatar: null,
     content: 'إذا شعرت بتعب أو صداع بعد إدخال عنصر جديد، ارجع خطوة للمستوى السابق يومين ثم جرّب مرة أخرى.',
@@ -56,7 +56,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   },
   {
     id: 5,
-    user_id: 0,
+    user_id: 'system',
     author_name: 'فريق الطيبات',
     author_avatar: null,
     content: 'خبر جديد: قريباً سنضيف لوحة المعلومات لتشاهد متوسط الالتزام وتحسّن الصحة عبر الأشهر.',
@@ -69,7 +69,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   },
   {
     id: 6,
-    user_id: 0,
+    user_id: 'system',
     author_name: 'فريق الطيبات',
     author_avatar: null,
     content: 'اقترحنا لك اليوم خيارات من "المتاح" حسب تفضيلاتك — ابدأ بالأبسط ثم توسّع تدريجياً.',
@@ -84,7 +84,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   // ── User posts (different members — for testing follow feature) ───────
   {
     id: 7,
-    user_id: 2,
+    user_id: 'mock-user-2',
     author_name: 'سارة العمري',
     author_avatar: null,
     content: 'اليوم أكملت شهرين كاملين مع الطيبات 🎉 الصداع اليومي اختفى تقريباً وطاقتي في الصباح تضاعفت. لمن يشك في البداية — استمر، النتائج تأتي.',
@@ -97,7 +97,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   },
   {
     id: 8,
-    user_id: 3,
+    user_id: 'mock-user-3',
     author_name: 'محمد الهاجري',
     author_avatar: null,
     content: 'جربت اليوم وجبة الأرز بالكوسا المسلوقة وزيت الزيتون — بصراحة أفضل مما توقعت! البساطة لها طعم مختلف لما تعرف أنها تنفعك.',
@@ -110,7 +110,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   },
   {
     id: 9,
-    user_id: 4,
+    user_id: 'mock-user-4',
     author_name: 'نورة الرشيد',
     author_avatar: null,
     content: 'بعد ٣ أسابيع على البروتوكول: النوم أصبح أعمق، والانتفاخ بعد الأكل خف كثيراً. ما توقعت أن الغذاء وحده يصنع هذا الفرق.',
@@ -123,7 +123,7 @@ export const MOCK_COMMUNITY_POSTS: CommunityPost[] = Object.freeze([
   },
   {
     id: 10,
-    user_id: 5,
+    user_id: 'mock-user-5',
     author_name: 'أحمد السالم',
     author_avatar: null,
     content: 'تعلمت أن أترك فترة ٤ ساعات بين الوجبات بدل الأكل كل ما أحسست بشيء. الجسم يحتاج وقت للهضم. من جرّب هذا؟',

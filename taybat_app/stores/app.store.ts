@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
-import { STORAGE_KEYS } from '@/api/storage/storageKeys';
-import { storageService } from '@/api/storage/storageService';
+import { STORAGE_KEYS } from '@/shared/storage/storageKeys';
+import { storageService } from '@/shared/storage/storageService';
 
 interface AppState {
   language: 'en' | 'ar';

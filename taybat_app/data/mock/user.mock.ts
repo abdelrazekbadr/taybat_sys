@@ -1,10 +1,11 @@
 import type { User } from '@/types';
 
+export const MOCK_USER_ID = 'mock-user-1';
+
 export const MOCK_USER: User = Object.freeze({
-  id: 1,
-  subscriber_id: 100,
-  name: 'عبد الرازق',
+  id: MOCK_USER_ID,
   email: 'user@example.com',
+  name: 'عبد الرازق',
   avatar_url: null,
   avatar_config: null,
   plan_start_date: '2026-04-01',
@@ -12,4 +13,5 @@ export const MOCK_USER: User = Object.freeze({
   theme: 'light',
   post_visibility: 'public',
   follow_permission: 'everyone',
-}) as unknown as User;
+  profile_completed: true,
+});

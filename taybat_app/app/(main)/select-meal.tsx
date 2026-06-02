@@ -9,12 +9,12 @@ import { ChevronLeft, ChevronRight, LayersPlus } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
+import { GradientTabs } from '@/components/common/GradientTabs';
 import { StarRating } from '@/components/common/StarRating';
 import { useAuthGate } from '@/hooks/useAuthGate';
 import { useRTL } from '@/hooks/useRTL';
 import { useMealsStore } from '@/stores/meals.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
-import { useUserStore } from '@/stores/user.store';
 import type { Meal } from '@/types';
 import { getZoneMeta, toArabicNumerals } from '@/utils/zoneUtils';
 
@@ -45,7 +45,6 @@ export default function SelectMealScreen() {
   }>();
   const { meals, initializeMeals, isLoading } = useMealsStore();
   const { userMeals, initializeUserMeals } = useUserMealsStore();
-  const { user, initializeUser } = useUserStore();
   const initialTabValue = Array.isArray(initialTab) ? initialTab[0] : initialTab;
   const resolvedInitialTab: TabKey =
     initialTabValue === 'lunch' ? 'lunch' : initialTabValue === 'dinner' ? 'dinner' : 'breakfast';
@@ -55,10 +54,6 @@ export default function SelectMealScreen() {
   useEffect(() => {
     if (!meals.length) initializeMeals();
   }, [meals.length, initializeMeals]);
-
-  useEffect(() => {
-    if (!user) initializeUser();
-  }, [initializeUser, user]);
 
   useEffect(() => {
     if (!userMeals.length) initializeUserMeals();
@@ -118,40 +113,7 @@ export default function SelectMealScreen() {
           className="self-center"
           style={{ width: '100%', maxWidth: 380 }}
         >
-          <View className="flex-row gap-2" style={{ flexDirection: rowDir }}>
-            {TABS.map((t) => {
-              const isActive = t.key === activeTab;
-              return (
-                <TouchableOpacity
-                  key={t.key}
-                  onPress={() => setActiveTab(t.key)}
-                  activeOpacity={0.85}
-                  className="flex-1 overflow-hidden rounded-full"
-                >
-                  {isActive ? (
-                    <LinearGradient
-                      colors={[theme.colors.secondary, theme.colors.primary]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      style={{ borderRadius: 999 }}
-                    >
-                      <View className="items-center justify-center rounded-full px-5 py-2.5 shadow-sm shadow-black/10">
-                        <AppText variant="bold" className="text-[13px] leading-5 text-white">
-                          {t.label}
-                        </AppText>
-                      </View>
-                    </LinearGradient>
-                  ) : (
-                    <View className="items-center justify-center rounded-full border border-app-lineSoft bg-app-surface px-5 py-2.5">
-                      <AppText variant="bold" className="text-[13px] leading-5 text-app-textSoft">
-                        {t.label}
-                      </AppText>
-                    </View>
-                  )}
-                </TouchableOpacity>
-              );
-            })}
-          </View>
+          <GradientTabs options={TABS} value={activeTab} onChange={setActiveTab} />
         </View>
       </View>
 
@@ -208,8 +170,8 @@ function MealCard({
   const [isAdding, setIsAdding] = useState(false);
   const imageSource = meal.image_url ? { uri: meal.image_url } : defaultFoodImage;
   const ingredientsCount =
-    typeof meal.meal_item_ids === 'string' && meal.meal_item_ids.trim().length > 0
-      ? meal.meal_item_ids.split(',').filter(Boolean).length
+    typeof meal.meal_item_codes === 'string' && meal.meal_item_codes.trim().length > 0
+      ? meal.meal_item_codes.split(',').filter(Boolean).length
       : 0;
 
   const handleAddInternal = async () => {

@@ -7,6 +7,7 @@ import { useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { AppText } from '@/components/common/AppText';
+import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { StarRating } from '@/components/common/StarRating';
 import { useRTL } from '@/hooks/useRTL';
 import { useCommunityStore } from '@/stores/community.store';
@@ -54,8 +55,8 @@ export default function UserProfileScreen() {
   const { ratings } = useWeeklyRatingStore();
   const { userFollows, toggleFollow } = useCommunityStore();
 
-  const targetUserId = userId !== undefined ? parseInt(userId, 10) : (user?.id ?? -1);
-  const isSystemUser = targetUserId === 0;
+  const targetUserId: string = userId !== undefined ? userId : (user?.id ?? '');
+  const isSystemUser = targetUserId === 'system';
   const isOwnProfile = userId === undefined || (user !== null && targetUserId === user?.id);
   const displayName = isOwnProfile ? (user?.name ?? '') : (paramName ?? '');
 
@@ -237,6 +238,12 @@ export default function UserProfileScreen() {
             ))}
           </View>
         )}
+
+        {isOwnProfile && user !== null && !isSystemUser ? (
+          <View className="mx-5 mt-4">
+            <PrimaryButton title="Complete profile" onPress={() => router.push('/(auth)/complete-profile' as never)} />
+          </View>
+        ) : null}
 
         {/* ── Badges ── */}
         {isOwnProfile && (

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
-import { MOCK_USER_MEALS } from '@/data/mock';
+import { trackingRepository } from '@/repositories/tracking';
+import { toUserMessage } from '@/shared/errors/AppError';
 import type { UserMeal } from '@/types';
 
 import { useMealsStore } from './meals.store';
@@ -34,20 +35,16 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
   initializeUserMeals: async () => {
     set({ isLoading: true, errorMessage: '' });
     try {
+      const user = useUserStore.getState().user;
+      if (!user) {
+        set({ isLoading: false });
+        return;
+      }
       const today = todayIsoDate();
-      const userMeals = MOCK_USER_MEALS;
-      set({
-        userMeals,
-        todayMeals: userMeals.filter((m) => m.date === today),
-        isLoading: false,
-      });
+      const userMeals = await trackingRepository.getUserMeals(user.id);
+      set({ userMeals, todayMeals: userMeals.filter((m) => m.date === today), isLoading: false });
     } catch (error: unknown) {
-      set({
-        userMeals: [],
-        todayMeals: [],
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'Failed to load meal logs',
-      });
+      set({ userMeals: [], todayMeals: [], isLoading: false, errorMessage: toUserMessage(error) });
     }
   },
 
@@ -61,44 +58,28 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
         set({ isLoading: false, errorMessage: 'User not initialized' });
         return false;
       }
-
       const meal = useMealsStore.getState().getMealById(mealId);
       if (!meal) {
         set({ isLoading: false, errorMessage: 'Meal not found' });
         return false;
       }
-
       const today = todayIsoDate();
-      const currentMeals = get().userMeals;
-      const todayMeals = currentMeals.filter((m) => m.user_id === user.id && m.date === today);
-      if (todayMeals.length >= 3) {
+      const todayCount = get().userMeals.filter((m) => m.user_id === user.id && m.date === today).length;
+      if (todayCount >= 3) {
         set({ isLoading: false, errorMessage: 'تم الوصول للحد اليومي (3 وجبات)' });
         return false;
       }
-
-      const nextId = (currentMeals.reduce((max, m) => Math.max(max, m.id), 0) || 0) + 1;
-      const newUserMeal: UserMeal = {
-        id: nextId,
-        user_id: user.id,
-        meal_id: meal.id,
-        meal_item_ids: meal.meal_item_ids,
-        datetime: new Date().toISOString(),
-        date: today,
-        zone_summary: meal.dominant_zone,
-      };
-
-      const nextUserMeals = [...currentMeals, newUserMeal];
-      set({
-        userMeals: nextUserMeals,
-        todayMeals: nextUserMeals.filter((m) => m.user_id === user.id && m.date === today),
-        isLoading: false,
+      const entry = await trackingRepository.logMeal({
+        userId: user.id,
+        mealId: meal.id,
+        mealItemCodes: meal.meal_item_codes,
+        zoneSummary: meal.dominant_zone,
       });
+      const nextMeals = [...get().userMeals, entry];
+      set({ userMeals: nextMeals, todayMeals: nextMeals.filter((m) => m.user_id === user.id && m.date === today), isLoading: false });
       return true;
     } catch (error: unknown) {
-      set({
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'Failed to log meal',
-      });
+      set({ isLoading: false, errorMessage: toUserMessage(error) });
       return false;
     }
   },
@@ -111,46 +92,23 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
         set({ isLoading: false, errorMessage: 'User not initialized' });
         return false;
       }
-
       const meal = useMealsStore.getState().getMealById(mealId);
       if (!meal) {
         set({ isLoading: false, errorMessage: 'Meal not found' });
         return false;
       }
-
-      const currentMeals = get().userMeals;
-      const existing = currentMeals.find((m) => m.id === userMealId);
-      if (!existing) {
-        set({ isLoading: false, errorMessage: 'Meal log not found' });
-        return false;
-      }
-
-      const today = todayIsoDate();
-      const nextUserMeals = currentMeals.map((m) =>
-        m.id === userMealId
-          ? {
-              ...m,
-              user_id: user.id,
-              meal_id: meal.id,
-              meal_item_ids: meal.meal_item_ids,
-              datetime: new Date().toISOString(),
-              date: existing.date || today,
-              zone_summary: meal.dominant_zone,
-            }
-          : m,
-      );
-
-      set({
-        userMeals: nextUserMeals,
-        todayMeals: nextUserMeals.filter((m) => m.user_id === user.id && m.date === today),
-        isLoading: false,
+      const updated = await trackingRepository.replaceMeal(userMealId, {
+        userId: user.id,
+        mealId: meal.id,
+        mealItemCodes: meal.meal_item_codes,
+        zoneSummary: meal.dominant_zone,
       });
+      const today = todayIsoDate();
+      const nextMeals = get().userMeals.map((m) => (m.id === userMealId ? updated : m));
+      set({ userMeals: nextMeals, todayMeals: nextMeals.filter((m) => m.user_id === user.id && m.date === today), isLoading: false });
       return true;
     } catch (error: unknown) {
-      set({
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'Failed to replace meal log',
-      });
+      set({ isLoading: false, errorMessage: toUserMessage(error) });
       return false;
     }
   },
@@ -158,21 +116,18 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
   deleteMeal: async (id) => {
     set({ isLoading: true, errorMessage: '' });
     try {
+      await trackingRepository.deleteMeal(id);
       const user = useUserStore.getState().user;
-      const currentMeals = get().userMeals;
-      const nextUserMeals = currentMeals.filter((m) => m.id !== id);
       const today = todayIsoDate();
+      const nextMeals = get().userMeals.filter((m) => m.id !== id);
       set({
-        userMeals: nextUserMeals,
-        todayMeals: user ? nextUserMeals.filter((m) => m.user_id === user.id && m.date === today) : [],
+        userMeals: nextMeals,
+        todayMeals: user ? nextMeals.filter((m) => m.user_id === user.id && m.date === today) : [],
         isLoading: false,
       });
-      return nextUserMeals.length !== currentMeals.length;
+      return true;
     } catch (error: unknown) {
-      set({
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'Failed to delete meal log',
-      });
+      set({ isLoading: false, errorMessage: toUserMessage(error) });
       return false;
     }
   },

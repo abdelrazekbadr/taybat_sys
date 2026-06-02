@@ -1,8 +1,8 @@
 export const themeTokens = {
   colors: {
     brand: {
-      emerald: '#10B981',
-      emeraldDark: '#059669',
+      emerald: '#34D399',
+      emeraldDark: '#10B981',
       emeraldSoft: '#DCFCE7',
       teal: '#06B6D4',
       tealDark: '#0891B2',

@@ -1,21 +1,13 @@
 import { create } from 'zustand';
 
-import { MOCK_WEEKLY_RATINGS } from '@/data/mock';
-import type { WeeklyRating, WeeklyScore } from '@/types';
+import { ratingRepository } from '@/repositories/ratings';
+import type { CreateRatingPayload } from '@/repositories/ratings';
+import { toUserMessage } from '@/shared/errors/AppError';
+import type { WeeklyRating } from '@/types';
 
 import { useUserStore } from './user.store';
 
-export type SubmitWeeklyRatingPayload = {
-  period_start: string;
-  health_score: WeeklyScore;
-  adherence_score: WeeklyScore;
-  pain_reduced: boolean;
-  energy_improved: boolean;
-  sleep_improved: boolean;
-  digestion_improved: boolean;
-  mood_improved: boolean;
-  mental_health_improved: boolean;
-};
+export type SubmitWeeklyRatingPayload = Omit<CreateRatingPayload, 'userId'>;
 
 interface WeeklyRatingState {
   ratings: WeeklyRating[];
@@ -35,11 +27,8 @@ const initialState = {
   errorMessage: '',
 };
 
-const daysBetween = (fromIso: string, toIso: string) => {
-  const from = new Date(fromIso).getTime();
-  const to = new Date(toIso).getTime();
-  return Math.floor((to - from) / (24 * 60 * 60 * 1000));
-};
+const daysBetween = (fromIso: string, toIso: string) =>
+  Math.floor((new Date(toIso).getTime() - new Date(fromIso).getTime()) / (24 * 60 * 60 * 1000));
 
 export const useWeeklyRatingStore = create<WeeklyRatingState>((set, get) => ({
   ...initialState,
@@ -47,15 +36,12 @@ export const useWeeklyRatingStore = create<WeeklyRatingState>((set, get) => ({
   initializeRatings: async () => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      set({ ratings: MOCK_WEEKLY_RATINGS, isLoading: false });
+      const user = useUserStore.getState().user;
+      const ratings = user ? await ratingRepository.getRatings(user.id) : [];
+      set({ ratings, isLoading: false });
       get().checkPendingRating();
     } catch (error: unknown) {
-      set({
-        ratings: [],
-        pendingRating: false,
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'Failed to load weekly ratings',
-      });
+      set({ ratings: [], pendingRating: false, isLoading: false, errorMessage: toUserMessage(error) });
     }
   },
 
@@ -67,24 +53,12 @@ export const useWeeklyRatingStore = create<WeeklyRatingState>((set, get) => ({
         set({ isLoading: false, errorMessage: 'User not initialized' });
         return false;
       }
-
-      const current = get().ratings;
-      const nextId = (current.reduce((max, r) => Math.max(max, r.id), 0) || 0) + 1;
-      const newRating: WeeklyRating = {
-        id: nextId,
-        user_id: user.id,
-        submitted_at: new Date().toISOString(),
-        ...payload,
-      };
-
-      set({ ratings: [...current, newRating], isLoading: false });
+      const rating = await ratingRepository.submitRating({ ...payload, userId: user.id });
+      set((state) => ({ ratings: [...state.ratings, rating], isLoading: false }));
       get().checkPendingRating();
       return true;
     } catch (error: unknown) {
-      set({
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'Failed to submit weekly rating',
-      });
+      set({ isLoading: false, errorMessage: toUserMessage(error) });
       return false;
     }
   },
@@ -97,17 +71,13 @@ export const useWeeklyRatingStore = create<WeeklyRatingState>((set, get) => ({
         set({ pendingRating: true });
         return;
       }
-      const days = daysBetween(user.plan_start_date, new Date().toISOString());
-      set({ pendingRating: days >= 7 });
+      set({ pendingRating: daysBetween(user.plan_start_date, new Date().toISOString()) >= 7 });
       return;
     }
-
     const last = ratings.reduce((latest, r) =>
       new Date(r.submitted_at).getTime() > new Date(latest.submitted_at).getTime() ? r : latest,
     );
-
-    const days = daysBetween(last.submitted_at, new Date().toISOString());
-    set({ pendingRating: days >= 7 });
+    set({ pendingRating: daysBetween(last.submitted_at, new Date().toISOString()) >= 7 });
   },
 
   resetWeeklyRatings: () => set({ ...initialState }),

@@ -12,39 +12,52 @@ export interface AvatarConfig {
   color?: string;
 }
 
-export interface MealItem {
+export interface MealItemCategory {
   id: number;
   name: string;
+  name_en: string | null;
+  description: string | null;
+  description_en: string | null;
+}
+
+export interface MealItem {
+  id: number;
+  code: string;
+  name: string;
   category: number;
+  meal_category_id?: number | null;
   zone: ZoneColor;
   rating: number;
   frequency: string;
   notes: string;
   image_url: string;
+  sequence?: number;
 }
 
 export interface Meal {
   id: number;
   name: string;
-  meal_item_ids: string;
+  /** comma-separated meal_item codes from meal_items.code */
+  meal_item_codes: string;
   dominant_zone: ZoneColor;
   image_url: string;
   /** comma-separated meal type ids: 1=إفطار 2=غداء 3=عشاء */
   meal_type_ids: string;
+  sequence?: number;
 }
 
 export interface User {
-  id: number;
-  subscriber_id: number;
-  name: string;
+  id: string;                     // UUID from Supabase auth.users
   email: string;
+  name: string | null;
   avatar_url: string | null;
   avatar_config: AvatarConfig | null;
-  plan_start_date: string;
+  plan_start_date: string | null;
   language: 'ar' | 'en';
   theme: 'light' | 'dark' | 'system';
   post_visibility: PostVisibility;
   follow_permission: FollowPermission;
+  profile_completed: boolean;
 }
 
 export interface MealItemPreference {
@@ -56,9 +69,10 @@ export interface MealItemPreference {
 
 export interface UserMeal {
   id: number;
-  user_id: number;
+  user_id: string;              // UUID from auth.users
   meal_id: number;
-  meal_item_ids: string;
+  /** comma-separated meal_item codes from meal_items.code */
+  meal_item_codes: string;
   datetime: string;
   date: string;
   zone_summary: ZoneColor;
@@ -68,7 +82,7 @@ export type WeeklyScore = 1 | 2 | 3 | 4 | 5;
 
 export interface WeeklyRating {
   id: number;
-  user_id: number;
+  user_id: string;              // UUID from auth.users
   period_start: string;
   submitted_at: string;
   health_score: WeeklyScore;
@@ -81,13 +95,21 @@ export interface WeeklyRating {
   mental_health_improved: boolean;
 }
 
+export interface HealthGoal {
+  id: number;
+  name: string;
+  name_en: string | null;
+  active: boolean;
+  image: string | null;
+}
+
 export type PostType = 'system' | 'achievement' | 'meal_share' | 'user_post';
 
 export type ReactionType = 'love';
 
 export interface CommunityPost {
   id: number;
-  user_id: number;
+  user_id: string;              // UUID from auth.users, or 'system' for official posts
   author_name: string;
   author_avatar: string | null;
   content: string;

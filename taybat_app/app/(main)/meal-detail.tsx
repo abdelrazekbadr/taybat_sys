@@ -29,7 +29,7 @@ export default function MealDetailScreen() {
   const screenHeight = Dimensions.get('window').height/2;
 
   const { getMealById, meals, initializeMeals } = useMealsStore();
-  const { mealItems, initializeMealItems, getMealItemById } = useMealItemsStore();
+  const { mealItems, initializeMealItems, getMealItemByCode } = useMealItemsStore();
   const { logMeal, deleteMeal } = useUserMealsStore();
 
   useEffect(() => {
@@ -75,9 +75,9 @@ export default function MealDetailScreen() {
 
   const zoneMeta = getZoneMeta(meal.dominant_zone);
   const imageSource = meal.image_url ? { uri: meal.image_url } : defaultFoodImage;
-  const itemIds = meal.meal_item_ids.split(',').map(Number);
-  const items: MealItem[] = itemIds
-    .map((id) => getMealItemById(id))
+  const itemCodes = meal.meal_item_codes.split(',').filter(Boolean);
+  const items: MealItem[] = itemCodes
+    .map((code) => getMealItemByCode(code))
     .filter((item): item is MealItem => item !== undefined);
 
   const handleShare = async () => {

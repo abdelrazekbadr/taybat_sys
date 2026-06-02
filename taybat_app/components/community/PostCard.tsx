@@ -77,7 +77,7 @@ export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPres
           >
             {post.author_avatar ? (
               <Image source={{ uri: post.author_avatar }} style={{ width: 44, height: 44 }} resizeMode="cover" />
-            ) : post.user_id === 0 ? (
+            ) : post.user_id === 'system' ? (
               <Users size={20} color={theme.colors.primary} strokeWidth={2.2} />
             ) : (
               <User size={20} color={theme.colors.primary} strokeWidth={2.2} />

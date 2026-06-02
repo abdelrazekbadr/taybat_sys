@@ -16,13 +16,15 @@ export interface UserProfile {
   email: string;
   name: string | null;
   gender: Gender | null;
+  birth_date: string | null;
   birth_year: number | null;
   weight_kg: number | null;
   height_cm: number | null;
   activity_level: ActivityLevel | null;
-  health_goals: string[] | null;
+  health_gools_ids: string | null;
   provider: AuthProvider;
   profile_completed: boolean;
+  plan_start_date: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -49,15 +51,16 @@ export interface LoginPayload {
 export interface ProfileCompletionPayload {
   name: string;
   gender?: Gender;
-  birth_year?: number;
+  birth_date?: string;
   weight_kg?: number;
   height_cm?: number;
   activity_level?: ActivityLevel;
-  health_goals?: string[];
+  health_gools_ids?: string;
 }
 
 export interface AuthResult {
   user: AuthUser;
+  profile: UserProfile;
   profile_completed: boolean;
 }
 
@@ -66,4 +69,3 @@ export interface AuthSession {
   user_id: string;
   expires_at: number;
 }
-

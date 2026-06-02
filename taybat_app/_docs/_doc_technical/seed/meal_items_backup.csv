@@ -1,0 +1,71 @@
+id,name,name_en,description,description_en,category,zone,rating,frequency,notes,image_url,active
+1,أرز أبيض,White rice,يُطهى بالماء فقط بدون ملح أو ثوم,Cook in water only without salt or garlic,1,1,,daily_basic,,,true
+2,أرز بسمتي,Basmati rice,يُطهى بالماء فقط بدون ملح أو ثوم,Cook in water only without salt or garlic,1,1,,daily_basic,,,true
+3,أرز بالشعيرية,Vermicelli rice,تُحمَّر الشعيرية بالزبدة البلدي أولًا ثم يُضاف الأرز مع الماء,Brown vermicelli in country butter first then add rice with water,1,1,,daily_basic,,,true
+4,أرز بالمكسرات,Rice with nuts,أرز أبيض مطبوخ بالماء مع مكسرات طبيعية,White rice cooked in water with natural nuts,1,3,,daily_basic,,,true
+5,توست قمح كامل الحبة,Whole wheat toast,توست من قمح كامل الحبة بكميات معقولة,Whole grain wheat toast in moderate amounts,1,2,,daily_basic,,,true
+6,بطاطس مسلوقة,Boiled potatoes,مسلوقة بالماء مع الملح فقط,Boiled in water with salt only,1,1,,daily_basic,,,true
+7,بطاطس مهروسة,Mashed potatoes,مهروسة بالزبدة البلدي مع الملح فقط,Mashed with country butter and salt only,1,1,,daily_basic,,,true
+8,بطاطا حلوة مشوية,Roasted sweet potato,مشوية بالملح فقط,Roasted with salt only,1,4,,daily_basic,,,true
+9,بطاطا حلوة مهروسة,Mashed sweet potato,مهروسة بالزبدة البلدي أو السمن,Mashed with country butter or ghee,1,4,,daily_basic,,,true
+10,فشار ذرة طبيعي,Natural popcorn,ذرة طبيعية بدون ملح صناعي أو نكهات مضافة,Natural corn without artificial salt or added flavors,1,3,,weekly,أسبوعيًا بديلًا عن المخبوزات الصناعية,,true
+11,لحم بتلو مسلوق,Boiled beef,مسلوق جيدًا مع الملح وزيت الزيتون فقط,Well boiled with salt and olive oil only,2,3,,weekly,,,true
+12,لحم ضأن مشوي,Grilled lamb,مشوي مع الملح وزيت الزيتون فقط,Grilled with salt and olive oil only,2,3,,weekly,,,true
+13,لحم ضأن مسلوق,Boiled lamb,مسلوق مع الملح وزيت الزيتون فقط,Boiled with salt and olive oil only,2,3,,weekly,,,true
+14,لحم إبل مسلوق,Boiled camel meat,من أفضل اللحوم في نظام الطيبات - مسلوق جيدًا,Among the best meats in Al-Tayebaat system - well boiled,2,3,,weekly,,,true
+15,لحم ماعز مسلوق,Boiled goat meat,مسلوق مع الملح والزيت فقط,Boiled with salt and oil only,2,3,,weekly,,,true
+16,لحم ماعز مشوي,Grilled goat meat,مشوي مع الملح والزيت فقط,Grilled with salt and oil only,2,3,,weekly,,,true
+17,لحم أرانب مسلوق,Boiled rabbit,بروتين خفيف سهل الهضم - مسلوق,Light protein easy to digest - boiled,2,3,,weekly,,,true
+18,كبدة مسلوقة,Boiled liver,كبدة الأنعام (بقر أو ضأن أو إبل) - مسلوقة - ليس دجاج,Livestock liver (beef lamb or camel) - boiled - not chicken,2,3,,weekly,,,true
+19,محشي كوسا وفلفل بالأرز,Stuffed zucchini and pepper with rice,كوسا وفلفل محشيان بالأرز ويُطهيان بالماء والملح والزيت فقط,Zucchini and pepper stuffed with rice cooked in water with salt and oil only,2,4,,occasionally,مرة شهريًا كحد أقصى - الكوسا مطبوخة محشية فقط,,true
+20,سمك سردين بحري مشوي,Grilled sea sardine,من البحر الطبيعي فقط لا مزارع - مشوي بالملح والزيت - يُنصح بأسماك البحر الحرة الطازجة: دنيس • لوت • مكرونة,Natural sea only no farms - grilled with salt and oil - Preferred free-sea fish: sea bream (denise) • grouper (lout) • barracuda (makarona),3,3,,weekly,,,true
+21,سمك ماكريل بحري مشوي,Grilled sea mackerel,من البحر الطبيعي فقط - مشوي بالملح والزيت - يُنصح بأسماك البحر الحرة الطازجة: دنيس • لوت • مكرونة,Natural sea only - grilled with salt and oil - Preferred free-sea fish: sea bream (denise) • grouper (lout) • barracuda (makarona),3,3,,weekly,,,true
+22,تونة بحرية طبيعية مشوية,Grilled natural sea tuna,تونة من البحر المفتوح - طبيعية - مشوية بالملح والزيت - يُنصح بأسماك البحر الحرة الطازجة: دنيس • لوت • مكرونة,Natural open-ocean tuna - grilled with salt and oil - Preferred free-sea fish: sea bream (denise) • grouper (lout) • barracuda (makarona),3,3,,weekly,,,true
+23,حمام مشوي,Grilled pigeon,حمام طائر يتغذى على الحبوب النظيفة - مشوي بالملح والزيت,Flying pigeon feeding on clean grains - grilled with salt and oil,4,3,,weekly,,,true
+24,سمان مشوي,Grilled quail,طائر مهاجر طبيعي - مشوي بالملح والزيت,Natural migratory quail bird - grilled with salt and oil,4,3,,weekly,,,true
+25,زبدة بلدي,Country butter,زبدة بلدي طازجة طبيعية,Fresh natural country butter,5,1,,daily_basic,,,true
+26,سمن بلدي,Country ghee,سمن بلدي طبيعي مستقر حراريًا خالٍ من بروتينات اللبن,Natural country ghee thermally stable and free of milk proteins,5,1,,daily_basic,,,true
+27,قشطة طبيعية,Natural cream,قشطة طبيعية بلدي - أساسية في النظام,Natural country cream - fundamental in the system,5,1,,daily_basic,,,true
+28,جبنة جودة,Gouda cheese,جبنة مطبوخة مختمرة - تُقدَّم باردة على التوست مباشرة,Cooked fermented cheese - served cold directly on toast,6,2,,weekly,تُقدَّم دائمًا مع زيتون كالاماتا,,true
+29,جبنة شيدر,Cheddar cheese,جبنة مطبوخة مختمرة - تُقدَّم باردة على التوست مباشرة,Cooked fermented cheese - served cold directly on toast,6,2,,weekly,تُقدَّم دائمًا مع زيتون كالاماتا,,true
+30,جبنة فلمنك,Edam cheese,جبنة مطبوخة مختمرة - تُقدَّم باردة على التوست مباشرة,Cooked fermented cheese - served cold directly on toast,6,2,,weekly,تُقدَّم دائمًا مع زيتون كالاماتا,,true
+31,جبنة موتزاريلا,Mozzarella cheese,جبنة مطبوخة مختمرة - تُقدَّم باردة على التوست مباشرة,Cooked fermented cheese - served cold directly on toast,6,2,,weekly,تُقدَّم دائمًا مع زيتون كالاماتا,,true
+32,تمر,Dates,سبع تمرات على الريق - توصية النبي ﷺ,Seven dates on empty stomach - prophetic recommendation,7,1,,daily,,,true
+33,موز,Banana,طازج بكميات معتدلة,Fresh in moderate amounts,7,3,,weekly,,,true
+34,عنب أسود,Black grapes,الأسود مفضَّل ثم الأحمر ثم الأخضر,Black preferred then red then green,7,3,,weekly,,,true
+35,رمان طازج,Fresh pomegranate,طازج بدون بذور,Fresh without seeds,7,3,,weekly,,,true
+36,تفاح مقشّر,Peeled apple,يُقشَّر دائمًا قبل الأكل - لا يُؤكل بقشره,Always peeled before eating - never with peel,7,4,,weekly,,,true
+37,فراولة طازجة,Fresh strawberries,طازجة بكميات معتدلة,Fresh in moderate amounts,7,3,,weekly,,,true
+38,كرز طازج,Fresh cherries,طازج,Fresh,7,3,,weekly,,,true
+39,برقوق طازج,Fresh plums,طازج,Fresh,7,3,,weekly,,,true
+40,مشمش طازج,Fresh apricots,طازج,Fresh,7,3,,weekly,,,true
+41,تين طازج,Fresh figs,من الفواكه المباركة المذكورة في القرآن الكريم,Among the blessed fruits mentioned in the Holy Quran,7,3,,weekly,,,true
+42,زبيب,Raisins,فاكهة مجففة طبيعية بكميات معتدلة,Natural dried fruit in moderate amounts,7,3,,weekly,,,true
+43,عصير جوافة معلب طبيعي,Natural canned guava juice,معلب طبيعي فقط - العصائر الطازجة ممنوعة,Natural canned only - fresh squeezed juices are forbidden,7,3,,weekly,,,true
+44,لوز,Almonds,لوز طبيعي نيئ لتقوية الذاكرة والمناعة,Raw natural almonds for memory and immunity,8,4,,weekly,,,true
+45,كاجو,Cashews,كاجو طبيعي نيئ,Raw natural cashews,8,3,,weekly,,,true
+46,فستق,Pistachios,فستق طبيعي نيئ,Raw natural pistachios,8,3,,weekly,,,true
+47,عين الجمل,Walnuts,عين الجمل طبيعية نيئة,Raw natural walnuts,8,3,,weekly,,,true
+48,فول سوداني,Peanuts,فول سوداني طبيعي نيئ,Raw natural peanuts,8,3,,weekly,,,true
+49,عسل طبيعي,Natural honey,ملعقة على الريق يوميًا - شفاء للناس,Spoon on empty stomach daily - healing for people,9,2,,daily,,,true
+50,عسل أسود (دبس),Black honey (molasses),مصدر ممتاز للحديد الطبيعي,Excellent source of natural iron,9,3,,weekly,,,true
+51,نوتيلا,Nutella,مسموحة في الصباح والليل فقط,Allowed in the morning and evening only,9,2,,daily,,,true
+52,مربى تين طبيعية,Natural fig jam,مربى طبيعية بدون إضافات أو حافظات,Natural jam without additives or preservatives,9,4,,occasionally,أسبوعيًا,,true
+53,مربى مشمش طبيعية,Natural apricot jam,مربى طبيعية بدون إضافات أو حافظات,Natural jam without additives or preservatives,9,4,,occasionally,أسبوعيًا,,true
+54,مربى فراولة طبيعية,Natural strawberry jam,مربى طبيعية بدون إضافات أو حافظات,Natural jam without additives or preservatives,9,4,,occasionally,أسبوعيًا,,true
+55,حلاوة طحينية غامقة,Dark tahini halva,طحينة سمسم طبيعية غامقة بدون إضافات,Natural dark sesame tahini without additives,9,3,,weekly,,,true
+56,شوكولاتة داكنة 70%,Dark chocolate 70%+,نسبة كاكاو 70% أو أكثر,70% cocoa content or more,9,2,,occasionally,مرة شهريًا كحد أقصى,,true
+57,زيتون كالاماتا,Kalamata olives,زيتون مخلل طبيعي يونسي الأصل,Natural pickled Greek Kalamata olives,10,3,,weekly,يُقدَّم دائمًا مع الأجبان المطبوخة,,true
+58,شاي أخضر,Green tea,البديل الصحي للشاي الأحمر المحظور,Healthy alternative to the forbidden black tea,11,3,,weekly,,,true
+59,قهوة تركية,Turkish coffee,من مصدر مضمون الجودة,From a quality-guaranteed source,11,2,,daily,,,true
+60,ماء دافئ,Warm water,على الريق صباحًا قبل أي شيء - يوميًا,On empty stomach every morning before anything - daily,11,1,,daily_basic,,,true
+61,شاي زعتر,Thyme tea,يُشرب دافئًا بعد الأكل,Served warm after meals,12,3,,weekly,أسبوعيًا بعد الوجبات,,true
+62,كراوية دافئة,Warm caraway tea,يُشرب دافئًا بعد الأكل,Served warm after meals,12,3,,weekly,أسبوعيًا بعد الوجبات,,true
+63,ينسون دافئ,Warm anise tea,يُشرب دافئًا بعد الأكل,Served warm after meals,12,3,,weekly,أسبوعيًا بعد الوجبات,,true
+64,زيت زيتون,Olive oil,بكر ممتاز - للسلطة والرش على الطعام - لا للقلي العميق,Extra virgin - for salads and drizzling - not for deep frying,13,1,,daily_basic,,,true
+65,شوربة لحم,Meat broth,شوربة لحم طبيعية مطبوخة بالماء والملح وزيت الزيتون فقط,Natural meat broth cooked with water salt and olive oil only,2,3,,weekly,,,true
+66,بطاطس مقلية,Fried potatoes,بطاطس مقلية بالزيت الطبيعي مع الملح فقط,Potatoes fried in natural oil with salt only,1,1,,daily_basic,,,true
+67,كفتة لحم بقري,Beef kofta,لحم بقري مفروم ومشوي مع الملح وزيت الزيتون فقط,Grilled minced beef with salt and olive oil only,2,3,,weekly,,,true
+68,كفتة لحم خروف,Lamb kofta,لحم خروف مفروم ومشوي مع الملح وزيت الزيتون فقط,Grilled minced lamb with salt and olive oil only,2,3,,weekly,,,true
+69,حمام محشي,Stuffed pigeon,حمام طائر محشي بالأرز ومطبوخ بالماء والملح والزيت فقط,Flying pigeon stuffed with rice cooked in water with salt and oil only,4,4,,occasionally,أحيانًا - مرة شهريًا كحد أقصى,,true
+70,حبات ذرة مشوية,Roasted corn kernels,حبات ذرة طبيعية مشوية بدون نكهات أو إضافات صناعية,Natural roasted corn kernels without artificial flavors or additives,1,3,,weekly,,,true

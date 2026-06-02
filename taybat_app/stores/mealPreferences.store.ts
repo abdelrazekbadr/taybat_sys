@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
-import { mealPreferencesService } from '@/api/account/mealPreferences.service';
+import { accountRepository } from '@/repositories/account';
+import { toUserMessage } from '@/shared/errors/AppError';
 
 import { useUserStore } from './user.store';
 
@@ -28,18 +29,13 @@ export const useMealPreferencesStore = create<MealPreferencesState>((set, get) =
     try {
       const user = useUserStore.getState().user;
       if (!user) {
-        set({ favoriteMealIds: [], isLoading: false, errorMessage: 'تعذّر العثور على المستخدم' });
+        set({ favoriteMealIds: [], isLoading: false });
         return;
       }
-
-      const stored = await mealPreferencesService.fetchFavorites(user.id);
-      set({ favoriteMealIds: stored ?? [], isLoading: false });
+      const ids = await accountRepository.getFavoriteMealIds(user.id);
+      set({ favoriteMealIds: ids, isLoading: false });
     } catch (error: unknown) {
-      set({
-        favoriteMealIds: [],
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'تعذّر تحميل تفضيلات الوجبات',
-      });
+      set({ favoriteMealIds: [], isLoading: false, errorMessage: toUserMessage(error) });
     }
   },
 
@@ -51,15 +47,13 @@ export const useMealPreferencesStore = create<MealPreferencesState>((set, get) =
         set({ isLoading: false, errorMessage: 'تعذّر العثور على المستخدم' });
         return false;
       }
-
-      const next = await mealPreferencesService.toggleFavorite(user.id, mealId);
+      const current = get().favoriteMealIds;
+      const next = current.includes(mealId) ? current.filter((id) => id !== mealId) : [...current, mealId];
+      await accountRepository.saveFavoriteMealIds(user.id, next);
       set({ favoriteMealIds: next, isLoading: false });
       return true;
     } catch (error: unknown) {
-      set({
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'تعذّر تحديث التفضيل',
-      });
+      set({ isLoading: false, errorMessage: toUserMessage(error) });
       return false;
     }
   },

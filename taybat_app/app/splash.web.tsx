@@ -7,8 +7,8 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 
-import { STORAGE_KEYS } from '@/api/storage/storageKeys';
-import { storageService } from '@/api/storage/storageService';
+import { STORAGE_KEYS } from '@/shared/storage/storageKeys';
+import { storageService } from '@/shared/storage/storageService';
 import { AppText } from '@/components/common/AppText';
 import { useAppStore } from '@/stores/app.store';
 import { useAuthStore } from '@/stores/auth.store';

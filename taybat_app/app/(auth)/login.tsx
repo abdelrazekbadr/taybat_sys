@@ -1,7 +1,6 @@
 import { router } from 'expo-router';
 import React, { useEffect } from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -19,21 +18,25 @@ import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useShallow } from 'zustand/react/shallow';
 
 import { AppText, AppTextInput } from '@/components/common/AppText';
+import { OutlineButton } from '@/components/common/OutlineButton';
+import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { useAuthStore } from '@/stores/auth.store';
 import { useRTL } from '@/hooks/useRTL';
-import { storageService } from '@/api/storage/storageService';
-import { STORAGE_KEYS } from '@/api/storage/storageKeys';
+import { storageService } from '@/shared/storage/storageService';
+import { STORAGE_KEYS } from '@/shared/storage/storageKeys';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { testSupabaseConnection } from '@/utils/supabaseTest';
 
 const splashLogo = require('../../assets/images/login_bg.png');
 
 const { height: SCREEN_H } = Dimensions.get('window');
 const HERO_H = Math.min(SCREEN_H * 0.32, 260);
-const LOGO_SIZE = Math.min(HERO_H * 0.65, 160);
 
 const loginSchema = z.object({
-  email: z.string().email('بريد إلكتروني غير صحيح'),
+  email: z.string().email({ message: 'بريد إلكتروني غير صحيح' }),
   password: z.string().min(8, 'كلمة المرور 8 أحرف على الأقل'),
 });
 type LoginForm = z.infer<typeof loginSchema>;
@@ -50,8 +53,18 @@ export default function LoginScreen() {
     defaultValues: { email: '', password: '' },
   });
 
-  const { isLoading, errorMessage, loginWithEmail, loginWithOAuth, clearError, setGuestMode } =
-    useAuthStore();
+  const { isLoading, errorMessage, loginWithEmail, loginWithOAuth, clearError, setGuestMode } = useAuthStore(
+    useShallow(
+    (s) => ({
+      isLoading: s.isLoading,
+      errorMessage: s.errorMessage,
+      loginWithEmail: s.loginWithEmail,
+      loginWithOAuth: s.loginWithOAuth,
+      clearError: s.clearError,
+      setGuestMode: s.setGuestMode,
+    }),
+    ),
+  );
 
   useEffect(() => {
     storageService.get<boolean>(STORAGE_KEYS.REMEMBER_ME).then((v) => {
@@ -104,6 +117,7 @@ export default function LoginScreen() {
     router.replace('/(main)' as never);
   };
 
+  const showOAuth = process.env.EXPO_PUBLIC_USE_MOCK === 'false';
   const isDark = theme.dark;
   const cardBg = isDark ? 'bg-app-navy' : 'bg-white';
   const inputBg = isDark ? 'bg-app-navy' : 'bg-[#F8FAFC]';
@@ -111,7 +125,7 @@ export default function LoginScreen() {
   const mutedText = isDark ? 'text-[#94a3b8]' : 'text-[#64748B]';
   const veryMuted = isDark ? 'text-[#64748B]' : 'text-[#94A3B8]';
   const lineCls = isDark ? 'bg-[#334155]' : 'bg-[#E8ECEF]';
-  const socialBg = isDark ? 'bg-app-navy' : 'bg-white';
+
 
   return (
     <KeyboardAvoidingView
@@ -291,69 +305,56 @@ export default function LoginScreen() {
               </View>
             ) : null}
 
+            {/* DEV: Supabase connectivity test */}
+            {/* {__DEV__ && (
+              <Pressable
+                onPress={testSupabaseConnection}
+                style={{
+                  borderWidth: 1,
+                  borderColor: '#94A3B8',
+                  borderRadius: 27,
+                  height: 40,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderStyle: 'dashed',
+                }}
+              >
+                <AppText style={{ fontSize: 12, color: '#64748B' }}>
+                  🔌 Test Supabase Connection
+                </AppText>
+              </Pressable>
+            )} */}
+
             {/* Login button */}
-            <Pressable
-              onPress={submit}
-              disabled={isLoading}
-              style={{
-                backgroundColor: theme.colors.primary,
-                height: 54,
-                borderRadius: 27,
-                alignItems: 'center',
-                justifyContent: 'center',
-                opacity: isLoading ? 0.7 : 1,
-              }}
-            >
-              {isLoading ? (
-                <ActivityIndicator size="small" color="#ffffff" />
-              ) : (
-                <AppText variant="semibold" className="text-[15.5px] text-white">
-                  {t('auth.login.submit')}
-                </AppText>
-              )}
-            </Pressable>
+            <PrimaryButton title={t('auth.login.submit')} onPress={submit} loading={isLoading} disabled={isLoading} />
 
-            {/* OR divider */}
-            <View className="flex-row items-center gap-3">
-              <View className={`flex-1 h-px ${lineCls}`} />
-              <AppText className={`text-[12px] ${veryMuted}`}>
-                {t('auth.decision.orWith')}
-              </AppText>
-              <View className={`flex-1 h-px ${lineCls}`} />
-            </View>
+            {/* OR divider + Social buttons — only in Supabase mode */}
+            {showOAuth && (
+              <>
+                <View className="flex-row items-center gap-3">
+                  <View className={`flex-1 h-px ${lineCls}`} />
+                  <AppText className={`text-[12px] ${veryMuted}`}>
+                    {t('auth.decision.orWith')}
+                  </AppText>
+                  <View className={`flex-1 h-px ${lineCls}`} />
+                </View>
 
-            {/* Social buttons — full-width outline pills */}
-            <View className="flex-row gap-3">
-              <Pressable
-                onPress={handleGoogle}
-                disabled={isLoading}
-                className={`flex-1 h-[52px] flex-row items-center justify-center gap-2 rounded-[26px] border ${socialBg}`}
-                style={{
-                  borderColor: isDark ? '#334155' : '#D1D5DB',
-                  opacity: isLoading ? 0.5 : undefined,
-                }}
-              >
-                <MaterialCommunityIcons name="google" size={22} color="#EA4335" />
-                <AppText variant="semibold" className="text-[14px] text-app-text">
-                  Google
-                </AppText>
-              </Pressable>
-
-              <Pressable
-                onPress={handleFacebook}
-                disabled={isLoading}
-                className={`flex-1 h-[52px] flex-row items-center justify-center gap-2 rounded-[26px] border ${socialBg}`}
-                style={{
-                  borderColor: isDark ? '#334155' : '#D1D5DB',
-                  opacity: isLoading ? 0.5 : undefined,
-                }}
-              >
-                <MaterialCommunityIcons name="facebook" size={22} color="#1877F2" />
-                <AppText variant="semibold" className="text-[14px] text-app-text">
-                  Facebook
-                </AppText>
-              </Pressable>
-            </View>
+                <View className="flex-row justify-center gap-3">
+                  <OutlineButton
+                    title="Google"
+                    onPress={handleGoogle}
+                    disabled={isLoading}
+                    icon={<MaterialCommunityIcons name="google" size={22} color="#EA4335" />}
+                  />
+                  <OutlineButton
+                    title="Facebook"
+                    onPress={handleFacebook}
+                    disabled={isLoading}
+                    icon={<MaterialCommunityIcons name="facebook" size={22} color="#1877F2" />}
+                  />
+                </View>
+              </>
+            )}
 
             {/* No account → Sign up */}
             <View className={`flex-row items-center justify-center gap-1`} style={{ flexDirection: rowDir }}>

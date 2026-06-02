@@ -6,11 +6,9 @@ import { useTheme } from 'react-native-paper';
 
 import { AppText } from '@/components/common/AppText';
 import { useRTL } from '@/hooks/useRTL';
-import { toArabicNumerals } from '@/utils/zoneUtils';
 
 interface HomeHeaderProps {
-  name: string;
-  subscriberId: number;
+  name: string | null;
   avatarUrl?: string | null;
   onBellPress?: () => void;
   onProfilePress?: () => void;
@@ -19,7 +17,7 @@ interface HomeHeaderProps {
 
 const defaultAvatar = require('../../assets/images/avatar/avatar_1.png');
 
-export function HomeHeader({ name, subscriberId, avatarUrl, onBellPress, onProfilePress, hasNotification = true }: HomeHeaderProps) {
+export function HomeHeader({ name, avatarUrl, onBellPress, onProfilePress, hasNotification = true }: HomeHeaderProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { isRTL, rowDir } = useRTL();
@@ -50,11 +48,6 @@ export function HomeHeader({ name, subscriberId, avatarUrl, onBellPress, onProfi
         <View className="gap-0.5">
           <AppText className="text-[12.5px] leading-[18px] text-app-textSoft">صباح الخير،</AppText>
           <AppText variant="bold" className="text-[16.5px] leading-[22px] text-app-navy">{name}</AppText>
-          <View className="mt-1 self-start rounded-full bg-app-successSoft px-2 py-0.5">
-            <AppText variant="bold" className="text-[11px] leading-2 text-app-primaryDark">
-              رقم المشترك: {toArabicNumerals(subscriberId)}
-            </AppText>
-          </View>
         </View>
       </TouchableOpacity>
 

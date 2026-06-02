@@ -20,18 +20,14 @@ import { currentStreak, daysOnPlan } from '@/utils/statsUtils';
 
 export default function HomeScreen() {
   const theme = useTheme();
-  const { user, initializeUser } = useUserStore();
+  const { user } = useUserStore();
   const { userMeals, todayMeals, initializeUserMeals } = useUserMealsStore();
-  const { meals, initializeMeals, getMealById } = useMealsStore();
+  const { meals, isLoading: mealsLoading, errorMessage: mealsError, initializeMeals, getMealById } = useMealsStore();
   const { pendingRating, initializeRatings, checkPendingRating } = useWeeklyRatingStore();
   const { rowDir, isRTL } = useRTL();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [cardKey, setCardKey] = useState(0);
   const deleteMeal = useUserMealsStore((s) => s.deleteMeal);
-
-  useEffect(() => {
-    if (!user) initializeUser();
-  }, [initializeUser, user]);
 
   useEffect(() => {
     if (!userMeals.length) initializeUserMeals();
@@ -49,22 +45,48 @@ export default function HomeScreen() {
     setIsRefreshing(true);
     setCardKey((k) => k + 1);
     await Promise.all([
-      initializeUser(),
       initializeUserMeals(),
       initializeMeals(),
       initializeRatings(),
     ]);
     setIsRefreshing(false);
-  }, [initializeUser, initializeUserMeals, initializeMeals, initializeRatings]);
+  }, [initializeUserMeals, initializeMeals, initializeRatings]);
 
   useEffect(() => {
     if (userMeals.length) checkPendingRating();
   }, [userMeals, checkPendingRating]);
 
-  if (!user || !meals.length) {
+  if (!user) {
     return (
       <View className="flex-1 items-center justify-center bg-app-background">
         <ActivityIndicator color={theme.colors.primary} size="large" />
+      </View>
+    );
+  }
+
+  if (mealsLoading && !meals.length) {
+    return (
+      <View className="flex-1 items-center justify-center bg-app-background">
+        <ActivityIndicator color={theme.colors.primary} size="large" />
+      </View>
+    );
+  }
+
+  if (mealsError && !meals.length) {
+    return (
+      <View className="flex-1 items-center justify-center bg-app-background" style={{ paddingHorizontal: 32, gap: 16 }}>
+        <AppText variant="bold" style={{ fontSize: 16, color: theme.colors.error, textAlign: 'center' }}>
+          تعذّر تحميل البيانات
+        </AppText>
+        <AppText style={{ fontSize: 13, color: '#64748B', textAlign: 'center', lineHeight: 20 }}>
+          {mealsError}
+        </AppText>
+        <Pressable
+          onPress={() => { void initializeMeals(); }}
+          style={{ marginTop: 8, paddingHorizontal: 24, paddingVertical: 10, borderRadius: 20, backgroundColor: theme.colors.primary }}
+        >
+          <AppText variant="semibold" style={{ fontSize: 14, color: '#fff' }}>إعادة المحاولة</AppText>
+        </Pressable>
       </View>
     );
   }
@@ -77,7 +99,6 @@ export default function HomeScreen() {
     <View className="flex-1 bg-app-background">
       <HomeHeader
         name={user.name}
-        subscriberId={user.subscriber_id}
         avatarUrl={user.avatar_url}
         onProfilePress={() => router.push('/(main)/user-profile')}
       />

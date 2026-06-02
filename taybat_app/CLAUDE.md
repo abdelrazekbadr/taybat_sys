@@ -1,262 +1,269 @@
 # CLAUDE.md — Taybat App
 
-## Project Overview
+**Al-Tayebat** — RTL-first Arabic Expo app · Dr. Diya Al-Awadi's five-zone dietary system.
 
-**Al-Tayebat** is a React Native (Expo) mobile app based on Dr. Diya Al-Awadi's five-zone dietary system for reducing inflammation and restoring biological balance. It is an RTL-first, Arabic-primary application.
-
-**Stack:** React Native 0.81 · Expo 54 · TypeScript (strict) · Zustand · React Native Paper (MD3) · NativeWind v4 · TanStack Query · i18next · react-hook-form + Zod · AsyncStorage
+**Stack:** RN 0.81 · Expo ~54 · TypeScript strict · Zustand ^5 · RN Paper ^5 (MD3) · NativeWind ^4 · react-hook-form + Zod · @supabase/supabase-js ^2 · lucide-react-native · i18next
 
 ---
 
 ## Directory Structure
 
-```
+```text
 taybat_app/
-├── app/                    # Expo Router screens & layouts (UI layer only)
-│   ├── _layout.tsx         # Root layout: fonts, theme, i18n, RTL bootstrap
-│   ├── (auth)/             # Auth group: onboarding, login, etc.
-│   └── index.tsx           # Entry screen
-├── api/                    # API + storage layer (no UI/navigation imports)
-│   ├── client/             # HTTP clients (fetchyClient via axios)
-│   ├── storage/            # AsyncStorage wrapper (storageService, STORAGE_KEYS)
-│   └── template/           # Service templates / examples
-├── components/
-│   └── common/             # Shared UI components (AppText, PrimaryButton, …)
-├── core/constants/         # App-wide constants (colors, etc.)
-├── hooks/                  # Custom React hooks
-├── localization/           # i18next setup, ar.json / en.json translations
-├── shared/lib/             # Internal libraries (Fetchy HTTP client)
-├── stores/                 # Zustand stores
-├── theme/                  # Paper theme builder, tokens, index
-├── utils/                  # Pure helper functions
-└── _docs/kb/               # Domain knowledge base (dietary guide, AI KB)
+├── app/             # Expo Router screens (UI only)
+│   ├── (auth)/      # login, signup, verify-email, reset-password, complete-profile
+│   └── (main)/      # index, select-meal, community, stats, account, user-profile…
+├── api/auth/        # authService — auth + profile orchestration
+├── api/client/      # supabaseClient, fetchyClient (axios)
+├── repositories/    # Interface + Mock + Supabase impls per domain
+├── stores/          # Zustand stores + storeReset.ts
+├── components/      # common/, auth/, home/, account/, community/
+├── hooks/           # useRTL, useThemeMode, useAuthGate
+├── shared/errors/   # AppError hierarchy + toUserMessage()
+├── shared/storage/  # storageService + STORAGE_KEYS
+├── lib/             # createLogger (react-native-logs)
+├── localization/    # i18next, ar.json / en.json
+├── theme/           # buildPaperTheme, tokens
+├── types/           # index.ts (entities), auth.types.ts
+└── utils/           # pure helpers
 ```
 
-**Path alias:** `@/` resolves to the project root (configured in `tsconfig.json`).
+**Alias:** `@/` → root.
 
 ---
 
-## Architectural Layers — Hard Rules
+## Layer Rules
 
 | Layer | Location | Allowed | Forbidden |
-|---|---|---|---|
-| **Screens** | `app/**` | UI rendering, user input, reading store state, calling store actions | Direct Supabase calls, business logic, navigation imports in api/ |
-| **Stores** | `stores/` | Zustand state, async actions, calling services | Direct Supabase calls, UI imports |
-| **Services** | `api/*/` service files | Orchestrate flows, call API modules, map errors | UI logic, navigation imports |
-| **API Modules** | `api/*/` non-service files | Wrap Supabase/HTTP calls with typed functions | UI logic, navigation |
-| **Utils** | `utils/` | Pure functions: formatting, validation, error mapping | Side effects, imports from stores/api |
+| --- | --- | --- | --- |
+| Screens | `app/**` | UI, store reads/actions | Direct Supabase, business logic |
+| Stores | `stores/` | State, async actions, call repos | Direct Supabase, UI imports |
+| Services | `api/*/` | Multi-repo orchestration | UI, navigation |
+| Repositories | `repositories/*/` | Typed data-source wrappers | UI, navigation, business logic |
+| Utils | `utils/` | Pure functions only | Side effects, store/api imports |
+
+**Flow:** Screen → Store → Service (optional) → Repository → Data source
+
+---
+
+## Mock vs Supabase
+
+```text
+EXPO_PUBLIC_USE_MOCK=true    # default — mock, no Supabase needed
+EXPO_PUBLIC_USE_MOCK=false   # production
+```
+
+Each `repositories/[domain]/index.ts` exports a singleton. **Always import the singleton, never the class.**
 
 ---
 
 ## Zustand Store Pattern
 
-Every feature store must follow this exact shape:
-
 ```typescript
-import { create } from 'zustand';
-
-interface FeatureState {
-  data: SomeType | null;
-  isLoading: boolean;
-  errorMessage: string;
-  // setters
-  setFieldName: (value: string) => void;
-  // actions
-  initializeFeature: () => Promise<void>;
-  fetchFeature: () => Promise<void>;
-  submitFeature: () => Promise<boolean>;
-  resetFeature: () => void;
-}
-
-export const useFeatureStore = create<FeatureState>((set, get) => ({
-  data: null,
-  isLoading: false,
-  errorMessage: '',
-
-  setFieldName: (value) => set({ fieldName: value }),
+export const useFeatureStore = create<FeatureState>((set) => ({
+  data: null, isLoading: false, errorMessage: '',
 
   fetchFeature: async () => {
     set({ isLoading: true, errorMessage: '' });
     try {
-      const result = await featureService.fetch();
-      set({ data: result, isLoading: false });
+      set({ data: await featureRepository.getItems(), isLoading: false });
     } catch (error: unknown) {
-      set({
-        errorMessage: error instanceof Error ? error.message : 'Failed to load',
-        isLoading: false,
-      });
+      set({ errorMessage: toUserMessage(error), isLoading: false });
     }
   },
+
+  resetFeature: () => set({ data: null, isLoading: false, errorMessage: '' }),
 }));
 ```
 
-Rules:
-- Never use `any` — use `unknown` for external errors and narrow with `instanceof Error`
-- Keep screens thin: read state + call actions only
-- Persist only what survives app restarts (use `storageService`)
-- Include `reset` action for every store
-- No temporary UI-only state unless unavoidable
+- Never `any` — `unknown` + `toUserMessage(error)` from `@/shared/errors/AppError`
+- Every store needs a `reset` action
+- Cross-store: `useOtherStore.getState().action()` — never import hooks inside another store
+- Full reset: `resetAllAppStores()` from `stores/storeReset.ts`
+
+### Active Stores
+
+| Store | Key state |
+| --- | --- |
+| `useAuthStore` | `status: AuthStatus`, `user: AuthUser\|null` |
+| `useUserStore` | `user: User\|null` |
+| `useAppStore` | `language: 'ar'\|'en'`, `isReady` |
+| `useThemeStore` | `mode: 'light'\|'dark'\|'system'` |
+| `useAccountStore` | draft name, avatarConfig, visibility prefs |
+| `useMealsStore` / `useMealItemsStore` | `meals[]` / `mealItems[]` |
+| `useMealPreferencesStore` | `favoriteMealIds[]` |
+| `useUserMealsStore` | `userMeals[]`, `todayMeals[]` — **max 3/day** |
+| `useCommunityStore` | paginated posts, reactions/follows (optimistic) |
+| `useWeeklyRatingStore` | `ratings[]`, `pendingRating` (true if 7+ days) |
+| `useAuthGateStore` | `isOpen` — drives AuthGateSheet overlay |
 
 ---
 
-## TypeScript Rules
+## Auth Flow
 
-- `strict: true` is enforced — no `any` anywhere
-- Use discriminated unions for state machines (auth, onboarding, request status)
-- Define shared types in dedicated type files (`types/` when created)
-- Handle all async with proper error typing
+`AuthStatus` = `'idle' | 'initializing' | 'authenticated' | 'guest' | 'unauthenticated' | 'loading' | 'error'`
 
----
+Routing in root layout: `initializing/idle` → splash · `unauthenticated/error` → login · `authenticated + !profile_completed` → complete-profile · `authenticated + profile_completed` → main · `guest` → main with auth gate.
 
-## Theme & Styling
-
-### Color tokens (Tailwind — use these in screens)
-
-```
-bg-app-primary        → #10B981 (Emerald)
-bg-app-secondary      → #06B6D4 (Teal)
-bg-app-navy           → #1e293b
-bg-app-background     → #f1f5f9
-bg-app-surface        → #ffffff
-text-app-text         → #1e293b
-text-app-muted        → #475569
-```
-
-**Never hardcode hex colors in screens.** Use `app.*` Tailwind tokens or `theme.colors.*` from `useTheme()`.
-
-### Paper theme (dynamic theming in components)
-
-```typescript
-import { useTheme } from 'react-native-paper';
-const theme = useTheme();
-// Use theme.colors.primary, theme.colors.surface, etc.
-// For StatusBar: theme.dark ? 'light' : 'dark'
-```
-
-### Layout / typography rule
-
-- Use **NativeWind `className`** for layout, spacing, and typography in screens
-- Use **`react-native-paper` components** for interactive UI (Button, TextInput, Card, etc.)
-- Inline `style` only when `className` cannot achieve the result
-
----
-
-## Text & Font Components
-
-Cairo is the only font family. **Always use the shared wrappers** — never use raw `<Text>` or `<TextInput>` from react-native.
-
-```tsx
-import { AppText, AppTextInput } from '@/components/common/AppText';
-
-// Variants: 'regular' | 'semibold' | 'bold'
-<AppText className="text-lg text-app-text">عنوان</AppText>
-<AppText variant="bold" className="text-[32px]">كبير</AppText>
-<AppTextInput variant="semibold" placeholder="..." />
-```
-
-Fonts are loaded once in `app/_layout.tsx` via `useFonts`.
-
----
-
-## RTL-First Development
-
-Arabic is the **default language**. RTL is the primary layout direction.
-
-- `useAppStore((s) => s.language)` gives `'ar' | 'en'`
-- Derive `isRTL = language === 'ar'` and set `text-right` / `text-left` conditionally
-- `AppText` / `AppTextInput` handle `writingDirection` automatically
-- `I18nManager.forceRTL` is applied at bootstrap in `app/_layout.tsx`
-- On Android a reload is triggered when RTL state changes — this is expected
-
----
-
-## Localization
-
-- i18next with `react-i18next` provider
-- Translation files: `localization/translations/ar.json` and `en.json`
-- Use `useTranslation()` hook — never hardcode user-facing strings in screens
-- Arabic is fallback for untranslated keys
-
----
-
-## Storage
-
-All persistence goes through `storageService` — never call `AsyncStorage` directly.
-
-```typescript
-import { storageService } from '@/api/storage/storageService';
-import { STORAGE_KEYS } from '@/api/storage/storageKeys';
-
-await storageService.set(STORAGE_KEYS.LANGUAGE, 'ar');
-const lang = await storageService.getString(STORAGE_KEYS.LANGUAGE);
-```
-
-Add new keys to `STORAGE_KEYS` constant before use.
-
----
-
-## Forms
-
-- `react-hook-form` for all forms with full TypeScript typing
-- `zod` for schema validation (client-side and server payload)
-- Validate before any API call
-- Surface validation errors clearly — never silently swallow
+`plan_start_date` set on `completeProfile()`. Drives days-on-plan and pending-rating logic.
 
 ---
 
 ## Error Handling
 
-- Map all errors to user-friendly messages **at the service layer**
-- Stores expose `errorMessage: string` — screens display it
-- Never expose raw Supabase/network error text to the user
-- Never swallow errors — always set `errorMessage` or throw typed errors
+```typescript
+import { toUserMessage } from '@/shared/errors/AppError';
+set({ errorMessage: toUserMessage(error), isLoading: false });
+```
+
+Classes: `NetworkError` · `InvalidCredentialsError` · `EmailAlreadyUsedError` · `EmailConfirmationRequiredError` · `SessionExpiredError` · `NotFoundError` · `ServerError`. All messages in Arabic — never expose raw Supabase errors.
+
+---
+
+## TypeScript
+
+- `strict: true` — no `any`
+- Discriminated unions for state machines (`AuthStatus`, `ThemeMode`, `ZoneColor`)
+- `meal_item_ids` on `Meal`/`UserMeal` is a **CSV string** — use `.split(',')`
+- Zone encoded in item ID: `id % 1000 === zone`
+
+---
+
+## Theme & Styling
+
+**Tailwind tokens — never hardcode hex:**
+
+```text
+bg-app-primary → #10B981   bg-app-secondary → #06B6D4   bg-app-navy → #1e293b
+bg-app-background → #f1f5f9   bg-app-surface → #fff   text-app-text → #1e293b
+```
+
+**Paper theme:** `const theme = useTheme();` → `theme.colors.primary / .surface / .error` · `theme.dark ? 'light' : 'dark'` for StatusBar.
+
+Rules: NativeWind `className` for layout · RN Paper for interactive UI · inline `style` only when needed · Icons: `lucide-react-native` + `MaterialCommunityIcons`
+
+**Asset icons (`OptionSelector`):** static PNG map lives in `utils/iconSources.ts`. To add a new icon — drop the file in `assets/icons/` and add one entry to `ICON_SOURCES`. Pass the name as a plain string shorthand in `OptionItem.icon`:
+
+```tsx
+// simple name string — resolves via ICON_SOURCES
+{ key: 'male', label: 'ذكر', icon: 'man' }
+
+// full descriptor — needed when tint is required
+{ key: 'dish', label: 'طبق', icon: { kind: 'image', name: 'dish', tint: true } }
+
+// lucide icon
+{ key: 1, label: 'سيء', icon: { kind: 'lucide', Icon: Frown } }
+```
+
+---
+
+## Text & Font
+
+Cairo is the only font. **Never raw `<Text>` or `<TextInput>`.**
+
+```tsx
+import { AppText, AppTextInput } from '@/components/common/AppText';
+// variants: 'regular' | 'semibold' | 'bold'
+<AppText variant="bold" className="text-2xl text-app-text">عنوان</AppText>
+```
+
+**`AppTextInput` does NOT forward refs** — `React.forwardRef` causes runtime crash. Use `returnKeyType` + `onSubmitEditing` instead.
+
+---
+
+## RTL
+
+Use `useRTL` — do not implement platform logic manually:
+
+```typescript
+const { isRTL, rowDir } = useRTL(); // rowDir: 'row' | 'row-reverse'
+<View style={{ flexDirection: rowDir }}>
+  <AppText className={isRTL ? 'text-right' : 'text-left'}>...</AppText>
+</View>
+```
+
+Android: native flip + reload. iOS: native RTL disabled, explicit CSS. `AppText`/`AppTextInput` handle `writingDirection` automatically.
+
+---
+
+## Localization
+
+`const { t } = useTranslation();` — never hardcode strings. Files: `localization/translations/ar.json` + `en.json`. Fallback: English. Switch via `useAppStore.setLanguage()`.
+
+---
+
+## Storage
+
+```typescript
+import { storageService } from '@/shared/storage/storageService';
+import { STORAGE_KEYS } from '@/shared/storage/storageKeys';
+await storageService.set(STORAGE_KEYS.LANGUAGE, 'ar');
+```
+
+Never call `AsyncStorage` directly. Add keys to `STORAGE_KEYS` before use.
+
+---
+
+## Forms
+
+```typescript
+const { control, handleSubmit } = useForm<z.infer<typeof schema>>({ resolver: zodResolver(schema) });
+```
+
+Validate before any API call. Add `accessibilityLabel` + `accessibilityHint` on auth screen inputs.
+
+---
+
+## Auth Button Pattern
+
+Inside `(auth)/` use `Pressable` — **not `<PrimaryButton>`**:
+
+```tsx
+<Pressable onPress={handleSubmit(onSubmit)} disabled={isLoading}
+  style={{ backgroundColor: theme.colors.primary, height: 54, borderRadius: 27,
+           alignItems: 'center', justifyContent: 'center', opacity: isLoading ? 0.7 : 1 }}>
+  {isLoading
+    ? <ActivityIndicator size="small" color="#fff" />
+    : <AppText variant="semibold" className="text-[15.5px] text-white">{t('auth.submit')}</AppText>}
+</Pressable>
+```
+
+---
+
+## Auth Gate & Logging
+
+```typescript
+const { requireAuth } = useAuthGate();
+requireAuth(() => toggleReaction(postId)); // opens sheet if guest
+
+const log = createLogger('feature'); // from @/lib/logger — never console.log
+log.debug('msg'); log.error('fail', err);
+```
 
 ---
 
 ## Commands
 
 ```bash
-npm run start        # Start Expo dev server
-npm run ios          # iOS simulator
-npm run android      # Android emulator
-npm run lint         # ESLint
-npm run typecheck    # tsc --noEmit
-npm run test         # Jest
-npm run format       # Prettier
+npm run start / ios / android
+npm run lint && npm run typecheck   # required before finishing any task
+npm run test / format
 ```
-
-**Before finishing any task:** run `npm run lint` and `npm run typecheck`.
 
 ---
 
-## Environment Variables
-
-Copy `.env.example` to `.env` and fill in:
-```
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-```
-
-Never commit `.env` or expose secrets in logs or code.
-
----
-
-## Domain Context
-
-The app implements Dr. Diya Al-Awadi's **five-zone dietary system**:
+## Domain — Five-Zone System
 
 | Zone | Color | Frequency |
-|---|---|---|
-| Safe Protocol | 🟢 Green | Daily — mandatory for severe cases |
-| Monitored | 🟡 Yellow | Daily with symptom monitoring |
-| Stable Cases | 🟠 Orange | 1–3× per week, boiling required |
-| Healthy/Children | 🟣 Purple | Rarely — forbidden for ill patients |
-| Forbidden | 🔴 Red | Never — even as an ingredient |
+| --- | --- | --- |
+| 1 | 🟢 Safe Protocol | Daily, mandatory for severe cases |
+| 2 | 🟡 Monitored | Daily with symptom monitoring |
+| 3 | 🟠 Stable Cases | 1–3×/week, boiling required |
+| 4 | 🟣 Healthy/Children | Rarely — forbidden for ill patients |
+| 5 | 🔴 Forbidden | Never, even as ingredient |
 
-**Red zone absolute prohibitions:** eggs, chicken, garlic, onion, tomato, legumes, white flour, citrus fruits.
+Zone in item ID: `id % 1000`. Use `dominantZoneFromMealItemIds()` (meals store) for CSV of IDs. Hard limit: **3 meals/day**. Rating pending if 7+ days since `plan_start_date` or last rating.
 
-Domain knowledge files are in `_docs/kb/`:
-- `01_Tayabat_Guide.md` — full Arabic dietary guide
-- `02_Tayabat_AI_KnowledgeBase_AR.md` — AI knowledge base
-- `Tayabat_Meals_Database_v2.json` — meals database
-- `agent_instruction.md` — development instructions
+**Red zone:** eggs · chicken · garlic · onion · tomato · legumes · white flour · citrus.
+
+Domain KB: `_docs/kb/` — dietary guide, AI KB, meals database.

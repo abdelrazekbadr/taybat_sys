@@ -7,8 +7,8 @@ import { useTheme } from 'react-native-paper';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import { AppText } from '@/components/common/AppText';
-import { STORAGE_KEYS } from '@/api/storage/storageKeys';
-import { storageService } from '@/api/storage/storageService';
+import { STORAGE_KEYS } from '@/shared/storage/storageKeys';
+import { storageService } from '@/shared/storage/storageService';
 import { useAppStore } from '@/stores/app.store';
 import slidesJson from '@/data/onboarding/onboardingSlides.json';
 

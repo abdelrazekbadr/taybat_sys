@@ -1,0 +1,2 @@
+- shopping cart feature - reset cart for new  shopping items list 
+- community post >> enable images and images viewer    

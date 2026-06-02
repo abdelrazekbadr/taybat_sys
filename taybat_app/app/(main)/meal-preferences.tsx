@@ -3,10 +3,10 @@ import { ActivityIndicator, Image, Pressable, ScrollView, View } from 'react-nat
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react-native';
 
 import { AppText, AppTextInput } from '@/components/common/AppText';
+import { GradientTabs } from '@/components/common/GradientTabs';
 import { StarRating } from '@/components/common/StarRating';
 import { useAuthGate } from '@/hooks/useAuthGate';
 import { useRTL } from '@/hooks/useRTL';
@@ -44,52 +44,6 @@ const TAB_TYPE_NUM: Record<TabKey, string> = {
   dinner: '3',
 };
 
-function MealTypeTabs(props: { value: TabKey; onChange: (v: TabKey) => void }) {
-  const theme = useTheme();
-  const { rowDir } = useRTL();
-
-  return (
-    <View className="px-[22px] py-3">
-      <View className="self-center" style={{ width: '100%', maxWidth: 380 }}>
-        <View className="flex-row gap-2" style={{ flexDirection: rowDir }}>
-          {TABS.map((t) => {
-            const isActive = t.key === props.value;
-            return (
-              <Pressable
-                key={t.key}
-                onPress={() => props.onChange(t.key)}
-                className="flex-1 overflow-hidden rounded-full"
-                style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
-              >
-                {isActive ? (
-                  <LinearGradient
-                    colors={[theme.colors.secondary, theme.colors.primary]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                    style={{ borderRadius: 999 }}
-                  >
-                    <View className="items-center justify-center rounded-full px-5 py-2.5 shadow-sm shadow-black/10">
-                      <AppText variant="bold" className="text-[13px] leading-5 text-white">
-                        {t.label}
-                      </AppText>
-                    </View>
-                  </LinearGradient>
-                ) : (
-                  <View className="items-center justify-center rounded-full border border-app-lineSoft bg-app-surface px-5 py-2.5">
-                    <AppText variant="bold" className="text-[13px] leading-5 text-app-textSoft">
-                      {t.label}
-                    </AppText>
-                  </View>
-                )}
-              </Pressable>
-            );
-          })}
-        </View>
-      </View>
-    </View>
-  );
-}
-
 function MealCard(props: {
   meal: Meal;
   favorite: boolean;
@@ -103,8 +57,8 @@ function MealCard(props: {
   const zoneMeta = getZoneMeta(props.meal.dominant_zone);
   const imageSource = props.meal.image_url ? { uri: props.meal.image_url } : defaultFoodImage;
   const ingredientsCount =
-    typeof props.meal.meal_item_ids === 'string' && props.meal.meal_item_ids.trim().length > 0
-      ? props.meal.meal_item_ids.split(',').filter(Boolean).length
+    typeof props.meal.meal_item_codes === 'string' && props.meal.meal_item_codes.trim().length > 0
+      ? props.meal.meal_item_codes.split(',').filter(Boolean).length
       : 0;
 
   return (
@@ -163,17 +117,13 @@ export default function MealPreferencesScreen() {
   const { rowDir, isRTL } = useRTL();
   const { requireAuth } = useAuthGate();
 
-  const { user, initializeUser } = useUserStore();
+  const { user } = useUserStore();
   const { meals, initializeMeals } = useMealsStore();
   const { userMeals, initializeUserMeals } = useUserMealsStore();
   const { favoriteMealIds, isLoading, errorMessage, initializePreferences, toggleFavorite } = useMealPreferencesStore();
 
   const [query, setQuery] = useState('');
   const [activeTab, setActiveTab] = useState<TabKey>('breakfast');
-
-  useEffect(() => {
-    if (!user) initializeUser();
-  }, [initializeUser, user]);
 
   useEffect(() => {
     if (!meals.length) initializeMeals();
@@ -257,7 +207,11 @@ export default function MealPreferencesScreen() {
         <View className="w-10" />
       </View>
 
-      <MealTypeTabs value={activeTab} onChange={setActiveTab} />
+      <View className="px-[22px] py-3">
+        <View className="self-center" style={{ width: '100%', maxWidth: 380 }}>
+          <GradientTabs options={TABS} value={activeTab} onChange={setActiveTab} />
+        </View>
+      </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="px-[22px] pb-10">

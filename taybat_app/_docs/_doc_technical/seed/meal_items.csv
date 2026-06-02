@@ -1,0 +1,93 @@
+code,id,name,name_en,description,description_en,category,zone,rating,frequency,notes,image_url,active
+CB01,1,أرز أبيض,White rice,يُطهى بالماء فقط بدون ملح أو ثوم,Cook in water only without salt or garlic,1,1,,daily_basic,,,True
+CB02,3,أرز بالشعيرية,Vermicelli rice,تُحمَّر الشعيرية بالزبدة البلدي أولًا ثم يُضاف الأرز مع الماء,Brown vermicelli in country butter first then add rice with water,1,1,,daily_basic,,,True
+CB03,4,أرز بالمكسرات,Rice with nuts,أرز مطبوخ مع مكسرات طبيعية ضمن الأشكال المسموحة لتقديم الأرز,Rice cooked with natural nuts as one of the permitted forms of serving rice,1,3,,daily_basic,,,True
+CB04,2,أرز بسمتي,Basmati rice,يُطهى بالماء فقط بدون ملح أو ثوم,Cook in water only without salt or garlic,1,1,,daily_basic,,,True
+CB05,8,بطاطا حلوة مشوية,Roasted sweet potato,مشوية بالملح فقط,Roasted with salt only,1,4,,daily_basic,,,True
+CB06,9,بطاطا حلوة مهروسة,Mashed sweet potato,مهروسة بالزبدة البلدي أو السمن,Mashed with country butter or ghee,1,4,,daily_basic,,,True
+CB07,6,بطاطس مسلوقة,Boiled potatoes,مسلوقة بالماء مع الملح فقط,Boiled in water with salt only,1,1,,daily_basic,,,True
+CB08,66,بطاطس مقلية,Fried potatoes,بطاطس طبيعية مقلية أو شيبسي طبيعي محضّر من البطاطس فقط دون إضافات صناعية,Natural fried potatoes or homemade chips from potatoes only without artificial additives,1,1,,daily_basic,,,True
+CB09,7,بطاطس مهروسة,Mashed potatoes,مهروسة بالزبدة البلدي مع الملح فقط,Mashed with country butter and salt only,1,1,,daily_basic,,,True
+CB10,5,توست قمح كامل الحبة,Whole wheat toast,توست قمح كامل الحبة يُفضّل تقديمه مع الزبدة البلدي وبكميات معتدلة,Whole grain wheat toast preferably served with country butter in moderate amounts,1,2,,daily_basic,,,True
+CB11,70,حبات ذرة مشوية,Roasted corn kernels,حبات ذرة طبيعية مشوية بدون نكهات أو إضافات صناعية,Natural roasted corn kernels without artificial flavors or additives,1,3,,weekly,,,True
+CB12,10,فشار ذرة طبيعي,Natural popcorn,ذرة طبيعية بدون ملح صناعي أو نكهات مضافة,Natural corn without artificial salt or added flavors,1,3,,weekly,أسبوعيًا بديلًا عن المخبوزات الصناعية,,True
+MT01,65,شوربة لحم,Meat broth,شوربة لحم طبيعية مطبوخة بالماء والملح وزيت الزيتون فقط,Natural meat broth cooked with water salt and olive oil only,2,3,,weekly,,,True
+MT02,18,كبدة مسلوقة,Boiled liver,كبدة الأنعام (بقر أو ضأن أو إبل) مسلوقة - ليس دجاج,Livestock liver (beef lamb or camel) boiled - not chicken,2,3,,weekly,,,True
+MT03,67,كفتة لحم بقري,Beef kofta,لحم بقري مفروم ومشوي مع الملح وزيت الزيتون فقط,Grilled minced beef with salt and olive oil only,2,3,,weekly,,,True
+MT04,68,كفتة لحم خروف,Lamb kofta,لحم خروف مفروم ومشوي مع الملح وزيت الزيتون فقط,Grilled minced lamb with salt and olive oil only,2,3,,weekly,,,True
+MT05,17,لحم أرانب مسلوق,Boiled rabbit,أرانب مسلوقة بالماء والملح فقط,Rabbit boiled in water with salt only,2,3,,weekly,,,True
+MT06,14,لحم إبل مسلوق,Boiled camel meat,إبل مسلوق جيدًا بالماء والملح فقط,Camel meat well boiled in water with salt only,2,3,,weekly,,,True
+MT07,11,لحم بتلو مسلوق,Boiled beef,مسلوق جيدًا مع الملح وزيت الزيتون فقط,Well boiled with salt and olive oil only,2,3,,weekly,,,True
+MT08,13,لحم ضأن مسلوق,Boiled lamb,مسلوق مع الملح وزيت الزيتون فقط,Boiled with salt and olive oil only,2,3,,weekly,,,True
+MT09,12,لحم ضأن مشوي,Grilled lamb,مشوي مع الملح وزيت الزيتون فقط,Grilled with salt and olive oil only,2,3,,weekly,,,True
+MT10,15,لحم ماعز مسلوق,Boiled goat meat,مسلوق مع الملح والزيت فقط,Boiled with salt and oil only,2,3,,weekly,,,True
+MT11,16,لحم ماعز مشوي,Grilled goat meat,مشوي مع الملح والزيت فقط,Grilled with salt and oil only,2,3,,weekly,,,True
+MT12,19,محشي كوسا وباذنجان وفلفل بالأرز,Stuffed zucchini eggplant and pepper with rice,خضروات مطبوخة ومحشية بالأرز وتُعد من الأصناف المسموحة على فترات متباعدة,Vegetables stuffed with rice cooked in water with salt and oil as an occasionally permitted dish,2,4,,occasionally,مرة شهريًا كحد أقصى - الخضروات مطبوخة محشية فقط,,True
+MT13,82,الممبار المحشي,Stuffed sausage casing,أمعاء الأنعام محشوة باللحم المفروم ومطبوخة بالماء والملح,Livestock intestine casing stuffed with minced meat cooked in water with salt,2,3,,weekly,,,True
+MT14,83,كوارع الأنعام المسلوقة,Boiled livestock trotters,كوارع بقر أو ضأن مسلوقة جيدًا بالماء والملح فقط,Beef or lamb trotters well boiled in water with salt only,2,3,,weekly,,,True
+FS01,22,تونة بحرية طبيعية مشوية,Grilled natural sea tuna,تونة من البحر المفتوح طبيعية مشوية بالملح والزيت,Natural open-ocean tuna grilled with salt and oil,3,3,,weekly,,,True
+FS02,20,سمك سردين بحري مشوي,Grilled sea sardine,سردين من البحر الطبيعي فقط لا من المزارع مشوي بالملح والزيت,Sardine from natural sea only not farms grilled with salt and oil,3,3,,weekly,,,True
+FS03,21,سمك ماكريل بحري مشوي,Grilled sea mackerel,ماكريل من البحر الطبيعي فقط مشوي بالملح والزيت,Mackerel from natural sea only grilled with salt and oil,3,3,,weekly,,,True
+BD01,69,حمام محشي,Stuffed pigeon,حمام طائر محشي بالأرز ومطبوخ بالماء والملح والزيت فقط,Flying pigeon stuffed with rice cooked in water with salt and oil only,4,4,,occasionally,أحيانًا - مرة شهريًا كحد أقصى,,True
+BD02,23,حمام مشوي,Grilled pigeon,حمام طائر يتغذى على الحبوب النظيفة مشوي بالملح والزيت,Flying pigeon feeding on clean grains grilled with salt and oil,4,3,,weekly,,,True
+BD03,24,سمان مشوي,Grilled quail,طائر مهاجر طبيعي مشوي بالملح والزيت,Natural migratory quail bird grilled with salt and oil,4,3,,weekly,,,True
+DF01,25,زبدة بلدي,Country butter,زبدة بلدي طازجة طبيعية,Fresh natural country butter,5,1,,daily_basic,,,True
+DF02,26,سمن بلدي,Country ghee,سمن بلدي طبيعي مصفى,Natural clarified country ghee,5,1,,daily_basic,,,True
+DF03,27,قشطة طبيعية,Natural cream,قشطة طبيعية بلدي,Natural country cream,5,1,,daily_basic,,,True
+DF04,71,سكر طبيعي,Natural sugar,سكر طبيعي بكميات معتدلة لا تتجاوز خمس عشرة ملعقة يومياً,Natural sugar in moderate amounts not exceeding fifteen spoons daily,5,1,,daily_basic,,,True
+CH01,28,جبنة جودة,Gouda cheese,جبن مطبوخ ومخمَّر من الأنواع المسموحة في نظام الطيبات,Cooked fermented cheese from permitted types in Al-Tayebaat system,6,2,,weekly,تُقدَّم دائمًا مع زيتون كالاماتا,,True
+CH02,29,جبنة شيدر,Cheddar cheese,جبن مطبوخ ومخمَّر من الأنواع المسموحة في نظام الطيبات,Cooked fermented cheese from permitted types in Al-Tayebaat system,6,2,,weekly,تُقدَّم دائمًا مع زيتون كالاماتا,,True
+CH03,30,جبنة فلمنك,Edam cheese,جبن مطبوخ ومخمَّر من الأنواع المسموحة في نظام الطيبات,Cooked fermented cheese from permitted types in Al-Tayebaat system,6,2,,weekly,تُقدَّم دائمًا مع زيتون كالاماتا,,True
+CH04,31,جبنة موتزاريلا,Mozzarella cheese,جبن مطبوخ ومخمَّر من الأنواع المسموحة في نظام الطيبات,Cooked fermented cheese from permitted types in Al-Tayebaat system,6,2,,weekly,تُقدَّم دائمًا مع زيتون كالاماتا,,True
+CH05,84,جبنة ريكفورد,Roquefort cheese,جبن مطبوخ ومخمَّر من الأنواع المسموحة في نظام الطيبات,Cooked fermented cheese from permitted types in Al-Tayebaat system,6,2,,weekly,,,True
+CH06,85,جبنة كشكفال,Kashkaval cheese,جبن مطبوخ ومخمَّر من الأنواع المسموحة في نظام الطيبات,Cooked fermented cheese from permitted types in Al-Tayebaat system,6,2,,weekly,,,True
+FR01,39,برقوق طازج,Fresh plums,طازج,Fresh,7,3,,weekly,,,True
+FR02,36,تفاح مقشّر,Peeled apple,يُقشَّر دائمًا قبل الأكل ولا يُؤكل بقشره,Always peeled before eating never with peel,7,4,,weekly,,,True
+FR03,32,تمر,Dates,سبع تمرات على الريق,Seven dates on empty stomach,7,1,,daily,,,True
+FR04,41,تين طازج,Fresh figs,تين طازج طبيعي,Fresh natural figs,7,3,,weekly,,,True
+FR05,35,رمان طازج,Fresh pomegranate,طازج بدون بذور,Fresh without seeds,7,3,,weekly,,,True
+FR06,42,زبيب,Raisins,فاكهة مجففة طبيعية بكميات معتدلة,Natural dried fruit in moderate amounts,7,3,,weekly,,,True
+FR07,43,عصير جوافة معلب طبيعي,Natural canned guava juice,عصير جوافة معلب طبيعي ضمن العصائر المعلبة المسموحة ويُتجنب العصير الطازج المعصور,Natural canned guava juice among permitted canned juices fresh squeezed juice is to be avoided,7,3,,weekly,,,True
+FR08,34,عنب أسود,Black grapes,الأسود مفضَّل ثم الأحمر ثم الأخضر,Black preferred then red then green,7,3,,weekly,,,True
+FR09,37,فراولة طازجة,Fresh strawberries,طازجة بكميات معتدلة,Fresh in moderate amounts,7,3,,weekly,,,True
+FR10,38,كرز طازج,Fresh cherries,طازج,Fresh,7,3,,weekly,,,True
+FR11,40,مشمش طازج,Fresh apricots,طازج,Fresh,7,3,,weekly,,,True
+FR12,33,موز,Banana,طازج بكميات معتدلة,Fresh in moderate amounts,7,3,,weekly,,,True
+FR13,86,عصير عنب معلب طبيعي,Natural canned grape juice,عصير عنب معلب طبيعي ضمن العصائر المعلبة المسموحة ويُتجنب العصير الطازج المعصور,Natural canned grape juice among permitted canned juices fresh squeezed juice is to be avoided,7,3,,weekly,,,True
+FR14,87,عصير كريز معلب طبيعي,Natural canned cherry juice,عصير كريز معلب طبيعي ضمن العصائر المعلبة المسموحة ويُتجنب العصير الطازج المعصور,Natural canned cherry juice among permitted canned juices fresh squeezed juice is to be avoided,7,3,,weekly,,,True
+FR15,88,عصير توت معلب طبيعي,Natural canned mulberry juice,عصير توت معلب طبيعي ضمن العصائر المعلبة المسموحة ويُتجنب العصير الطازج المعصور,Natural canned mulberry juice among permitted canned juices fresh squeezed juice is to be avoided,7,3,,weekly,,,True
+FR16,89,قمر الدين المعلب,Canned apricot nectar,قمر الدين طبيعي معلب ضمن العصائر المعلبة المسموحة ويُتجنب العصير الطازج المعصور,Natural canned apricot nectar among permitted canned juices fresh squeezed juice is to be avoided,7,3,,weekly,,,True
+FR17,90,جوافة طازجة بدون بذر,Fresh seedless guava,جوافة طازجة تُؤكل بدون بذور,Fresh guava eaten without seeds,7,4,,occasionally,,,True
+FR18,91,توت مجفف,Dried mulberries,توت مجفف طبيعي بكميات معتدلة,Natural dried mulberries in moderate amounts,7,3,,weekly,,,True
+FR19,92,تين مجفف,Dried figs,تين مجفف طبيعي بكميات معتدلة,Natural dried figs in moderate amounts,7,3,,weekly,,,True
+NT01,47,عين الجمل,Walnuts,عين الجمل طبيعية نيئة,Raw natural walnuts,8,3,,weekly,,,True
+NT02,46,فستق,Pistachios,فستق طبيعي نيئ,Raw natural pistachios,8,3,,weekly,,,True
+NT03,48,فول سوداني,Peanuts,فول سوداني طبيعي نيئ,Raw natural peanuts,8,3,,weekly,,,True
+NT04,45,كاجو,Cashews,كاجو طبيعي نيئ,Raw natural cashews,8,3,,weekly,,,True
+NT05,44,لوز,Almonds,لوز طبيعي نيئ,Raw natural almonds,8,4,,weekly,,,True
+SW01,55,حلاوة طحينية غامقة,Dark tahini halva,طحينة سمسم طبيعية غامقة بدون إضافات,Natural dark sesame tahini without additives,9,3,,weekly,,,True
+SW02,56,شوكولاتة داكنة 70%,Dark chocolate 70%+,نسبة كاكاو 70% أو أكثر,70% cocoa content or more,9,2,,occasionally,مرة شهريًا كحد أقصى,,True
+SW03,50,عسل أسود (دبس),Black honey (molasses),دبس قصب السكر الطبيعي الداكن,Natural dark sugarcane molasses,9,3,,weekly,,,True
+SW04,49,عسل طبيعي,Natural honey,ملعقة على الريق يوميًا,A spoon on empty stomach daily,9,2,,daily,,,True
+SW05,52,مربى تين طبيعية,Natural fig jam,مربى طبيعية بدون إضافات أو حافظات,Natural jam without additives or preservatives,9,4,,weekly,,,True
+SW06,54,مربى فراولة طبيعية,Natural strawberry jam,مربى طبيعية بدون إضافات أو حافظات,Natural jam without additives or preservatives,9,4,,weekly,,,True
+SW07,53,مربى مشمش طبيعية,Natural apricot jam,مربى طبيعية بدون إضافات أو حافظات,Natural jam without additives or preservatives,9,4,,weekly,,,True
+SW08,51,نوتيلا,Nutella,مسموحة ضمن النظام في وجبتي الصباح والمساء فقط وبكميات معتدلة,Permitted in the system for breakfast and evening meals only in moderate amounts,9,2,,daily,,,True
+SW09,72,شمع العسل,Honeycomb,شمع عسل طبيعي يُؤكل كما هو أو يُمضغ,Natural honeycomb eaten as is or chewed,9,3,,weekly,,,True
+SW10,73,غذاء ملكات النحل,Royal jelly,غذاء ملكات النحل الطبيعي بكميات صغيرة,Natural royal jelly in small amounts,9,3,,weekly,,,True
+SW11,74,حبوب اللقاح الطبيعية,Natural bee pollen,حبوب لقاح طبيعية تُستخدم بكميات صغيرة,Natural bee pollen used in small amounts,9,3,,weekly,,,True
+SW12,75,اللبان الذكر (الكُندر),Frankincense (Boswellia),يُنقع في الماء ويُشرب أو يُمضغ مباشرة,Soaked in water and drunk or chewed directly,9,3,,weekly,,,True
+SW13,76,المستكة اليونانية,Greek mastic,تُنقع مع زبدة جوز الهند وتُؤخذ على الريق,Soaked with coconut butter and taken on empty stomach,9,3,,weekly,,,True
+SW14,77,حلاوة المولد (نوجا),Nougat halva,حلاوة مولد طبيعية من السمسم والعسل بدون إضافات صناعية,Natural nougat from sesame and honey without artificial additives,9,3,,weekly,,,True
+OL01,57,زيتون كالاماتا,Kalamata olives,زيتون مخلل طبيعي يوناني الأصل,Natural pickled Greek Kalamata olives,10,3,,weekly,يُقدَّم دائمًا مع الأجبان المطبوخة,,True
+DR01,58,شاي أخضر,Green tea,شاي أخضر طبيعي غير مخمر,Natural unfermented green tea,11,3,,weekly,,,True
+DR02,59,قهوة تركية,Turkish coffee,من مصدر مضمون الجودة,From a quality-guaranteed source,11,2,,daily,,,True
+DR03,60,ماء دافئ,Warm water,على الريق صباحًا قبل أي شيء يوميًا,On empty stomach every morning before anything daily,11,1,,daily_basic,,,True
+HB01,61,شاي زعتر,Thyme tea,يُشرب دافئًا بعد الأكل,Served warm after meals,12,3,,weekly,أسبوعيًا بعد الوجبات,,True
+HB02,62,كراوية دافئة,Warm caraway tea,يُشرب دافئًا بعد الأكل,Served warm after meals,12,3,,weekly,أسبوعيًا بعد الوجبات,,True
+HB03,63,ينسون دافئ,Warm anise tea,يُشرب دافئًا بعد الأكل,Served warm after meals,12,3,,weekly,أسبوعيًا بعد الوجبات,,True
+HB04,78,كمون دافئ,Warm cumin tea,يُشرب دافئًا بعد الأكل,Served warm after meals,12,3,,weekly,أسبوعيًا بعد الوجبات,,True
+OI01,64,زيت زيتون,Olive oil,بكر ممتاز للسلطة والرش على الطعام ولا يُستخدم للقلي العميق,Extra virgin for salads and drizzling not for deep frying,13,1,,daily_basic,,,True
+OI02,79,زيت الذرة وعباد الشمس,Corn and sunflower oil,زيت طبيعي يُستخدم للقلي بدلًا من الزيوت الصناعية,Natural oil used for frying as an alternative to artificial oils,13,1,,daily,,,True
+OI03,80,خل قصب السكر الطبيعي,Natural sugarcane vinegar,كوب ماء مع ملعقة خل قصب السكر الطبيعي بعد الوجبات,A cup of water with a spoon of natural sugarcane vinegar after meals,13,3,,weekly,,,True
+OI04,81,خل التفاح الطبيعي,Natural apple cider vinegar,خل تفاح طبيعي غير مبستر يُستخدم بعد الوجبات,Unpasteurized natural apple cider vinegar used after meals,13,3,,weekly,,,True

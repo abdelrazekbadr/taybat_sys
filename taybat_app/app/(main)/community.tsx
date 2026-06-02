@@ -1,22 +1,26 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { FlatList, Pressable, View } from 'react-native';
+import { FlatList, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ActivityIndicator, useTheme } from 'react-native-paper';
+import { ActivityIndicator } from 'react-native-paper';
 
 import { CommunityStatsTab } from '@/components/community/CommunityStatsTab';
 import { EmptyFeed } from '@/components/community/EmptyFeed';
 import { PostCard } from '@/components/community/PostCard';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { AppText } from '@/components/common/AppText';
+import { GradientTabs } from '@/components/common/GradientTabs';
 import { useRTL } from '@/hooks/useRTL';
 import { useCommunityStore } from '@/stores/community.store';
 import { useUserStore } from '@/stores/user.store';
 
 type CommunityTab = 'posts' | 'stats';
 
+const COMMUNITY_TABS = [
+  { key: 'posts', label: 'المنشورات' },
+  { key: 'stats', label: 'لوحة المعلومات' },
+] as const;
+
 export default function CommunityScreen() {
-  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { rowDir } = useRTL();
 
@@ -40,48 +44,8 @@ export default function CommunityScreen() {
           <View className="w-11" />
         </View>
 
-        <View className="mt-4 flex-row justify-center gap-3" style={{ flexDirection: rowDir }}>
-          <Pressable onPress={() => setActiveTab('posts')} style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}>
-            {activeTab === 'posts' ? (
-              <LinearGradient
-                colors={[theme.colors.primary, theme.colors.secondary]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ paddingHorizontal: 18, paddingVertical: 10, borderRadius: 999 }}
-              >
-                <AppText variant="bold" className="text-[13px] text-white">
-                  المنشورات
-                </AppText>
-              </LinearGradient>
-            ) : (
-              <View className="rounded-full border border-app-lineSoft bg-app-surface px-[18px] py-[10px]">
-                <AppText variant="bold" className="text-[13px] text-app-textMuted">
-                  المنشورات
-                </AppText>
-              </View>
-            )}
-          </Pressable>
-
-          <Pressable onPress={() => setActiveTab('stats')} style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}>
-            {activeTab === 'stats' ? (
-              <LinearGradient
-                colors={[theme.colors.primary, theme.colors.secondary]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={{ paddingHorizontal: 18, paddingVertical: 10, borderRadius: 999 }}
-              >
-                <AppText variant="bold" className="text-[13px] text-white">
-                  لوحة المعلومات
-                </AppText>
-              </LinearGradient>
-            ) : (
-              <View className="rounded-full border border-app-lineSoft bg-app-surface px-[18px] py-[10px]">
-                <AppText variant="bold" className="text-[13px] text-app-textMuted">
-                  لوحة المعلومات
-                </AppText>
-              </View>
-            )}
-          </Pressable>
+        <View className="mt-4">
+          <GradientTabs options={COMMUNITY_TABS} value={activeTab} onChange={setActiveTab} />
         </View>
       </View>
 
@@ -120,7 +84,7 @@ export default function CommunityScreen() {
             ) : null
           }
           renderItem={({ item }) => {
-            const isFollowable = item.user_id !== 0 && item.user_id !== (user?.id ?? -1);
+            const isFollowable = item.user_id !== 'system' && item.user_id !== (user?.id ?? '');
             return (
               <PostCard
                 post={item}
@@ -147,4 +111,3 @@ export default function CommunityScreen() {
     </View>
   );
 }
-

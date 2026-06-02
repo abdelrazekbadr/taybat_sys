@@ -8,16 +8,13 @@ import { Check, Pencil, User, X } from 'lucide-react-native';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { AppText, AppTextInput } from '@/components/common/AppText';
 import { AvatarPickerSheet } from '@/components/account/AvatarPickerSheet';
-import { SegmentedToggle } from '@/components/account/SegmentedToggle';
 import { SettingsRow } from '@/components/account/SettingsRow';
 import { useRTL } from '@/hooks/useRTL';
 import { useAccountStore } from '@/stores/account.store';
 import { useAuthStore } from '@/stores/auth.store';
-import { useAppStore } from '@/stores/app.store';
 import { useMealPreferencesStore } from '@/stores/mealPreferences.store';
-import { useThemeStore } from '@/stores/theme.store';
 import { useUserStore } from '@/stores/user.store';
-import type { AvatarConfig, FollowPermission, PostVisibility } from '@/types';
+import type { AvatarConfig } from '@/types';
 import { daysOnPlan } from '@/utils/statsUtils';
 import { toArabicNumerals } from '@/utils/zoneUtils';
 
@@ -56,16 +53,12 @@ export default function AccountScreen() {
   const insets = useSafeAreaInsets();
   const { rowDir } = useRTL();
 
-  const { user, initializeUser } = useUserStore();
-  const { language, setLanguage } = useAppStore();
-  const { mode, setMode } = useThemeStore();
+  const { user } = useUserStore();
 
   const {
     isEditingName,
     draftName,
     avatarConfig,
-    postVisibility,
-    followPermission,
     isLoading,
     isSaving,
     errorMessage,
@@ -75,8 +68,6 @@ export default function AccountScreen() {
     cancelEditName,
     confirmEditName,
     updateAvatar,
-    updatePostVisibility,
-    updateFollowPermission,
     logout,
   } = useAccountStore();
 
@@ -85,12 +76,6 @@ export default function AccountScreen() {
   const { favoriteMealIds, initializePreferences } = useMealPreferencesStore();
 
   const [avatarPickerVisible, setAvatarPickerVisible] = useState(false);
-
-  useEffect(() => {
-    if (!user) {
-      initializeUser();
-    }
-  }, [initializeUser, user]);
 
   useEffect(() => {
     initializeAccount();
@@ -113,7 +98,7 @@ export default function AccountScreen() {
   const dayNumber = daysOnPlan(user.plan_start_date);
   const journeyDaysLabel = `${toArabicNumerals(dayNumber)} يوم`;
   const resolvedAvatar = (avatarConfig ?? user.avatar_config) as AvatarConfig | null;
-  const avatarLabel = resolvedAvatar?.type === 'emoji' ? resolvedAvatar.value : firstLetter(user.name);
+  const avatarLabel = resolvedAvatar?.type === 'emoji' ? resolvedAvatar.value : firstLetter(user.name ?? '');
   const avatarBg = resolvedAvatar?.type === 'letter' && resolvedAvatar.color ? resolvedAvatar.color : theme.colors.surfaceVariant;
 
   return (
@@ -362,7 +347,7 @@ export default function AccountScreen() {
 
       <AvatarPickerSheet
         visible={avatarPickerVisible}
-        name={user.name}
+        name={user.name ?? ''}
         value={resolvedAvatar}
         onDismiss={() => setAvatarPickerVisible(false)}
         onSelect={async (config) => {

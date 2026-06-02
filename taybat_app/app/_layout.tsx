@@ -13,12 +13,15 @@ import { useFonts } from 'expo-font';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import i18n from '@/localization/i18n';
+import { createLogger } from '@/lib/logger';
 import { useAppStore } from '@/stores/app.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { useThemeStore } from '@/stores/theme.store';
 import { buildNavigationTheme, buildPaperTheme } from '@/theme';
 import './_nativewind-interop';
 import './global.css';
+
+const log = createLogger('Layout');
 
 // iOS: all RTL is handled via explicit JS styles (row-reverse, textAlign).
 // Disable native RTL flip so it never conflicts with those explicit overrides.
@@ -118,7 +121,11 @@ export default function RootLayout() {
   }, [fontsLoaded, isBootstrapped, isLangReady]);
 
   React.useEffect(() => {
+    const { user } = useAuthStore.getState();
+    log.debug('[Layout] guard fired — authStatus:', authStatus, '| segments:', segments.join('/'), '| profile_completed:', user?.profile_completed ?? 'no-user');
+
     if (authStatus === 'initializing' || authStatus === 'idle' || authStatus === 'loading') {
+      log.debug('[Layout] guard: skipping (transient status)');
       return;
     }
 
@@ -127,8 +134,16 @@ export default function RootLayout() {
     const isAccessible = authStatus === 'authenticated' || authStatus === 'guest';
 
     if (isAccessible && inAuth) {
+      const isOnCompleteProfile = segments[1] === 'complete-profile';
+      log.debug('[Layout] guard: isAccessible+inAuth | isOnCompleteProfile:', isOnCompleteProfile, '| profile_completed:', user?.profile_completed);
+      if (isOnCompleteProfile && user !== null) {
+        log.debug('[Layout] guard: staying on complete-profile');
+        return;
+      }
+      log.debug('[Layout] guard: navigating to /(main)');
       router.replace('/(main)' as never);
     } else if (!isAccessible && inMain) {
+      log.debug('[Layout] guard: navigating to login');
       router.replace('/(auth)/login' as never);
     }
   }, [authStatus, segments]);

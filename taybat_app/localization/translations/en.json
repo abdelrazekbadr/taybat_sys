@@ -77,7 +77,10 @@
       "gender": "Gender",
       "male": "Male",
       "female": "Female",
-      "birthYear": "Birth year",
+      "birthDate": "Date of birth",
+      "birthYear": "Year",
+      "birthMonth": "Month",
+      "birthDay": "Day",
       "weight": "Weight (kg)",
       "height": "Height (cm)",
       "activityLevel": "Activity level",
@@ -95,7 +98,17 @@
       "skip": "Skip for now",
       "save": "Save & continue",
       "next": "Next",
-      "back": "Back"
+      "back": "Previous"
+    },
+    "verifyEmail": {
+      "title": "Verify your email",
+      "body": "We sent a 6-digit code to",
+      "hint": "Enter the 6-digit verification code",
+      "submit": "Verify",
+      "resend": "Resend code",
+      "resendIn": "Resend in",
+      "resentMessage": "A new code was sent. Check your inbox.",
+      "backToLogin": "Back to login"
     },
     "reset": {
       "title": "Reset password",

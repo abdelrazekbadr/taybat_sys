@@ -1,18 +1,14 @@
 import React from 'react';
-import { Pressable, View } from 'react-native';
+import { NativeModules, Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
+import { ChevronDown } from 'lucide-react-native';
 
 import { AppText, AppTextInput } from '@/components/common/AppText';
-import { ChipSelector } from '@/components/common/ChipSelector';
-import { SelectionModal } from '@/components/common/SelectionModal';
+import { OptionSelector, type OptionItem } from '@/components/common/OptionSelector';
 import { useRTL } from '@/hooks/useRTL';
 import type { Gender } from '@/types';
-
-const birthYearOptions = Array.from({ length: 70 }).map((_, idx) => {
-  const year = new Date().getFullYear() - (idx + 12);
-  return { value: year, label: String(year) };
-});
+import { SelectionModal } from '@/components/common/SelectionModal';
 
 export function ProfileStepBasic(props: {
   name: string;
@@ -20,72 +16,250 @@ export function ProfileStepBasic(props: {
   nameError?: string;
   gender: Gender | undefined;
   onChangeGender: (v: Gender) => void;
+  genderError?: string;
   birthYear: number | undefined;
   onChangeBirthYear: (v: number) => void;
+  birthMonth: number | undefined;
+  onChangeBirthMonth: (v: number) => void;
+  birthDay: number | undefined;
+  onChangeBirthDay: (v: number) => void;
+  birthDateError?: string;
   disabled?: boolean;
 }) {
   const { t } = useTranslation();
   const theme = useTheme();
   const { rowDir } = useRTL();
+  const [dobOpen, setDobOpen] = React.useState(false);
   const [yearOpen, setYearOpen] = React.useState(false);
+  const [monthOpen, setMonthOpen] = React.useState(false);
+  const [dayOpen, setDayOpen] = React.useState(false);
+  const [nameFocused, setNameFocused] = React.useState(false);
+
+  const DatePickerComponent = React.useMemo(() => {
+    try {
+      if (!NativeModules.RNDatePicker) return null;
+      return require('react-native-date-picker').default as React.ComponentType<{
+        modal?: boolean;
+        open: boolean;
+        date: Date;
+        mode?: 'date';
+        maximumDate?: Date;
+        onConfirm: (date: Date) => void;
+        onCancel: () => void;
+      }>;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const genderOptions: OptionItem<Gender>[] = [
+    { key: 'male', label: t('auth.completeProfile.male'), icon: 'man' },
+    { key: 'female', label: t('auth.completeProfile.female'), icon: 'woman' },
+  ];
+
+  const surfaceVariant = theme.colors.surfaceVariant ?? theme.colors.surface;
+  const outline = theme.colors.outlineVariant ?? theme.colors.outline;
+  const labelColor = theme.colors.onSurfaceVariant ?? theme.colors.onSurface;
+
+  const nameBorderColor = props.nameError
+    ? theme.colors.error
+    : nameFocused
+    ? theme.colors.primary
+    : outline;
+
+  const selectedDob =
+    typeof props.birthYear === 'number' && typeof props.birthMonth === 'number' && typeof props.birthDay === 'number'
+      ? new Date(props.birthYear, props.birthMonth - 1, props.birthDay)
+      : new Date(2000, 0, 1);
+
+  const dobLabel =
+    typeof props.birthYear === 'number' && typeof props.birthMonth === 'number' && typeof props.birthDay === 'number'
+      ? `${String(props.birthDay).padStart(2, '0')}/${String(props.birthMonth).padStart(2, '0')}/${props.birthYear}`
+      : t('auth.completeProfile.select');
+
+  const yearOptions = React.useMemo(() => {
+    return Array.from({ length: 95 }).map((_, idx) => {
+      const year = new Date().getFullYear() - (idx + 8);
+      return { value: year, label: String(year) };
+    });
+  }, []);
+
+  const monthOptions = React.useMemo(() => {
+    return Array.from({ length: 12 }).map((_, idx) => {
+      const value = idx + 1;
+      return { value, label: String(value) };
+    });
+  }, []);
+
+  const dayOptions = React.useMemo(() => {
+    const y = props.birthYear;
+    const m = props.birthMonth;
+    const maxDays =
+      typeof y === 'number' && typeof m === 'number'
+        ? new Date(y, m, 0).getDate()
+        : 31;
+    return Array.from({ length: maxDays }).map((_, idx) => {
+      const value = idx + 1;
+      return { value, label: String(value) };
+    });
+  }, [props.birthMonth, props.birthYear]);
 
   return (
-    <View className="gap-5">
-      <View className="gap-1">
-        <AppText className="text-[13px] text-app-textMuted">{t('auth.completeProfile.name')}</AppText>
-        <AppTextInput
-          value={props.name}
-          onChangeText={props.onChangeName}
-          placeholder={t('auth.completeProfile.name')}
-          className="rounded-[14px] border border-app-lineSoft bg-app-surface px-4 py-3 text-[14px] text-app-text"
-          editable={!props.disabled}
-          returnKeyType="done"
-        />
+    <View style={{ gap: 20 }}>
+
+      {/* ── Name ── */}
+      <View style={{ gap: 6 }}>
+        <AppText variant="semibold" style={{ fontSize: 13, color: labelColor }}>
+          {t('auth.completeProfile.name')}
+        </AppText>
+        <View
+          style={{
+            height: 52,
+            borderRadius: 26,
+            borderWidth: 1.5,
+            borderColor: nameBorderColor,
+            backgroundColor: surfaceVariant,
+            flexDirection: rowDir,
+            alignItems: 'center',
+            paddingHorizontal: 18,
+          }}
+        >
+          <AppTextInput
+            value={props.name}
+            onChangeText={props.onChangeName}
+            onFocus={() => setNameFocused(true)}
+            onBlur={() => setNameFocused(false)}
+            placeholder={t('auth.completeProfile.name')}
+            placeholderTextColor={labelColor}
+            editable={!props.disabled}
+            returnKeyType="done"
+            style={{ flex: 1, height: '100%', fontSize: 14, color: theme.colors.onSurface }}
+          />
+        </View>
         {props.nameError ? (
-          <AppText className="text-[12px]" style={{ color: theme.colors.error }}>
+          <AppText style={{ fontSize: 12, marginStart: 8, color: theme.colors.error }}>
             {props.nameError}
           </AppText>
         ) : null}
       </View>
 
-      <View className="gap-2">
-        <AppText className="text-[13px] text-app-textMuted">{t('auth.completeProfile.gender')}</AppText>
-        <ChipSelector
-          options={[
-            { key: 'male', label: t('auth.completeProfile.male') },
-            { key: 'female', label: t('auth.completeProfile.female') },
-          ]}
+      {/* ── Gender — large cards ── */}
+      <View style={{ gap: 8 }}>
+        <AppText variant="semibold" style={{ fontSize: 13, color: labelColor }}>
+          {t('auth.completeProfile.gender')}
+        </AppText>
+        <OptionSelector
+          mode="single"
+          layout="iconTop"
+          variant="soft"
+          options={genderOptions}
           value={props.gender ?? null}
-          onChange={(v) => props.onChangeGender(v as Gender)}
+          onChange={props.onChangeGender}
+          disabled={props.disabled}
+          iconSize={26}
+          wrapperClassName="flex-row gap-3"
+          itemClassName="flex-1"
         />
+        {props.genderError ? (
+          <AppText style={{ fontSize: 12, marginStart: 8, color: theme.colors.error }}>
+            {props.genderError}
+          </AppText>
+        ) : null}
       </View>
 
-      <View className="gap-2">
-        <AppText className="text-[13px] text-app-textMuted">{t('auth.completeProfile.birthYear')}</AppText>
+      {/* ── Date of Birth (Year / Month / Day) ── */}
+      <View style={{ gap: 8 }}>
+        <AppText variant="semibold" style={{ fontSize: 13, color: labelColor }}>
+          {t('auth.completeProfile.birthDate')}
+        </AppText>
+
         <Pressable
-          onPress={() => setYearOpen(true)}
+          onPress={() => {
+            if (DatePickerComponent) {
+              setDobOpen(true);
+              return;
+            }
+            setYearOpen(true);
+          }}
           disabled={props.disabled}
-          className="rounded-[14px] border border-app-lineSoft bg-app-surface px-4 py-3"
-          style={({ pressed }) => [{ opacity: props.disabled ? 0.6 : pressed ? 0.9 : 1, flexDirection: rowDir }]}
+          style={({ pressed }) => ({
+            height: 52,
+            borderRadius: 20,
+            borderWidth: 1.5,
+            borderColor: props.birthDateError ? theme.colors.error : outline,
+            backgroundColor: surfaceVariant,
+            flexDirection: rowDir,
+            alignItems: 'center',
+            paddingHorizontal: 14,
+            opacity: pressed ? 0.85 : 1,
+          })}
         >
-          <AppText className="text-[14px] text-app-text">
-            {props.birthYear ? String(props.birthYear) : t('auth.completeProfile.select')}
+          <AppText style={{ flex: 1, fontSize: 14, color: dobLabel === t('auth.completeProfile.select') ? labelColor : theme.colors.onSurface }}>
+            {dobLabel}
           </AppText>
+          <ChevronDown size={16} color={labelColor} strokeWidth={1.5} />
         </Pressable>
+        {props.birthDateError ? (
+          <AppText style={{ fontSize: 12, marginStart: 8, color: theme.colors.error }}>
+            {props.birthDateError}
+          </AppText>
+        ) : null}
       </View>
+
+      {DatePickerComponent ? (
+        <DatePickerComponent
+          modal
+          open={dobOpen}
+          date={selectedDob}
+          mode="date"
+          maximumDate={new Date()}
+          onConfirm={(date) => {
+            props.onChangeBirthYear(date.getFullYear());
+            props.onChangeBirthMonth(date.getMonth() + 1);
+            props.onChangeBirthDay(date.getDate());
+            setDobOpen(false);
+          }}
+          onCancel={() => setDobOpen(false)}
+        />
+      ) : null}
 
       <SelectionModal
         visible={yearOpen}
         title={t('auth.completeProfile.birthYear')}
-        options={birthYearOptions}
+        options={yearOptions}
         selectedValue={props.birthYear ?? null}
         onDismiss={() => setYearOpen(false)}
         onSelect={(value) => {
           props.onChangeBirthYear(value);
           setYearOpen(false);
+          setMonthOpen(true);
+        }}
+      />
+
+      <SelectionModal
+        visible={monthOpen}
+        title={t('auth.completeProfile.birthMonth')}
+        options={monthOptions}
+        selectedValue={props.birthMonth ?? null}
+        onDismiss={() => setMonthOpen(false)}
+        onSelect={(value) => {
+          props.onChangeBirthMonth(value);
+          setMonthOpen(false);
+          setDayOpen(true);
+        }}
+      />
+
+      <SelectionModal
+        visible={dayOpen}
+        title={t('auth.completeProfile.birthDay')}
+        options={dayOptions}
+        selectedValue={props.birthDay ?? null}
+        onDismiss={() => setDayOpen(false)}
+        onSelect={(value) => {
+          props.onChangeBirthDay(value);
+          setDayOpen(false);
         }}
       />
     </View>
   );
 }
-

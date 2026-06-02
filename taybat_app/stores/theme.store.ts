@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
-import { STORAGE_KEYS } from '@/api/storage/storageKeys';
-import { storageService } from '@/api/storage/storageService';
+import { STORAGE_KEYS } from '@/shared/storage/storageKeys';
+import { storageService } from '@/shared/storage/storageService';
 import type { ThemeMode } from '@/theme';
 
 interface ThemeState {
@@ -14,7 +14,7 @@ interface ThemeState {
 }
 
 const initialState = {
-  mode: 'light' as ThemeMode,//system
+  mode: 'light' as ThemeMode,
   isLoading: false,
   errorMessage: '',
 };
@@ -27,9 +27,7 @@ export const useThemeStore = create<ThemeState>((set) => ({
     try {
       await storageService.set(STORAGE_KEYS.THEME_MODE, mode);
     } catch (error: unknown) {
-      set({
-        errorMessage: error instanceof Error ? error.message : 'Failed to save theme setting',
-      });
+      set({ errorMessage: error instanceof Error ? error.message : 'Failed to save theme setting' });
     }
   },
 
@@ -38,15 +36,10 @@ export const useThemeStore = create<ThemeState>((set) => ({
     try {
       const savedMode = await storageService.getString(STORAGE_KEYS.THEME_MODE);
       const mode: ThemeMode =
-        savedMode === 'light' || savedMode === 'dark' || savedMode === 'system'
-          ? savedMode
-          : 'light';
+        savedMode === 'light' || savedMode === 'dark' || savedMode === 'system' ? savedMode : 'light';
       set({ mode, isLoading: false });
     } catch (error: unknown) {
-      set({
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'Failed to load theme settings',
-      });
+      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'Failed to load theme settings' });
     }
   },
 

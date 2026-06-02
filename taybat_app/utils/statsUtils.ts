@@ -1,6 +1,7 @@
 import type { UserMeal, WeeklyRating } from '@/types';
 
-export const daysOnPlan = (planStartDate: string): number => {
+export const daysOnPlan = (planStartDate: string | null | undefined): number => {
+  if (!planStartDate) return 0;
   const start = new Date(planStartDate).getTime();
   const now = Date.now();
   return Math.max(0, Math.floor((now - start) / 86_400_000));
