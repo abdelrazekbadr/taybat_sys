@@ -11,6 +11,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { ServerError } from '@/shared/errors/AppError';
 import type { UserMeal } from '@/types';
+import { localDateISO } from '@/utils/dateUtils';
 import type { CreateUserMealPayload, ITrackingRepository } from './ITrackingRepository';
 
 export class TrackingRepositorySupabase implements ITrackingRepository {
@@ -38,16 +39,17 @@ export class TrackingRepositorySupabase implements ITrackingRepository {
   }
 
   async logMeal(payload: CreateUserMealPayload): Promise<UserMeal> {
-    const now = new Date().toISOString();
+    const now = new Date();
     const { data, error } = await this.client
       .from('user_meals')
       .insert({
         user_id: payload.userId,
         meal_id: payload.mealId,
         meal_item_codes: payload.mealItemCodes,
-        datetime: now,
-        date: now.slice(0, 10),
+        datetime: now.toISOString(),
+        date: localDateISO(now),
         zone_summary: payload.zoneSummary,
+        hungry_state: payload.hungryState ?? null,
       })
       .select()
       .single();

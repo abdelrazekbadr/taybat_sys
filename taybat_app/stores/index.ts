@@ -10,4 +10,4 @@ export * from './storeReset';
 export * from './theme.store';
 export * from './user.store';
 export * from './userMeals.store';
-export * from './weeklyRating.store';
+export * from './userRating.store';

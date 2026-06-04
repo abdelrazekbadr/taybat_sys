@@ -4,4 +4,4 @@ export * from './meal_items.mock';
 export * from './meals.mock';
 export * from './user.mock';
 export * from './user_meals.mock';
-export * from './weekly_ratings.mock';
+export * from './user_ratings.mock';

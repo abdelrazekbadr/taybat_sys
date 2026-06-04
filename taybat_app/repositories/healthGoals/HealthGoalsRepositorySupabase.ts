@@ -11,7 +11,7 @@ export class HealthGoalsRepositorySupabase implements IHealthGoalsRepository {
   async listActiveGoals(): Promise<HealthGoal[]> {
     const { data, error } = await this.client
       .from('health_goals')
-      .select('id, code, name, name_en, active, image')
+      .select('id, code, name, name_en, active, image, show_in_complete_profile')
       .eq('active', true)
       .order('code', { ascending: true });
 

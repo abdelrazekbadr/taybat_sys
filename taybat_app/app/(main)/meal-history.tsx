@@ -135,7 +135,7 @@ export default function MealHistoryScreen() {
                 >
                   <View className="items-center gap-2" style={{ flexDirection: rowDir }}>
                     <CalendarDays size={13} color={theme.colors.primary} strokeWidth={2} />
-                    <AppText variant="bold" className="text-[13px] leading-5 text-app-navy">
+                    <AppText variant="bold" className="text-[13px] leading-6 text-app-navy">
                       {formatFullDateAr(date)}
                     </AppText>
                   </View>

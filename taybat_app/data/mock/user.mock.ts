@@ -10,6 +10,7 @@ export const MOCK_USER: User = Object.freeze({
   avatar_url: null,
   avatar_config: null,
   plan_start_date: '2026-04-01',
+  next_rating_date: '2026-04-08',
   language: 'ar',
   theme: 'light',
   post_visibility: 'public',

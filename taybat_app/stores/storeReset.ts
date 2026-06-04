@@ -14,7 +14,7 @@ import { useMealsStore } from './meals.store';
 import { useThemeStore } from './theme.store';
 import { useUserMealsStore } from './userMeals.store';
 import { useUserStore } from './user.store';
-import { useWeeklyRatingStore } from './weeklyRating.store';
+import { useUserRatingStore } from './userRating.store';
 
 export async function resetAllAppStores(): Promise<void> {
   await Promise.all([
@@ -35,7 +35,7 @@ export async function resetAllAppStores(): Promise<void> {
   useMealsStore.getState().resetMeals();
   useMealItemsStore.getState().resetMealItems();
   useUserMealsStore.getState().resetUserMeals();
-  useWeeklyRatingStore.getState().resetWeeklyRatings();
+  useUserRatingStore.getState().resetUserRatings();
   useMealPreferencesStore.getState().resetPreferences();
   useUserStore.getState().resetUser();
 }

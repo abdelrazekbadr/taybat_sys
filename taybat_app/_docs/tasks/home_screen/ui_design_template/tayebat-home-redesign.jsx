@@ -218,7 +218,7 @@ function CommitmentCard({ onWantMeal }) {
   const moods = [
   { e: '😋', l: 'جوع شديد' },
   { e: '🙂', l: 'جائع' },
-  { e: '😌', l: 'محايد' },
+  { e: '😌', l: 'عادي' },
   { e: '😊', l: 'شبعان' }];
 
   return (

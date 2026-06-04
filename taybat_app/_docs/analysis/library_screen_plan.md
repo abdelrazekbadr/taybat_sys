@@ -171,7 +171,7 @@ Static data — no store needed (knowledge base is read-only content).
 Each topic has 4–8 items. Examples for Level 1 items:
 
 - Rice (الأرز) — `Wheat` icon — "المصدر الأساسي للطاقة، يومي بدون قيود"
-- Potato (البطاطس) — `Sprout` icon — "غذاء محايد، يُسلق أو يُشوى"
+- Potato (البطاطس) — `Sprout` icon — "غذاء عادي يُسلق أو يُشوى"
 - Olive Oil (زيت الزيتون) — `Droplets` icon — "مضاد التهابات طبيعي"
 - Dates (التمر) — `Cherry` icon — "محلي طبيعي مسموح يومياً"
 - Vitamin D (فيتامين د) — `Sun` icon — "مكمل إلزامي للجميع"

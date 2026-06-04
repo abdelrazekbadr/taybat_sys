@@ -76,6 +76,19 @@ export const useFeatureStore = create<FeatureState>((set) => ({
 }));
 ```
 
+### ⚠️ Zustand Selector Rule — NEVER use object selectors without `useShallow`
+
+Object selectors create a **new reference on every call**, causing the component to re-render on ANY store change (including unrelated `isLoading` flips). With Portal/Stack contexts in the render tree this cascades into "Maximum update depth exceeded".
+
+```typescript
+// ❌ WRONG — new object every render → infinite re-render loop
+const { goals, fetchGoals } = useStore((s) => ({ goals: s.goals, fetchGoals: s.fetchGoals }));
+
+// ✅ CORRECT — one subscription per field
+const goals     = useStore((s) => s.goals);
+const fetchGoals = useStore((s) => s.fetchGoals);
+```
+
 - Never `any` — `unknown` + `toUserMessage(error)` from `@/shared/errors/AppError`
 - Every store needs a `reset` action
 - Cross-store: `useOtherStore.getState().action()` — never import hooks inside another store

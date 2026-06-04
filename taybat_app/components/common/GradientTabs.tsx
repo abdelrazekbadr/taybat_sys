@@ -43,14 +43,14 @@ export function GradientTabs<K extends string>({
                 style={{ borderRadius: 999 }}
               >
                 <View className="items-center justify-center rounded-full px-5 py-2.5 shadow-sm shadow-black/10">
-                  <AppText variant="bold" className="text-[13px] leading-5 text-white">
+                  <AppText variant="bold" className="text-[13px]  text-white">
                     {t.label}
                   </AppText>
                 </View>
               </LinearGradient>
             ) : (
               <View className="items-center justify-center rounded-full border border-app-lineSoft bg-app-surface px-5 py-2.5">
-                <AppText variant="bold" className="text-[13px] leading-5 text-app-textSoft">
+                <AppText variant="bold" className="text-[13px]  text-app-textSoft">
                   {t.label}
                 </AppText>
               </View>

@@ -26,6 +26,9 @@ export interface UserProfile {
   provider: AuthProvider;
   profile_completed: boolean;
   plan_start_date: string | null;
+  next_rating_date: string | null;
+  last_health_score: number | null;
+  last_improvement_goals_codes: string | null;
   created_at: string;
   updated_at: string;
 }

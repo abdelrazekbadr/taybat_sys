@@ -101,11 +101,11 @@ export function TodayMealRow({
           </AppText>
 
           <View className="flex-row items-center gap-1" style={{ flexDirection: rowDir }}>
-            <AppText variant="bold" className="text-[10.5px] leading-4 text-app-textSoft">
+            <AppText variant="bold" className="text-[10.5px] leading-5 text-app-textSoft">
               {slotLabel}
             </AppText>
             <View className="h-[3px] w-[3px] rounded-full bg-app-muted2" />
-            <AppText className="text-[10.5px] leading-4 text-app-textSoft">{timeLabel}</AppText>
+            <AppText className="text-[10.5px] leading-5 text-app-textSoft">{timeLabel}</AppText>
           </View>
 
           <View className="flex-row items-center" style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}>

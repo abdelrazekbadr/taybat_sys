@@ -14,9 +14,11 @@ interface PrimaryButtonProps {
   gradientColors?: [string, string];
   leadingIcon?: React.ReactElement;
   trailingIcon?: React.ReactElement;
+  /** Tailwind classes applied to the outer Pressable — use h-[N] to control height */
+  className?: string;
 }
 
-export function PrimaryButton({ title, onPress, loading, disabled, gradientColors, leadingIcon, trailingIcon }: PrimaryButtonProps) {
+export function PrimaryButton({ title, onPress, loading, disabled, gradientColors, leadingIcon, trailingIcon, className }: PrimaryButtonProps) {
   const theme = useTheme();
   const { rowDir } = useRTL();
   const isInactive = Boolean(loading || disabled);
@@ -26,13 +28,14 @@ export function PrimaryButton({ title, onPress, loading, disabled, gradientColor
     <Pressable
       onPress={onPress}
       disabled={isInactive}
-      style={({ pressed }) => [{ alignSelf: 'stretch' }, { opacity: isInactive ? 0.4 : pressed ? 0.9 : 1 }]}
+      className={`self-stretch${className ? ` ${className}` : ''}`}
+      style={({ pressed }) => ({ opacity: isInactive ? 0.4 : pressed ? 0.9 : 1 })}
     >
       <LinearGradient
         colors={colors}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ borderRadius: 16, paddingVertical: 14, alignItems: 'center', justifyContent: 'center', alignSelf: 'stretch' }}
+        style={{ flex: 1, minHeight: 48, borderRadius: 16, alignItems: 'center', justifyContent: 'center' }}
       >
         {loading ? (
           <ActivityIndicator size="small" color={theme.colors.onPrimary} />

@@ -8,6 +8,11 @@ pnpm-debug.log*
 node_modules/
 **/node_modules/
 
+.claude/
+.trae/
+.agents/
+.mcp.json
+
 .vscode/
 .idea/
 

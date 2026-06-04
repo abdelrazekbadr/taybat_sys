@@ -6,6 +6,7 @@ import { useTheme } from 'react-native-paper';
 import { AppText } from '@/components/common/AppText';
 import { useRTL } from '@/hooks/useRTL';
 import type { UserMeal } from '@/types';
+import { localDateISO } from '@/utils/dateUtils';
 
 const AR_MONTHS = [
   'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
@@ -91,7 +92,7 @@ export function WeeklyProgressBar({ userMeals, planStartDate, onPress }: WeeklyP
   const { rowDir } = useRTL();
   const isLTR = rowDir === 'row';
 
-  const todayISO = new Date().toISOString().slice(0, 10);
+  const todayISO = localDateISO();
   const planStartISO = planStartDate?.slice(0, 10) ?? null;
 
   const mealDateSet = React.useMemo(
@@ -139,7 +140,7 @@ export function WeeklyProgressBar({ userMeals, planStartDate, onPress }: WeeklyP
       </View>
 
       {/* Cycle date range */}
-      <AppText className="mb-3 mt-0.5 text-[11px] leading-4 text-app-textMuted">
+      <AppText className="mb-3 mt-0.5 text-[11px] leading-5 text-app-textMuted">
         {formatDateAr(cycleStartISO)} — {formatDateAr(cycleEndISO)}
       </AppText>
 

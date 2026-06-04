@@ -29,7 +29,7 @@ type MoodItem = { Icon: LucideIcon; label: string };
 const MOODS: MoodItem[] = [
   { Icon: Frown, label: 'جوع شديد' },
   { Icon: Meh,   label: 'جائع' },
-  { Icon: Smile, label: 'محايد' },
+  { Icon: Smile, label: 'عادي' },
   { Icon: Laugh, label: 'شبعان' },
 ];
 

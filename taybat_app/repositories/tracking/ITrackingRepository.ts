@@ -5,6 +5,7 @@ export interface CreateUserMealPayload {
   mealId: number;
   mealItemCodes: string;
   zoneSummary: import('@/types').ZoneColor;
+  hungryState?: import('@/types').HungryState | null;
 }
 
 export interface ITrackingRepository {

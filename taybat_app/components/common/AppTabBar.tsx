@@ -76,10 +76,10 @@ export function AppTabBar({ active = 'home' }: AppTabBarProps) {
           return (
             <TouchableOpacity
               key="add"
-              className="flex-1 items-center"
-              style={{ marginTop: -28 }}
+              className="flex-1 items-center opacity-85"
+              style={{ marginTop: -40 }}
               onPress={() => handlePress('add')}
-              activeOpacity={0.85}
+              activeOpacity={0.80}
             >
               <LinearGradient
                 colors={[theme.colors.secondary, theme.colors.primary]}
@@ -109,7 +109,7 @@ export function AppTabBar({ active = 'home' }: AppTabBarProps) {
             />
             <AppText
               variant="bold"
-              className="text-center text-[10.5px] leading-[14px]"
+              className="text-center text-[10.5px] leading-[17px]"
               style={{ color: isActive ? theme.colors.primary : inactiveColor }}
             >
               {label}

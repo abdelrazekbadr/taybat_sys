@@ -102,7 +102,7 @@ export default function SelectMealScreen() {
           )}
         </TouchableOpacity>
         <View className="items-center gap-0.5">
-          <AppText variant="bold" className="text-center text-[17px] leading-6 text-app-navy">{headerTitle}</AppText>
+          <AppText variant="bold" className="text-center text-[17px]  text-app-navy">{headerTitle}</AppText>
         </View>
         <View className="w-10" />
       </View>
@@ -180,7 +180,7 @@ function MealCard({
     const replaceId = replaceUserMealId ? Number(replaceUserMealId) : Number.NaN;
     const ok = Number.isFinite(replaceId) ? await replaceMeal(replaceId, meal.id) : await logMeal(meal.id);
     if (ok) {
-      router.back();
+      router.replace('/(main)' as never);
       return;
     }
     setIsAdding(false);
@@ -207,11 +207,11 @@ function MealCard({
         </AppText>
 
         <View className="flex-row items-center gap-1" style={{ flexDirection: rowDir }}>
-          <AppText variant="bold" className="text-[10.5px] leading-4 text-app-textSoft">
+          <AppText variant="bold" className="text-[10.5px] leading-5 text-app-textSoft">
             تناولت آخر أسبوع: {toArabicNumerals(lastWeekCount)} {lastWeekCount === 1 ? 'مرة' : 'مرات'}
           </AppText>
           <View className="h-[3px] w-[3px] rounded-full bg-app-muted2" />
-          <AppText className="text-[10.5px] leading-4 text-app-textSoft">
+          <AppText className="text-[10.5px] leading-5 text-app-textSoft">
             {ingredientsCount} مكوّنات
           </AppText>
         </View>

@@ -92,7 +92,7 @@ interface ScoreSelectorProps {
 |---|---|---|
 | 1 | `Frown` | سيء جداً |
 | 2 | `Meh` | سيء |
-| 3 | `Smile` | محايد |
+| 3 | `Smile` | محاعادييد |
 | 4 | `Laugh` | جيد |
 | 5 | `PartyPopper` | ممتاز |
 

@@ -43,6 +43,9 @@ export class UserProfileRepositoryMock implements IUserProfileRepository {
       provider: data.provider ?? existing?.provider ?? 'email',
       profile_completed: typeof data.profile_completed !== 'undefined' ? data.profile_completed : (existing?.profile_completed ?? false),
       plan_start_date: typeof data.plan_start_date !== 'undefined' ? data.plan_start_date : (existing?.plan_start_date ?? null),
+      next_rating_date: typeof data.next_rating_date !== 'undefined' ? data.next_rating_date : (existing?.next_rating_date ?? null),
+      last_health_score: typeof data.last_health_score !== 'undefined' ? data.last_health_score : (existing?.last_health_score ?? null),
+      last_improvement_goals_codes: typeof data.last_improvement_goals_codes !== 'undefined' ? data.last_improvement_goals_codes : (existing?.last_improvement_goals_codes ?? null),
       created_at: existing?.created_at ?? now,
       updated_at: now,
     };

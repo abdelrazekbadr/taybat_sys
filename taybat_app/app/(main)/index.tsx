@@ -1,6 +1,6 @@
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, ScrollView, ActivityIndicator, RefreshControl, Alert, Pressable } from 'react-native';
+import { AppState, View, ScrollView, ActivityIndicator, RefreshControl, Alert, Pressable } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import { BarChart2, ChevronLeft, ChevronRight, Star, Utensils } from 'lucide-react-native';
@@ -15,15 +15,16 @@ import { WeeklyProgressBar } from '@/components/home/WeeklyProgressBar';
 import { useMealsStore } from '@/stores/meals.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import { useUserStore } from '@/stores/user.store';
-import { useWeeklyRatingStore } from '@/stores/weeklyRating.store';
+import { useUserRatingStore } from '@/stores/userRating.store';
 import { daysOnPlan } from '@/utils/statsUtils';
 
 export default function HomeScreen() {
   const theme = useTheme();
   const { user } = useUserStore();
   const { userMeals, todayMeals, initializeUserMeals } = useUserMealsStore();
+  const refreshTodayMeals = useUserMealsStore((s) => s.refreshTodayMeals);
   const { meals, isLoading: mealsLoading, errorMessage: mealsError, initializeMeals, getMealById } = useMealsStore();
-  const { pendingRating, initializeRatings, checkPendingRating } = useWeeklyRatingStore();
+  const { pendingRating, initializeRatings, checkPendingRating } = useUserRatingStore();
   const { rowDir, isRTL } = useRTL();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [cardKey, setCardKey] = useState(0);
@@ -32,6 +33,21 @@ export default function HomeScreen() {
   useEffect(() => {
     if (!userMeals.length) initializeUserMeals();
   }, [initializeUserMeals, userMeals.length]);
+
+  // Re-filter todayMeals by the current calendar date whenever the screen gains
+  // focus or the app returns to the foreground — handles overnight date changes.
+  useFocusEffect(
+    useCallback(() => {
+      refreshTodayMeals();
+    }, [refreshTodayMeals]),
+  );
+
+  useEffect(() => {
+    const sub = AppState.addEventListener('change', (state) => {
+      if (state === 'active') refreshTodayMeals();
+    });
+    return () => sub.remove();
+  }, [refreshTodayMeals]);
 
   useEffect(() => {
     if (!meals.length) initializeMeals();
@@ -195,7 +211,7 @@ export default function HomeScreen() {
                 <AppText variant="bold" className="text-[15px] leading-[22px] text-app-navy">
                   لم تسجّل وجبات اليوم بعد
                 </AppText>
-                <AppText className="text-center text-[13px] leading-5 text-app-textSoft">
+                <AppText className="text-center text-[13px] leading-6 text-app-textSoft">
                   سجّل أول وجبة وابدأ يومك بشكل صحيح
                 </AppText>
               </View>
@@ -204,7 +220,12 @@ export default function HomeScreen() {
 
           {/* Stats link */}
           <Pressable
-            onPress={() => router.push('/(main)/stats')}
+            onPress={() =>
+              router.push({
+                pathname: '/(main)/stats',
+                params: { initialTab: pendingRating ? 'evaluation' : 'timeline' },
+              } as never)
+            }
             className="mt-3 rounded-[18px] border border-app-lineSoft bg-app-surface px-4 py-4"
             style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
           >
@@ -216,7 +237,7 @@ export default function HomeScreen() {
                 <AppText variant="bold" className="text-[14px] leading-6 text-app-navy">
                   إنجازاتي
                 </AppText>
-                <AppText className="text-[12.5px] leading-5 text-app-textMuted">
+                <AppText className="text-[12.5px] leading-6 text-app-textMuted">
                   شاهد تقييماتك وتطورك
                 </AppText>
               </View>
@@ -231,19 +252,33 @@ export default function HomeScreen() {
           {/* Weekly rating banner */}
           {pendingRating && (
             <Pressable
-              onPress={() => router.push('/(main)/stats')}
-              className="mt-[22px] gap-1 rounded-[18px] border border-app-warning bg-app-warningSoft p-4"
-              style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
+              onPress={() => router.push('/(main)/stats' as never)}
+              className="mt-[22px] overflow-hidden rounded-[18px] border border-app-warning bg-app-surface"
+              style={({ pressed }) => [{ opacity: pressed ? 0.88 : 1 }]}
             >
-              <View className="items-center gap-1.5" style={{ flexDirection: rowDir }}>
-                <Star size={15} color={theme.colors.primary} fill={theme.colors.primary} strokeWidth={0} />
-                <AppText variant="bold" className="text-[15px] leading-[22px] text-app-navy">
-                  حان وقت تقييم أسبوعك!
-                </AppText>
+              {/* Warning accent stripe on the start edge */}
+              <View className="flex-row" style={{ flexDirection: rowDir }}>
+                <View className="w-1 self-stretch bg-app-warning" />
+                <View className="flex-1 items-center gap-3 px-4 py-3.5" style={{ flexDirection: rowDir }}>
+                  {/* Icon badge */}
+                  <View className="h-11 w-11 items-center justify-center rounded-[14px] bg-app-warningSoft">
+                    <Star size={22} color="#F5A623" fill="#F5A623" strokeWidth={0} />
+                  </View>
+                  {/* Text */}
+                  <View className="flex-1">
+                    <AppText variant="bold" className="text-[14px] leading-6 text-app-navy">
+                      حان وقت تقييمك الأسبوعي
+                    </AppText>
+                    <AppText className="text-[12px] leading-5 text-app-textSoft">
+                      أخبرنا كيف كان أسبوعك الصحي
+                    </AppText>
+                  </View>
+                  {/* Directional arrow */}
+                  {isRTL
+                    ? <ChevronLeft  size={20} color="#F5A623" strokeWidth={2.5} />
+                    : <ChevronRight size={20} color="#F5A623" strokeWidth={2.5} />}
+                </View>
               </View>
-              <AppText className="text-[13px] leading-5 text-app-textSoft">
-                أخبرنا كيف كان أسبوعك الصحي
-              </AppText>
             </Pressable>
           )}
 

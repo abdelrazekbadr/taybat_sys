@@ -2,7 +2,8 @@ import { create } from 'zustand';
 
 import { trackingRepository } from '@/repositories/tracking';
 import { toUserMessage } from '@/shared/errors/AppError';
-import type { UserMeal } from '@/types';
+import type { HungryState, UserMeal } from '@/types';
+import { localDateISO } from '@/utils/dateUtils';
 
 import { useMealsStore } from './meals.store';
 import { useUserStore } from './user.store';
@@ -13,7 +14,8 @@ interface UserMealsState {
   isLoading: boolean;
   errorMessage: string;
   initializeUserMeals: () => Promise<void>;
-  logMeal: (mealId: number) => Promise<boolean>;
+  refreshTodayMeals: () => void;
+  logMeal: (mealId: number, hungryState?: HungryState | null) => Promise<boolean>;
   replaceMeal: (userMealId: number, mealId: number) => Promise<boolean>;
   deleteMeal: (id: number) => Promise<boolean>;
   getMealsByDate: (date: string) => UserMeal[];
@@ -27,7 +29,7 @@ const initialState = {
   errorMessage: '',
 };
 
-const todayIsoDate = () => new Date().toISOString().slice(0, 10);
+const todayIsoDate = () => localDateISO();
 
 export const useUserMealsStore = create<UserMealsState>((set, get) => ({
   ...initialState,
@@ -48,9 +50,19 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
     }
   },
 
+  refreshTodayMeals: () => {
+    const today = todayIsoDate();
+    const user  = useUserStore.getState().user;
+    set({
+      todayMeals: user
+        ? get().userMeals.filter((m) => m.user_id === user.id && m.date === today)
+        : [],
+    });
+  },
+
   getMealsByDate: (date) => get().userMeals.filter((m) => m.date === date),
 
-  logMeal: async (mealId) => {
+  logMeal: async (mealId, hungryState) => {
     set({ isLoading: true, errorMessage: '' });
     try {
       const user = useUserStore.getState().user;
@@ -74,6 +86,7 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
         mealId: meal.id,
         mealItemCodes: meal.meal_item_codes,
         zoneSummary: meal.dominant_zone,
+        hungryState: hungryState ?? null,
       });
       const nextMeals = [...get().userMeals, entry];
       set({ userMeals: nextMeals, todayMeals: nextMeals.filter((m) => m.user_id === user.id && m.date === today), isLoading: false });

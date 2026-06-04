@@ -56,6 +56,7 @@ export interface User {
   avatar_url: string | null;
   avatar_config: AvatarConfig | null;
   plan_start_date: string | null;
+  next_rating_date: string | null;
   language: 'ar' | 'en';
   theme: 'light' | 'dark' | 'system';
   post_visibility: PostVisibility;
@@ -70,6 +71,8 @@ export interface MealItemPreference {
   is_favorite: boolean;
 }
 
+export type HungryState = 1 | 2 | 3 | 4;
+
 export interface UserMeal {
   id: number;
   user_id: string;              // UUID from auth.users
@@ -79,23 +82,20 @@ export interface UserMeal {
   datetime: string;
   date: string;
   zone_summary: ZoneColor;
+  /** 1=شبعان  2=عادي  3=جائع  4=جوع شديد — null on legacy rows */
+  hungry_state?: HungryState | null;
 }
 
 export type WeeklyScore = 1 | 2 | 3 | 4 | 5;
 
-export interface WeeklyRating {
+export interface UserRating {
   id: number;
-  user_id: string;              // UUID from auth.users
+  user_id: string;
   period_start: string;
   submitted_at: string;
   health_score: WeeklyScore;
-  adherence_score: WeeklyScore;
-  pain_reduced: boolean;
-  energy_improved: boolean;
-  sleep_improved: boolean;
-  digestion_improved: boolean;
-  mood_improved: boolean;
-  mental_health_improved: boolean;
+  adherence_score: WeeklyScore | null;   // system-computed — not user-entered
+  improvement_goals_codes: string;        // CSV of health_goal IDs e.g. "1,4,5"
 }
 
 export interface HealthGoal {
@@ -105,6 +105,7 @@ export interface HealthGoal {
   name_en: string | null;
   active: boolean;
   image: string | null;
+  show_in_complete_profile: boolean;
 }
 
 export interface HealthCondition {

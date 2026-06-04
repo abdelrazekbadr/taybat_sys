@@ -31,6 +31,7 @@ export const useUserStore = create<UserState>((set) => ({
         avatar_url: null,
         avatar_config: null as AvatarConfig | null,
         plan_start_date: profile.plan_start_date ?? null,
+        next_rating_date: profile.next_rating_date ?? null,
         language: 'ar',
         theme: 'system',
         post_visibility: 'public',

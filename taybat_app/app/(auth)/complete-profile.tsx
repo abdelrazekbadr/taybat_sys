@@ -70,6 +70,11 @@ export default function CompleteProfileScreen() {
   const conditions = useHealthConditionsStore((s) => s.conditions);
   const fetchConditions = useHealthConditionsStore((s) => s.fetchConditions);
 
+  const completeProfileGoals = React.useMemo(
+    () => goals.filter((g) => g.show_in_complete_profile),
+    [goals],
+  );
+
   const [step, setStep] = React.useState(0);
   const { setValue, watch, setError, clearErrors, formState } = useForm<FormValues>({
     defaultValues: {
@@ -386,7 +391,7 @@ export default function CompleteProfileScreen() {
 
           {step === 2 && (
             <ProfileStepGoals
-              goals={goals}
+              goals={completeProfileGoals}
               value={values.health_goals_codes}
               onChange={(v) => { clearErrors('health_goals_codes'); setValue('health_goals_codes', v, { shouldDirty: true }); }}
               error={formState.errors.health_goals_codes?.message}

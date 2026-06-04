@@ -45,6 +45,16 @@ type MultipleProps<K extends string | number> = BaseProps<K> & {
 };
 
 function AssetImage({ name, size, color, tint }: { name: string; size: number; color: string; tint?: boolean }) {
+  const isRemote = /^https?:\/\//.test(name);
+  if (isRemote) {
+    return (
+      <Image
+        source={{ uri: name }}
+        style={{ width: size, height: size, ...(tint ? { tintColor: color } : null) }}
+        resizeMode="contain"
+      />
+    );
+  }
   const src = ICON_SOURCES[name];
   if (!src) return null;
   return (
@@ -104,7 +114,7 @@ export function OptionSelector<K extends string | number>(props: SingleProps<K> 
             : 'flex-row items-center gap-2 rounded-[14px] border px-3 py-3';
 
         const iconSize = props.iconSize ?? (layout === 'iconTop' ? 22 : 18);
-        const labelClassName = layout === 'iconTop' ? 'mt-1 text-center text-[11px] leading-4' : 'flex-1 text-[12.5px] leading-5';
+        const labelClassName = layout === 'iconTop' ? 'mt-1 text-center text-[11px] leading-5' : 'flex-1 text-[12.5px] leading-5';
 
         return (
           <Pressable

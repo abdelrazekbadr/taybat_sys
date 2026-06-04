@@ -51,10 +51,20 @@ class AuthService {
 
   async completeProfile(userId: string, email: string, data: ProfileCompletionPayload): Promise<UserProfile> {
     try {
+      const existing = await userProfileRepository.getProfile(userId);
+      const planStartDate = existing?.plan_start_date ?? new Date().toISOString().split('T')[0];
+      const nextRatingDate =
+        existing?.next_rating_date ??
+        (() => {
+          const dt = new Date(planStartDate);
+          dt.setDate(dt.getDate() + 7);
+          return dt.toISOString().split('T')[0];
+        })();
       return await userProfileRepository.upsertProfile(userId, {
         ...data,
         email,
-        plan_start_date: new Date().toISOString().split('T')[0],
+        plan_start_date: planStartDate,
+        next_rating_date: nextRatingDate,
         profile_completed: true,
       });
     } catch (error: unknown) {
@@ -146,6 +156,7 @@ class AuthService {
       health_goals_codes: null,
         health_conditions_codes: null,
       plan_start_date: null,
+        next_rating_date: null,
       profile_completed: false,
     });
   }

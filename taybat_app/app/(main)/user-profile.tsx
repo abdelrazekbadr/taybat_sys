@@ -12,9 +12,10 @@ import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { StarRating } from '@/components/common/StarRating';
 import { useRTL } from '@/hooks/useRTL';
 import { useCommunityStore } from '@/stores/community.store';
+import { useHealthGoalsStore } from '@/stores/healthGoals.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import { useUserStore } from '@/stores/user.store';
-import { useWeeklyRatingStore } from '@/stores/weeklyRating.store';
+import { useUserRatingStore } from '@/stores/userRating.store';
 import { toArabicNumerals } from '@/utils/zoneUtils';
 
 const BADGE_MILESTONES = [
@@ -25,26 +26,6 @@ const BADGE_MILESTONES = [
   { id: 5, label: 'عائلة الطيبات', minDays: 90 },
 ] as const;
 
-const IMPROVEMENT_KEYS = [
-  'pain_reduced',
-  'energy_improved',
-  'sleep_improved',
-  'digestion_improved',
-  'mood_improved',
-  'mental_health_improved',
-] as const;
-
-type ImprovementKey = (typeof IMPROVEMENT_KEYS)[number];
-
-const IMPROVEMENT_LABELS: Record<ImprovementKey, string> = {
-  pain_reduced: 'تقلص الألم',
-  energy_improved: 'طاقة أفضل',
-  sleep_improved: 'نوم أفضل',
-  digestion_improved: 'هضم أفضل',
-  mood_improved: 'مزاج أحسن',
-  mental_health_improved: 'صحة ذهنية',
-};
-
 export default function UserProfileScreen() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -53,7 +34,8 @@ export default function UserProfileScreen() {
 
   const { user } = useUserStore();
   const { userMeals } = useUserMealsStore();
-  const { ratings } = useWeeklyRatingStore();
+  const { ratings } = useUserRatingStore();
+  const goals = useHealthGoalsStore((s) => s.goals);
   const { userFollows, toggleFollow } = useCommunityStore();
 
   const targetUserId: string = userId !== undefined ? userId : (user?.id ?? '');
@@ -84,11 +66,10 @@ export default function UserProfileScreen() {
   }, [ratings]);
 
   const improvements = useMemo(() => {
-    if (!latestRating) return [];
-    return IMPROVEMENT_KEYS.filter((key) => latestRating[key] === true).map(
-      (key) => IMPROVEMENT_LABELS[key],
-    );
-  }, [latestRating]);
+    if (!latestRating || !latestRating.improvement_goals_codes) return [];
+    const ids = new Set(latestRating.improvement_goals_codes.split(',').map(Number).filter(Boolean));
+    return goals.filter((g) => ids.has(g.id)).map((g) => g.name);
+  }, [latestRating, goals]);
 
   const isFollowing = userFollows.includes(targetUserId);
   const canFollow = !isOwnProfile && !isSystemUser;
@@ -322,16 +303,6 @@ export default function UserProfileScreen() {
               >
                 <AppText className="text-[13px] leading-5 text-app-text">الصحة العامة</AppText>
                 <StarRating value={latestRating.health_score} size={14} gap={3} />
-              </View>
-
-              <View className="mx-4 h-px bg-app-lineSoft" />
-
-              <View
-                className="flex-row items-center justify-between px-4 py-3.5"
-                style={{ flexDirection: rowDir }}
-              >
-                <AppText className="text-[13px] leading-5 text-app-text">الالتزام الغذائي</AppText>
-                <StarRating value={latestRating.adherence_score} size={14} gap={3} />
               </View>
 
               {improvements.length > 0 && (
