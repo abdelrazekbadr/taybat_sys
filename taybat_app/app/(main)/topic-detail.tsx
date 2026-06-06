@@ -1,9 +1,8 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Animated, Dimensions, Easing, Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, type MD3Theme } from 'react-native-paper';
-
 
 import {
   AlertTriangle,
@@ -27,6 +26,7 @@ import {
   HeartPulse,
   Layers,
   Leaf,
+  Milk,
   Scale,
   ShieldAlert,
   ShieldCheck,
@@ -38,13 +38,14 @@ import {
   Target,
   TrendingUp,
   UtensilsCrossed,
+  Users,
   Wheat,
   type LucideIcon,
 } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
 import { useRTL } from '@/hooks/useRTL';
-import topicsJson from '@/data/topics/topics.json';
+import { useTopicsStore } from '@/stores/topics.store';
 
 const defaultTopicImage = require('../../assets/images/onboarding2_woman_heart.png');
 const imageMobileApp = require('../../assets/topics/mobile_app.png');
@@ -52,26 +53,6 @@ const imageMobileApp2 = require('../../assets/topics/mobile_app2.png');
 const imageAllowed = require('../../assets/topics/allowed.png');
 const imageForbidden = require('../../assets/topics/forbidden.png');
 const imageRating = require('../../assets/topics/rating.png');
-
-type JsonTopicItem = {
-  id: number;
-  code: string;
-  icon: string;
-  title: string;
-  description: string;
-};
-
-type JsonTopic = {
-  id: number;
-  code: string;
-  sequence: number;
-  title: string;
-  description: string;
-  image_url: string;
-  accent_color: string;
-  icon: string;
-  items: JsonTopicItem[];
-};
 
 const ICONS: Record<string, LucideIcon> = {
   AlertTriangle,
@@ -93,6 +74,7 @@ const ICONS: Record<string, LucideIcon> = {
   HeartPulse,
   Layers,
   Leaf,
+  Milk,
   Scale,
   ShieldAlert,
   ShieldCheck,
@@ -104,6 +86,7 @@ const ICONS: Record<string, LucideIcon> = {
   Target,
   TrendingUp,
   UtensilsCrossed,
+  Users,
   Wheat,
 };
 
@@ -111,40 +94,23 @@ function resolveIcon(name: string): LucideIcon {
   return ICONS[name] ?? BookOpen;
 }
 
-function resolveAccentColor(theme: MD3Theme, code: string) {
+function resolveAccentColor(theme: MD3Theme, code: string, accentColor: string) {
+  if (accentColor && accentColor.startsWith('#')) return accentColor;
   switch (code) {
-    case 'app-goals':
-      return theme.colors.primary;
-    case 'system-intro':
-      return theme.colors.secondary;
-    case 'weekly-rating':
-      return theme.colors.primary;
-    case 'allowed-foods':
-      return theme.colors.primary;
-    case 'forbidden-foods':
-      return theme.colors.error;
-    default:
-      return theme.colors.primary;
+    case 'forbidden-foods': return theme.colors.error;
+    default: return theme.colors.primary;
   }
 }
 
-function resolveTopicImage(code: string, imageUrl?: string) {
-  if (typeof imageUrl === 'string' && imageUrl.trim().length > 0) {
-    return { uri: imageUrl };
-  }
+function resolveTopicImage(code: string, imageUrl: string) {
+  if (imageUrl.trim().length > 0) return { uri: imageUrl };
   switch (code) {
-    case 'allowed-foods':
-      return imageAllowed;
-    case 'forbidden-foods':
-      return imageForbidden;
-    case 'weekly-rating':
-      return imageRating;
-    case 'system-intro':
-      return imageMobileApp2;
-    case 'app-goals':
-      return imageMobileApp;
-    default:
-      return defaultTopicImage;
+    case 'allowed-foods':   return imageAllowed;
+    case 'forbidden-foods': return imageForbidden;
+    case 'weekly-rating':   return imageRating;
+    case 'system-intro':    return imageMobileApp2;
+    case 'app-goals':       return imageMobileApp;
+    default:                return defaultTopicImage;
   }
 }
 
@@ -156,14 +122,16 @@ export default function TopicDetailScreen() {
   const sheetEntrance = useRef(new Animated.Value(0)).current;
   const screenHeight = Dimensions.get('window').height / 2;
 
-  const topic = useMemo(() => {
-    if (!topicCode || Array.isArray(topicCode)) return undefined;
-    const parsed = topicsJson as unknown as JsonTopic[];
-    return parsed.find((t) => t.code === topicCode);
-  }, [topicCode]);
+  const fetchTopics    = useTopicsStore((s) => s.fetchTopics);
+  const getTopicByCode = useTopicsStore((s) => s.getTopicByCode);
 
-  const accentColor = topic ? resolveAccentColor(theme, topic.code) : theme.colors.primary;
-  const imageSource = topic ? resolveTopicImage(topic.code, topic.image_url) : defaultTopicImage;
+  useEffect(() => { fetchTopics(); }, [fetchTopics]);
+
+  const code = Array.isArray(topicCode) ? topicCode[0] : topicCode;
+  const topic = code ? getTopicByCode(code) : undefined;
+
+  const accentColor = topic ? resolveAccentColor(theme, topic.code, topic.accent_color) : theme.colors.primary;
+  const imageSource  = topic ? resolveTopicImage(topic.code, topic.image_url) : defaultTopicImage;
 
   useEffect(() => {
     if (!topic) return;
@@ -174,7 +142,7 @@ export default function TopicDetailScreen() {
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     }).start();
-  }, [sheetEntrance, topic, topicCode]);
+  }, [sheetEntrance, topic]);
 
   const sheetAnimatedStyle = {
     opacity: sheetEntrance,
@@ -222,29 +190,32 @@ export default function TopicDetailScreen() {
             </View>
           </View>
 
-        <View
-          className="absolute left-[22px] right-[22px] flex-row justify-between"
-          style={{ top: 12, flexDirection: rowDir }}
-        >
-          <TouchableOpacity
-            className="h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface shadow-lg shadow-black/10"
-            style={{ elevation: 5 }}
-            onPress={() => router.back()}
-            activeOpacity={0.8}
+          <View
+            className="absolute left-[22px] right-[22px] flex-row justify-between"
+            style={{ top: 12, flexDirection: rowDir }}
           >
-            {isRTL ? (
-              <ChevronRight size={25} color={theme.colors.onSurface} strokeWidth={2.5} />
-            ) : (
-              <ChevronLeft size={25} color={theme.colors.onSurface} strokeWidth={2.5} />
-            )}
-          </TouchableOpacity>
-          <View className="w-11" />
+            <TouchableOpacity
+              className="h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface shadow-lg shadow-black/10"
+              style={{ elevation: 5 }}
+              onPress={() => router.back()}
+              activeOpacity={0.8}
+            >
+              {isRTL ? (
+                <ChevronRight size={25} color={theme.colors.onSurface} strokeWidth={2.5} />
+              ) : (
+                <ChevronLeft size={25} color={theme.colors.onSurface} strokeWidth={2.5} />
+              )}
+            </TouchableOpacity>
+            <View className="w-11" />
+          </View>
         </View>
       </View>
-      </View>
 
-      <Animated.View className="-mt-7 flex-1  bg-app-background" style={sheetAnimatedStyle}>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: insets.bottom + 28 }}>
+      <Animated.View className="-mt-7 flex-1 bg-app-background" style={sheetAnimatedStyle}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{ paddingBottom: insets.bottom + 28 }}
+        >
           <View className="px-[22px] pt-4">
             <AppText variant="bold" className="text-[22px] leading-[35px] text-app-navy">
               {topic.title}
@@ -266,7 +237,7 @@ export default function TopicDetailScreen() {
                       <ItemIcon size={20} color={accentColor} strokeWidth={2.5} />
                     </View>
                     <View className="flex-1 gap-1" style={{ minWidth: 0 }}>
-                      <AppText variant="bold" className="text-[14px]  text-app-navy">
+                      <AppText variant="bold" className="text-[14px] text-app-navy">
                         {item.title}
                       </AppText>
                       <AppText className="text-[12.5px] leading-5 text-app-textSoft">

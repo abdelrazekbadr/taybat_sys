@@ -13,6 +13,7 @@ import { HomeHeader } from '@/components/home/HomeHeader';
 import { TodayMealRow } from '@/components/home/TodayMealRow';
 import { WeeklyProgressBar } from '@/components/home/WeeklyProgressBar';
 import { useMealsStore } from '@/stores/meals.store';
+import { useNotificationsStore } from '@/stores/notifications.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import { useUserStore } from '@/stores/user.store';
 import { useUserRatingStore } from '@/stores/userRating.store';
@@ -25,6 +26,8 @@ export default function HomeScreen() {
   const refreshTodayMeals = useUserMealsStore((s) => s.refreshTodayMeals);
   const { meals, isLoading: mealsLoading, errorMessage: mealsError, initializeMeals, getMealById } = useMealsStore();
   const { pendingRating, initializeRatings, checkPendingRating } = useUserRatingStore();
+  const unreadCount = useNotificationsStore((s) => s.unreadCount);
+  const loadNotifications = useNotificationsStore((s) => s.loadNotifications);
   const { rowDir, isRTL } = useRTL();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [cardKey, setCardKey] = useState(0);
@@ -56,6 +59,10 @@ export default function HomeScreen() {
   useEffect(() => {
     initializeRatings();
   }, [initializeRatings]);
+
+  useEffect(() => {
+    loadNotifications();
+  }, [loadNotifications]);
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -117,6 +124,8 @@ export default function HomeScreen() {
         gender={user.gender}
         avatarUrl={user.avatar_url}
         onProfilePress={() => router.push('/(main)/user-profile')}
+        onBellPress={() => router.push('/(main)/notifications')}
+        unreadCount={unreadCount}
       />
 
       <ScrollView

@@ -16,7 +16,7 @@ interface HomeHeaderProps {
   isGuest?: boolean;
   onBellPress?: () => void;
   onProfilePress?: () => void;
-  hasNotification?: boolean;
+  unreadCount?: number;
 }
 
 function getGreeting() {
@@ -24,12 +24,13 @@ function getGreeting() {
   return hour >= 5 && hour < 12 ? 'صباح الخير،' : 'مساء الخير،';
 }
 
-export function HomeHeader({ name, gender, avatarUrl, isGuest = false, onBellPress, onProfilePress, hasNotification = true }: HomeHeaderProps) {
+export function HomeHeader({ name, gender, avatarUrl, isGuest = false, onBellPress, onProfilePress, unreadCount = 0 }: HomeHeaderProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { isRTL, rowDir } = useRTL();
   const avatarSource = avatarUrl ? { uri: avatarUrl } : getDefaultAvatarSource(gender, isGuest);
   const greeting = getGreeting();
+  const badgeLabel = unreadCount > 9 ? '9+' : String(unreadCount);
 
   return (
     <View
@@ -65,8 +66,27 @@ export function HomeHeader({ name, gender, avatarUrl, isGuest = false, onBellPre
         activeOpacity={0.7}
       >
         <Bell size={20} color={theme.colors.onSurface} strokeWidth={2} />
-        {hasNotification && (
-          <View className="absolute right-[9px] top-[9px] h-2 w-2 rounded-full border-2 border-app-surface bg-app-secondary" />
+        {unreadCount > 0 && (
+          <View
+            style={{
+              position: 'absolute',
+              top: 6,
+              right: 6,
+              minWidth: 16,
+              height: 16,
+              borderRadius: 8,
+              backgroundColor: '#E11D48',
+              borderWidth: 1.5,
+              borderColor: theme.colors.surface,
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: 3,
+            }}
+          >
+            <AppText variant="bold" style={{ fontSize: 9, lineHeight: 13, color: '#fff' }}>
+              {badgeLabel}
+            </AppText>
+          </View>
         )}
       </TouchableOpacity>
     </View>

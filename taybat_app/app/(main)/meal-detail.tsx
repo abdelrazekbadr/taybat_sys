@@ -42,6 +42,7 @@ export default function MealDetailScreen() {
   const { mealItems, initializeMealItems, getMealItemByCode } = useMealItemsStore();
   const { logMeal, deleteMeal } = useUserMealsStore();
   const [hungryState, setHungryState] = useState<HungryState | null>(null);
+  const [hungerRequired, setHungerRequired] = useState(false);
 
   useEffect(() => {
     if (!meals.length) initializeMeals();
@@ -107,7 +108,13 @@ export default function MealDetailScreen() {
     Alert.alert('تعذّر تسجيل الوجبة', message || 'حاول مرة أخرى');
   };
 
-  const handleAddToday = () => requireAuth(handleAddTodayInternal);
+  const handleAddToday = () => {
+    if (!hungryState) {
+      setHungerRequired(true);
+      return;
+    }
+    requireAuth(handleAddTodayInternal);
+  };
 
   const canDeleteLog = typeof userMealId === 'string' && userMealId.length > 0;
 
@@ -221,10 +228,15 @@ export default function MealDetailScreen() {
                 options={HUNGRY_OPTIONS}
                 mode="single"
                 value={hungryState}
-                onChange={(val) => setHungryState(val)}
+                onChange={(val) => { setHungryState(val); setHungerRequired(false); }}
                 layout="iconTop"
                 variant="soft"
               />
+              {hungerRequired && (
+                <AppText className="mt-2 text-[12px] leading-[18px] text-red-500">
+                  يرجى تحديد شعورك قبل إضافة الوجبة
+                </AppText>
+              )}
             </View>
 
             {/* ── Action buttons row ── */}
@@ -233,7 +245,6 @@ export default function MealDetailScreen() {
                 <PrimaryButton
                   title="اضف الوجبة"
                   onPress={handleAddToday}
-                  disabled={!hungryState}
                   className="h-[48px]"
                   leadingIcon={<LayersPlus size={16} color="white" strokeWidth={2.5} />}
                 />

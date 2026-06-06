@@ -14,6 +14,8 @@ import { useMealsStore } from './meals.store';
 import { useThemeStore } from './theme.store';
 import { useUserMealsStore } from './userMeals.store';
 import { useUserStore } from './user.store';
+import { useNotificationsStore } from './notifications.store';
+import { useTopicsStore } from './topics.store';
 import { useUserRatingStore } from './userRating.store';
 
 export async function resetAllAppStores(): Promise<void> {
@@ -26,6 +28,7 @@ export async function resetAllAppStores(): Promise<void> {
     storageService.remove(STORAGE_KEYS.MEAL_FAVORITES),
     storageService.remove(STORAGE_KEYS.COMMUNITY_REACTIONS),
     storageService.remove(STORAGE_KEYS.COMMUNITY_FOLLOWS),
+    storageService.remove(STORAGE_KEYS.NOTIFICATION_READS),
     useThemeStore.getState().resetTheme(),
   ]);
 
@@ -37,5 +40,7 @@ export async function resetAllAppStores(): Promise<void> {
   useUserMealsStore.getState().resetUserMeals();
   useUserRatingStore.getState().resetUserRatings();
   useMealPreferencesStore.getState().resetPreferences();
+  useTopicsStore.getState().resetTopics();
+  useNotificationsStore.getState().resetNotifications();
   useUserStore.getState().resetUser();
 }

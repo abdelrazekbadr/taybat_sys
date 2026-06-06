@@ -1,13 +1,18 @@
-import { Heart, Pin, Share2, User, UserCheck, UserPlus, Users } from 'lucide-react-native';
-import React, { useMemo } from 'react';
-import { Image, Pressable, TouchableOpacity, View } from 'react-native';
+import { ExternalLink, Heart, Link, Pin, Share2, User, UserCheck, UserPlus, Users } from 'lucide-react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { ActivityIndicator, Dimensions, Image, Linking, Pressable, Share, TouchableOpacity, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
+import * as Sharing from 'expo-sharing';
+import { captureRef } from 'react-native-view-shot';
 
 import { AppText } from '@/components/common/AppText';
+import { FullScreenImageModal } from '@/components/common/FullScreenImageModal';
 import { useRTL } from '@/hooks/useRTL';
 import type { CommunityPost } from '@/types';
 import { toRelativeArabicTime } from '@/utils/communityTime';
+import { SYSTEM_ADMIN_USER_ID } from '@/utils/constants';
+import { PostShareCard } from './PostShareCard';
 
 interface PostCardProps {
   post: CommunityPost;
@@ -19,24 +24,86 @@ interface PostCardProps {
 }
 
 const LOVE_COLOR = '#E11D48';
+const COLLAPSED_LINES = 4;
+// ~50 Arabic chars per line × 4 lines = 200 chars threshold
+const LONG_CONTENT_THRESHOLD = 200;
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
+function extractLinkDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return url;
+  }
+}
 
 export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPress }: PostCardProps) {
   const theme = useTheme();
   const { rowDir } = useRTL();
+  const shareCardRef = useRef<View>(null);
+
   const timeLabel = useMemo(() => toRelativeArabicTime(post.created_at), [post.created_at]);
   const heartColor = isLoved ? LOVE_COLOR : theme.colors.onSurfaceVariant;
   const showFollow = onFollowPress !== undefined;
+  const isSystemPost = post.post_type === 'system' || post.user_id === SYSTEM_ADMIN_USER_ID;
+  const linkDomain = useMemo(() => (post.link_url ? extractLinkDomain(post.link_url) : null), [post.link_url]);
 
-  const handleAuthorPress = () => {
+  // "See more" — character-count threshold avoids onTextLayout+numberOfLines bug
+  const isLongContent = post.content.length > LONG_CONTENT_THRESHOLD;
+  const [isExpanded, setIsExpanded] = useState(false);
+  const toggleExpanded = useCallback(() => setIsExpanded((v) => !v), []);
+
+  // Sharing state
+  const [isSharing, setIsSharing] = useState(false);
+
+  // Image viewer state
+  const [viewingImage, setViewingImage] = useState<string | null>(null);
+
+  const handleAuthorPress = useCallback(() => {
+    if (isSystemPost) return;
     router.push({
       pathname: '/(main)/user-profile',
       params: { userId: String(post.user_id), name: post.author_name },
     });
-  };
+  }, [isSystemPost, post.user_id, post.author_name]);
+
+  const handleLinkPress = useCallback(() => {
+    if (post.link_url) Linking.openURL(post.link_url);
+  }, [post.link_url]);
+
+  const handleShare = useCallback(async () => {
+    if (isSharing) return;
+    setIsSharing(true);
+    try {
+      // Small delay so the off-screen view finishes layout
+      await new Promise<void>((r) => setTimeout(r, 80));
+      const uri = await captureRef(shareCardRef, { format: 'png', quality: 1, result: 'tmpfile' });
+      const available = await Sharing.isAvailableAsync();
+      if (available) {
+        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: 'مشاركة المنشور' });
+      } else {
+        await Share.share({ message: `${post.author_name}\n\n${post.content}` });
+      }
+    } catch {
+      // Fallback to plain-text share if capture fails
+      await Share.share({ message: `${post.author_name}\n\n${post.content}` });
+    } finally {
+      setIsSharing(false);
+    }
+  }, [isSharing, post.author_name, post.content]);
 
   return (
     <View className="bg-app-surface">
-      {/* Pinned indicator */}
+      {/* ── Off-screen share card for capture ── */}
+      <View
+        style={{ position: 'absolute', top: -10000, left: 0, width: SCREEN_WIDTH }}
+        collapsable={false}
+        pointerEvents="none"
+      >
+        <PostShareCard ref={shareCardRef} post={post} width={SCREEN_WIDTH} />
+      </View>
+
+      {/* ── Pinned indicator ── */}
       {post.is_pinned && (
         <View
           className="flex-row items-center gap-1.5 bg-app-background px-4 py-1.5"
@@ -47,7 +114,7 @@ export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPres
         </View>
       )}
 
-      {/* Author row — single flat row, all layout in inline style to avoid NativeWind conflicts */}
+      {/* ── Author row ── */}
       <View
         style={{
           flexDirection: rowDir,
@@ -58,10 +125,9 @@ export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPres
           gap: 8,
         }}
       >
-        {/* Avatar + name: TouchableOpacity so flex:1 + flexDirection apply without function-style issues */}
         <TouchableOpacity
           onPress={handleAuthorPress}
-          activeOpacity={0.75}
+          activeOpacity={isSystemPost ? 1 : 0.75}
           style={{ flex: 1, flexDirection: rowDir, alignItems: 'center', gap: 12 }}
         >
           <View
@@ -77,7 +143,7 @@ export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPres
           >
             {post.author_avatar ? (
               <Image source={{ uri: post.author_avatar }} style={{ width: 44, height: 44 }} resizeMode="cover" />
-            ) : post.user_id === 'system' ? (
+            ) : isSystemPost ? (
               <Users size={20} color={theme.colors.primary} strokeWidth={2.2} />
             ) : (
               <User size={20} color={theme.colors.primary} strokeWidth={2.2} />
@@ -85,10 +151,10 @@ export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPres
           </View>
 
           <View style={{ flex: 1 }}>
-            <AppText variant="bold" className="text-[14px] leading-5 text-app-navy">
+            <AppText variant="bold" className="text-[14px] leading-6 text-app-navy">
               {post.author_name}
             </AppText>
-            <AppText className="mt-0.5 text-[11.5px] leading-4 text-app-textMuted">
+            <AppText className="mt-0.5 text-[11.5px] leading-5 text-app-textMuted">
               {timeLabel}
             </AppText>
           </View>
@@ -122,67 +188,137 @@ export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPres
                 variant="semibold"
                 style={{ fontSize: 11, lineHeight: 16, color: theme.colors.primary }}
               >
-                {isFollowing ? 'تتابعه' : 'متابعة'}
+                {isFollowing ? 'إلغاء المتابعة' : 'متابعة'}
               </AppText>
             </View>
           </Pressable>
         )}
       </View>
 
-      {/* Content */}
-      <AppText className="px-4 pb-3 text-[14px] leading-7 text-app-text">{post.content}</AppText>
+      {/* ── Content with see-more ── */}
+      <View className="px-4">
+        <Pressable onPress={isLongContent ? toggleExpanded : undefined} style={({ pressed }) => ({ opacity: pressed && isLongContent ? 0.85 : 1 })}>
+          <AppText
+            className="text-[14px] leading-7 text-app-text"
+            numberOfLines={isLongContent && !isExpanded ? COLLAPSED_LINES : undefined}
+          >
+            {post.content}
+          </AppText>
+        </Pressable>
 
-      {/* Image */}
+        {isLongContent ? (
+          <View style={{ flexDirection: rowDir, paddingTop: 2, paddingBottom: 10 }}>
+            <Pressable
+              onPress={toggleExpanded}
+              style={({ pressed }) => ({ opacity: pressed ? 0.65 : 1 })}
+            >
+              <AppText variant="semibold" style={{ fontSize: 12.5, color: theme.colors.primary }}>
+                {isExpanded ? 'أقل' : 'إقرأ المزيد ...'}
+              </AppText>
+            </Pressable>
+          </View>
+        ) : (
+          <View className="h-3" />
+        )}
+      </View>
+
+      {/* ── Image (tap to view full screen) ── */}
       {post.image_url ? (
-        <Image
-          source={{ uri: post.image_url }}
-          resizeMode="cover"
-          style={{ width: '100%', aspectRatio: 16 / 9 }}
-        />
+        <Pressable onPress={() => setViewingImage(post.image_url)}>
+          <Image
+            source={{ uri: post.image_url }}
+            resizeMode="cover"
+            style={{ width: '100%', aspectRatio: 16 / 9 }}
+          />
+        </Pressable>
       ) : null}
 
-      {/* Reaction count */}
-      {post.love_count > 0 && (
-        <View
-          className="flex-row items-center gap-1.5 px-4 py-2"
-          style={{ flexDirection: rowDir }}
+      <FullScreenImageModal uri={viewingImage} onClose={() => setViewingImage(null)} />
+
+      {/* ── Link preview ── */}
+      {post.link_url ? (
+        <Pressable
+          onPress={handleLinkPress}
+          style={({ pressed }) => ({ opacity: pressed ? 0.75 : 1 })}
         >
           <View
-            className="h-[18px] w-[18px] items-center justify-center rounded-full"
-            style={{ backgroundColor: LOVE_COLOR }}
+            style={{
+              flexDirection: rowDir,
+              alignItems: 'center',
+              gap: 10,
+              marginHorizontal: 16,
+              marginBottom: 10,
+              paddingHorizontal: 12,
+              paddingVertical: 10,
+              borderRadius: 10,
+              borderWidth: 1,
+              borderColor: theme.colors.outlineVariant,
+              backgroundColor: theme.colors.surfaceVariant,
+            }}
           >
-            <Heart size={9} color="white" fill="white" strokeWidth={2} />
+            <View
+              style={{
+                width: 32,
+                height: 32,
+                borderRadius: 8,
+                backgroundColor: theme.colors.primaryContainer,
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Link size={15} color={theme.colors.primary} strokeWidth={2.2} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <AppText variant="semibold" className="text-[12.5px] leading-5 text-app-navy" numberOfLines={1}>
+                {linkDomain}
+              </AppText>
+              <AppText className="text-[11px] leading-4 text-app-textMuted" numberOfLines={1}>
+                {post.link_url}
+              </AppText>
+            </View>
+            <ExternalLink size={14} color={theme.colors.onSurfaceVariant} strokeWidth={2} />
           </View>
-          <AppText className="text-[12px] text-app-textMuted">{post.love_count}</AppText>
-        </View>
-      )}
+        </Pressable>
+      ) : null}
 
-      {/* Divider */}
+      {/* ── Divider ── */}
       <View className="mx-4 h-px bg-app-lineSoft" />
 
-      {/* Action row */}
+      {/* ── Action row (love with count + share) ── */}
       <View style={{ flexDirection: rowDir }}>
         <Pressable
           onPress={onLovePress}
           className="flex-1 items-center justify-center py-3"
           style={({ pressed }) => [{ opacity: pressed ? 0.65 : 1 }]}
         >
-          <Heart
-            size={18}
-            color={heartColor}
-            fill={isLoved ? heartColor : 'transparent'}
-            strokeWidth={2.2}
-          />
+          <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 5 }}>
+            <Heart
+              size={18}
+              color={heartColor}
+              fill={isLoved ? heartColor : 'transparent'}
+              strokeWidth={2.2}
+            />
+            {post.love_count > 0 && (
+              <AppText variant="semibold" style={{ fontSize: 12.5, color: heartColor, lineHeight: 18 }}>
+                {post.love_count}
+              </AppText>
+            )}
+          </View>
         </Pressable>
 
         <View className="my-2 w-px bg-app-lineSoft" />
 
         <Pressable
-          disabled
+          onPress={handleShare}
+          disabled={isSharing}
           className="flex-1 items-center justify-center py-3"
-          style={{ opacity: 0.35 }}
+          style={{ opacity: isSharing ? 0.5 : 1 }}
         >
-          <Share2 size={18} color={theme.colors.onSurfaceVariant} strokeWidth={2.2} />
+          {isSharing ? (
+            <ActivityIndicator size={16} color={theme.colors.onSurfaceVariant} />
+          ) : (
+            <Share2 size={18} color={theme.colors.onSurfaceVariant} strokeWidth={2.2} />
+          )}
         </Pressable>
       </View>
     </View>

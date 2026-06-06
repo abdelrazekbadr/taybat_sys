@@ -26,7 +26,7 @@ export default function CommunityScreen() {
 
   const [activeTab, setActiveTab] = useState<CommunityTab>('posts');
   const { user } = useUserStore();
-  const { posts, stats, userReactions, userFollows, isLoading, isLoadingMore, hasMore, errorMessage, initializeCommunity, loadMorePosts, refreshPosts, toggleReaction, toggleFollow } =
+  const { posts, userReactions, userFollows, isLoading, isLoadingMore, hasMore, errorMessage, initializeCommunity, loadMorePosts, refreshPosts, toggleReaction, toggleFollow } =
     useCommunityStore();
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export default function CommunityScreen() {
       <View className="px-[22px]" style={{ paddingTop: insets.top + 10 }}>
         <View className="flex-row items-center justify-between" style={{ flexDirection: rowDir }}>
           <View className="w-11" />
-          <AppText variant="bold" className="text-[17px] leading-6 text-app-navy">
+          <AppText variant="bold" className="text-[17px] text-app-navy">
             عائلة الطيبات
           </AppText>
           <View className="w-11" />
@@ -50,7 +50,7 @@ export default function CommunityScreen() {
       </View>
 
       {activeTab === 'stats' ? (
-        <CommunityStatsTab stats={stats} />
+        <CommunityStatsTab />
       ) : (
         <FlatList
           data={posts}
@@ -84,7 +84,7 @@ export default function CommunityScreen() {
             ) : null
           }
           renderItem={({ item }) => {
-            const isFollowable = item.user_id !== 'system' && item.user_id !== (user?.id ?? '');
+            const isFollowable = item.user_id !== (user?.id ?? '');
             return (
               <PostCard
                 post={item}

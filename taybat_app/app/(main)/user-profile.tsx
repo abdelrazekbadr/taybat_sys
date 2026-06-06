@@ -190,7 +190,7 @@ export default function UserProfileScreen() {
                   className="text-[13px] leading-5"
                   style={{ color: isFollowing ? 'white' : theme.colors.primary }}
                 >
-                  {isFollowing ? 'تتابعه' : 'متابعة'}
+                  {isFollowing ? 'متابَع' : 'متابعة'}
                 </AppText>
               </Pressable>
             )}

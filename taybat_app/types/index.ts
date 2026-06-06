@@ -116,20 +116,62 @@ export interface HealthCondition {
   image: string | null;
 }
 
+export interface LibraryTopic {
+  id: number;
+  code: string;
+  sequence: number;
+  title: string;
+  description: string;
+  image_url: string;
+  accent_color: string;
+  icon: string;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface LibraryTopicItem {
+  id: number;
+  topic_id: number;
+  code: string;
+  sequence: number;
+  icon: string;
+  title: string;
+  description: string;
+  is_active: boolean;
+}
+
+export type LibraryTopicWithItems = LibraryTopic & { items: LibraryTopicItem[] };
+
 export type PostType = 'system' | 'achievement' | 'meal_share' | 'user_post';
+export type NotificationType = 'announcement' | 'new_post' | 'health_tip';
+export type NotificationActionType = 'community_post' | 'url';
+
+export interface AppNotification {
+  id: number;
+  type: NotificationType;
+  title: string;
+  body: string;
+  image_url: string | null;
+  action_type: NotificationActionType | null;
+  action_ref: string | null;
+  created_at: string;
+  is_read: boolean;
+}
 
 export type ReactionType = 'love';
 
 export interface CommunityPost {
   id: number;
-  user_id: string;              // UUID from auth.users, or 'system' for official posts
+  user_id: string;              // UUID from auth.users
   author_name: string;
   author_avatar: string | null;
   content: string;
   image_url: string | null;
+  link_url: string | null;
   post_type: PostType;
   is_pinned: boolean;
   love_count: number;
+  public_notification: boolean;
   created_at: string;
   updated_at: string;
 }

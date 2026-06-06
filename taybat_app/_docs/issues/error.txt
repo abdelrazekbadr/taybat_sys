@@ -1,0 +1,24 @@
+
+ LOG  Profile | DEBUG : [Profile] upsertProfile → userId: 65e67f03-a55a-47e5-936a-826e35485b18 fields: 
+[
+  "next_rating_date",
+  "last_health_score",
+  "last_improvement_goals_codes",
+  "id",
+  "updated_at"
+]
+
+ LOG  Profile | ERROR : [Profile] upsertProfile ERROR: 
+{
+  "code": "23502",
+  "message": "null value in column \"email\" of relation \"profiles\" violates not-null constraint",
+  "details": null,
+  "hint": null,
+  "payload": {
+    "next_rating_date": "2026-06-12",
+    "last_health_score": 2,
+    "last_improvement_goals_codes": "2",
+    "id": "65e67f03-a55a-47e5-936a-826e35485b18",
+    "updated_at": "2026-06-05T20:06:50.813Z"
+  }
+}

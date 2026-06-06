@@ -18,7 +18,7 @@ const ARABIC_MONTHS = [
 ];
 
 // Saturday-first column order (Sat→Fri), matches Arabic calendar convention
-const WEEK_DAYS_AR = ['س', 'ح', 'إ', 'ث', 'أ', 'خ', 'ج'];
+const WEEK_DAYS_AR = ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'];
 
 const COMMIT_GREEN = '#34D399';
 const COMMIT_RED   = '#fb7185';
