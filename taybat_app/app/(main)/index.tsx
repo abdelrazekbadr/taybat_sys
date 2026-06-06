@@ -1,12 +1,13 @@
 import { router, useFocusEffect } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { AppState, View, ScrollView, ActivityIndicator, RefreshControl, Alert, Pressable } from 'react-native';
+import { AppState, View, ScrollView, RefreshControl, Alert, Pressable } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import { BarChart2, ChevronLeft, ChevronRight, Star, Utensils } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
+import { MealSpinner } from '@/components/common/MealSpinner';
 import { useRTL } from '@/hooks/useRTL';
 import { CommitmentCard } from '@/components/home/CommitmentCard';
 import { HomeHeader } from '@/components/home/HomeHeader';
@@ -82,7 +83,7 @@ export default function HomeScreen() {
   if (!user) {
     return (
       <View className="flex-1 items-center justify-center bg-app-background">
-        <ActivityIndicator color={theme.colors.primary} size="large" />
+        <MealSpinner />
       </View>
     );
   }
@@ -90,7 +91,7 @@ export default function HomeScreen() {
   if (mealsLoading && !meals.length) {
     return (
       <View className="flex-1 items-center justify-center bg-app-background">
-        <ActivityIndicator color={theme.colors.primary} size="large" />
+        <MealSpinner />
       </View>
     );
   }

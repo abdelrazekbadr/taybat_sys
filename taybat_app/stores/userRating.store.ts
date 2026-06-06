@@ -6,6 +6,7 @@ import type { CreateUserRatingPayload } from '@/repositories/userRatings';
 import { toUserMessage } from '@/shared/errors/AppError';
 import type { UserRating } from '@/types';
 
+import { useMembershipStore } from './membership.store';
 import { useUserStore } from './user.store';
 
 export type SubmitUserRatingPayload = Omit<CreateUserRatingPayload, 'userId'>;
@@ -95,6 +96,7 @@ export const useUserRatingStore = create<UserRatingState>((set, get) => ({
       useUserStore.getState().updateUser({ next_rating_date: nextRatingDate });
       set((state) => ({ ratings: [...state.ratings, rating], isLoading: false }));
       get().checkPendingRating();
+      void useMembershipStore.getState().recordEvent('committed', 'complete_weekly_rating');
       return true;
     } catch (error: unknown) {
       set({ isLoading: false, errorMessage: toUserMessage(error) });

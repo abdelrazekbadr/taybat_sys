@@ -183,3 +183,63 @@ export interface CommunityStats {
   avg_adherence_score: number | null;
   total_meals_logged: number;
 }
+
+// ============================================================
+// Membership
+// ============================================================
+
+export type MembershipTrack = 'committed' | 'supporter';
+
+export type MembershipTierKey = 'starter' | 'bronze' | 'silver' | 'gold' | 'platinum';
+
+export type PointEventActionKey =
+  | 'add_daily_meal'
+  | 'complete_weekly_rating'
+  | 'consecutive_week_streak'
+  | 'share_meal'
+  | 'share_post'
+  | 'share_stats'
+  | 'share_topic'
+  | 'create_community_post';
+
+export type PointEventReferenceType = 'post' | 'meal' | 'stat' | 'topic';
+
+export interface MembershipTier {
+  track: MembershipTrack;
+  tierKey: MembershipTierKey;
+  minPoints: number;
+  labelAr: string;
+  iconKey: string;
+  sortOrder: number;
+}
+
+export interface PointRule {
+  actionKey: PointEventActionKey;
+  track: MembershipTrack;
+  points: number;
+  isActive: boolean;
+}
+
+export interface UserMembership {
+  userId: string;
+  committedPoints: number;
+  supporterPoints: number;
+  committedTier: MembershipTier;
+  supporterTier: MembershipTier;
+  windowStart: string;
+}
+
+export interface MembershipConfig {
+  resetWindowDays: number;
+  maxDailyMealEvents: number;
+  adCooldownHours: number;
+  tiers: MembershipTier[];
+  rules: PointRule[];
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  userId: string;
+  points: number;
+  tierKey: MembershipTierKey;
+}

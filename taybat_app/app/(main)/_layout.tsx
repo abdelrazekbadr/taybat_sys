@@ -1,9 +1,18 @@
 import { Stack } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { AuthGateSheet } from '@/components/auth/AuthGateSheet';
+import { useMembershipStore } from '@/stores/membership.store';
 
 export default function MainLayout() {
+  const init           = useMembershipStore((s) => s.init);
+  const fetchMembership = useMembershipStore((s) => s.fetchMembership);
+
+  useEffect(() => {
+    void init().then(() => fetchMembership());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <>
       <Stack screenOptions={{ headerShown: false }}>

@@ -15,6 +15,7 @@ import { useAuthGate } from '@/hooks/useAuthGate';
 import { useRTL } from '@/hooks/useRTL';
 import { useMealItemsStore } from '@/stores/mealItems.store';
 import { useMealsStore } from '@/stores/meals.store';
+import { useMembershipStore } from '@/stores/membership.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import type { HungryState, MealItem, ZoneColor } from '@/types';
 import { getZoneMeta } from '@/utils/zoneUtils';
@@ -94,7 +95,14 @@ export default function MealDetailScreen() {
 
   const handleShare = async () => {
     try {
-      await Share.share({ message: `وجبة ${meal.name} من نظام الطيّبات - ${zoneMeta.emoji} منطقة ${zoneMeta.label}` });
+      const result = await Share.share({
+        message: `وجبة ${meal.name} من نظام الطيّبات - ${zoneMeta.emoji} منطقة ${zoneMeta.label}`,
+      });
+      // Only award points when the user actually shared (not when they cancelled).
+      // On Android result.action is always sharedAction; on iOS it reflects real intent.
+      if (result.action === Share.sharedAction) {
+        void useMembershipStore.getState().recordEvent('supporter', 'share_meal', undefined, 'meal', meal.id);
+      }
     } catch {}
   };
 

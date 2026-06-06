@@ -6,6 +6,7 @@ import type { HungryState, UserMeal } from '@/types';
 import { localDateISO } from '@/utils/dateUtils';
 
 import { useMealsStore } from './meals.store';
+import { useMembershipStore } from './membership.store';
 import { useUserStore } from './user.store';
 
 interface UserMealsState {
@@ -81,6 +82,8 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
         set({ isLoading: false, errorMessage: 'تم الوصول للحد اليومي (3 وجبات)' });
         return false;
       }
+      // Capture before the API call: only the FIRST meal of the day earns points
+      const isFirstMealToday = todayCount === 0;
       const entry = await trackingRepository.logMeal({
         userId: user.id,
         mealId: meal.id,
@@ -90,6 +93,9 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
       });
       const nextMeals = [...get().userMeals, entry];
       set({ userMeals: nextMeals, todayMeals: nextMeals.filter((m) => m.user_id === user.id && m.date === today), isLoading: false });
+      if (isFirstMealToday) {
+        void useMembershipStore.getState().recordEvent('committed', 'add_daily_meal');
+      }
       return true;
     } catch (error: unknown) {
       set({ isLoading: false, errorMessage: toUserMessage(error) });
@@ -129,6 +135,8 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
   deleteMeal: async (id) => {
     set({ isLoading: true, errorMessage: '' });
     try {
+      // Capture the meal's date before removing it from state
+      const targetMeal = get().userMeals.find((m) => m.id === id);
       await trackingRepository.deleteMeal(id);
       const user = useUserStore.getState().user;
       const today = todayIsoDate();
@@ -138,6 +146,13 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
         todayMeals: user ? nextMeals.filter((m) => m.user_id === user.id && m.date === today) : [],
         isLoading: false,
       });
+      // Only remove the day's committed points when this was the LAST meal for that day
+      if (targetMeal) {
+        const remainingMealsForDay = nextMeals.filter((m) => m.date === targetMeal.date);
+        if (remainingMealsForDay.length === 0) {
+          void useMembershipStore.getState().deleteDayEvent(targetMeal.date);
+        }
+      }
       return true;
     } catch (error: unknown) {
       set({ isLoading: false, errorMessage: toUserMessage(error) });

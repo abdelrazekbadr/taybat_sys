@@ -11,3 +11,4 @@ export * from './theme.store';
 export * from './user.store';
 export * from './userMeals.store';
 export * from './userRating.store';
+export * from './membership.store';

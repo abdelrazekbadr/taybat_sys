@@ -1,0 +1,33 @@
+
+فكرة الشارات المكتسبة سيتم حذفها واستبدالها بافكار اخري
+الافكار الاخري تعتمد علي العضوية 
+ــــــــــــــــ
+نقاط العضو الملتزم  : اخر ٣٠ يوم
+هي  نقاط يتم تجميعها للمستخدم اخر ٣٠  يوم من خلال اضافة وجبة علي الاقل كل يوم وعمل تقييم اسبوعي
+ يجب تخزين قواعد النقاط بقاعدة البيانات بيحث اذا تم التعديل عليها يتم التأثير فورا علي جميع المستخدمين 
+
+
+ــــــــ 
+نقاط العضو الداعم : اخر ٣٠ يوم
+هو العضو الذي يعمل علي هدف دعم التطبيق من خلال عمل 
+مشاركة سواء للوجبات سواء المنشورات الاحصائيات  او  المواضيع
+ يجب تخزين قواعد النقاط بقاعدة البيانات بيحث اذا تم التعديل عليها يتم التأثير فورا علي جميع المستخدمين 
+من خلال رؤية اعلان محدد خلال التطبيق كنوع من الدعم 
+فكرة الاعلان ستكون اختيارية وليست اجبارية
+الهدف منها تحصيل تكلفة الدعم للتطبيق
+
+النقاط والعضوية ستكون موجودة بشكل اساسي في صفحة
+  taybat_app/app/(main)/user-profile.tsx
+
+  لكن اريد اقترحات عن الاماكن المناسبة الاخري التي يتم عرض فيها العضوية
+
+  ــــــــ
+  * create technical plan in english to apply this membership feature in my app with supabase connection
+with dynamic points roles the points will reset after (30) days as default need to be configured also in database 
+the goal : make big community connections , icrease app users with soft an viral ideas without annoying users
+focus to create technical plan without code implementation
+save output in taybat_app/_docs/analysis
+
+
+
+

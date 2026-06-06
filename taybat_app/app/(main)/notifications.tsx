@@ -1,11 +1,12 @@
 import { Bell, BellOff, CheckCheck, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React, { useCallback, useEffect } from 'react';
 import { FlatList, Pressable, View } from 'react-native';
-import { ActivityIndicator, useTheme } from 'react-native-paper';
+import { useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 
 import { AppText } from '@/components/common/AppText';
+import { MealSpinner } from '@/components/common/MealSpinner';
 import { useRTL } from '@/hooks/useRTL';
 import { useNotificationsStore } from '@/stores/notifications.store';
 import type { AppNotification } from '@/types';
@@ -159,7 +160,7 @@ export default function NotificationsScreen() {
       {/* List */}
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator />
+          <MealSpinner />
         </View>
       ) : (
         <FlatList

@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Pressable, ScrollView, View } from 'react-native';
+import { Image, Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react-native';
 
 import { AppText, AppTextInput } from '@/components/common/AppText';
+import { MealSpinner } from '@/components/common/MealSpinner';
 import { GradientTabs } from '@/components/common/GradientTabs';
 import { StarRating } from '@/components/common/StarRating';
 import { useAuthGate } from '@/hooks/useAuthGate';
@@ -179,7 +180,7 @@ export default function MealPreferencesScreen() {
   if (!user || !meals.length) {
     return (
       <View className="flex-1 items-center justify-center bg-app-background">
-        <ActivityIndicator color={theme.colors.primary} size="large" />
+        <MealSpinner />
       </View>
     );
   }

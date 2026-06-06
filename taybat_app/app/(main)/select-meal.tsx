@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, ScrollView, TouchableOpacity, ActivityIndicator, Image, Alert } from 'react-native';
+import { View, ScrollView, TouchableOpacity, ActivityIndicator, Image, Alert } from 'react-native'; // ActivityIndicator kept for add-button (38px circle)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 
@@ -9,6 +9,7 @@ import { ChevronLeft, ChevronRight, LayersPlus } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
+import { MealSpinner } from '@/components/common/MealSpinner';
 import { GradientTabs } from '@/components/common/GradientTabs';
 import { StarRating } from '@/components/common/StarRating';
 import { useAuthGate } from '@/hooks/useAuthGate';
@@ -120,7 +121,7 @@ export default function SelectMealScreen() {
       {/* list */}
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={theme.colors.primary} />
+          <MealSpinner />
         </View>
       ) : (
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>

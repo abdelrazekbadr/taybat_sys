@@ -17,6 +17,7 @@ import { useUserStore } from './user.store';
 import { useNotificationsStore } from './notifications.store';
 import { useTopicsStore } from './topics.store';
 import { useUserRatingStore } from './userRating.store';
+import { useMembershipStore } from './membership.store';
 
 export async function resetAllAppStores(): Promise<void> {
   await Promise.all([
@@ -42,5 +43,6 @@ export async function resetAllAppStores(): Promise<void> {
   useMealPreferencesStore.getState().resetPreferences();
   useTopicsStore.getState().resetTopics();
   useNotificationsStore.getState().resetNotifications();
+  useMembershipStore.getState().resetMembership();
   useUserStore.getState().resetUser();
 }

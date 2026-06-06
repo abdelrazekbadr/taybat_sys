@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { ActivityIndicator } from 'react-native-paper';
+import { MealSpinner } from '@/components/common/MealSpinner';
 
 import { CommunityStatsTab } from '@/components/community/CommunityStatsTab';
 import { EmptyFeed } from '@/components/community/EmptyFeed';
@@ -69,8 +69,8 @@ export default function CommunityScreen() {
           onEndReachedThreshold={0.4}
           ListEmptyComponent={
             isLoading ? (
-              <View className="py-10">
-                <ActivityIndicator />
+              <View className="py-10 items-center">
+                <MealSpinner size={120} />
               </View>
             ) : (
               <EmptyFeed />
@@ -97,8 +97,8 @@ export default function CommunityScreen() {
           }}
           ListFooterComponent={
             isLoadingMore ? (
-              <View className="py-6">
-                <ActivityIndicator />
+              <View className="py-6 items-center">
+                <MealSpinner variant="arc" size={80} />
               </View>
             ) : (
               <View className="h-2" />

@@ -16,6 +16,7 @@ export const STORAGE_KEYS = {
   MOCK_USER_PROFILES: '@taybat/mock_user_profiles',
   REMEMBER_ME: 'remember_me',
   NOTIFICATION_READS: '@taybat/notification_reads',
+  MEMBERSHIP_MOCK_EVENTS: '@taybat/membership_mock_events',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

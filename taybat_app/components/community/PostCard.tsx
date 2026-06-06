@@ -9,6 +9,7 @@ import { captureRef } from 'react-native-view-shot';
 import { AppText } from '@/components/common/AppText';
 import { FullScreenImageModal } from '@/components/common/FullScreenImageModal';
 import { useRTL } from '@/hooks/useRTL';
+import { useMembershipStore } from '@/stores/membership.store';
 import type { CommunityPost } from '@/types';
 import { toRelativeArabicTime } from '@/utils/communityTime';
 import { SYSTEM_ADMIN_USER_ID } from '@/utils/constants';
@@ -88,9 +89,11 @@ export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPres
       // Fallback to plain-text share if capture fails
       await Share.share({ message: `${post.author_name}\n\n${post.content}` });
     } finally {
+      // Award supporter points once per post shared (deduped by post.id in DB)
+      void useMembershipStore.getState().recordEvent('supporter', 'share_post', undefined, 'post', post.id);
       setIsSharing(false);
     }
-  }, [isSharing, post.author_name, post.content]);
+  }, [isSharing, post.author_name, post.content, post.id]);
 
   return (
     <View className="bg-app-surface">

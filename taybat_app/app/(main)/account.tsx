@@ -13,10 +13,19 @@ import { useRTL } from '@/hooks/useRTL';
 import { useAccountStore } from '@/stores/account.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { useMealPreferencesStore } from '@/stores/mealPreferences.store';
+import { useMembershipStore } from '@/stores/membership.store';
 import { useUserStore } from '@/stores/user.store';
-import type { AvatarConfig } from '@/types';
+import type { AvatarConfig, MembershipTierKey } from '@/types';
 import { daysOnPlan } from '@/utils/statsUtils';
 import { toArabicNumerals } from '@/utils/zoneUtils';
+
+const TIER_COLOR: Record<MembershipTierKey, string> = {
+  starter:  '#94a3b8',
+  bronze:   '#b45309',
+  silver:   '#64748b',
+  gold:     '#d97706',
+  platinum: '#4f46e5',
+};
 
 const maskEmail = (email: string) => {
   const at = email.indexOf('@');
@@ -74,6 +83,7 @@ export default function AccountScreen() {
   const authLogout = useAuthStore((s) => s.logout);
 
   const { favoriteMealIds, initializePreferences } = useMealPreferencesStore();
+  const committedTier = useMembershipStore((s) => s.committedTier);
 
   const [avatarPickerVisible, setAvatarPickerVisible] = useState(false);
 
@@ -154,6 +164,17 @@ export default function AccountScreen() {
                   في الرحلة منذ {journeyDaysLabel}
                 </AppText>
               </View>
+              {committedTier && committedTier.tierKey !== 'starter' && (
+                <View
+                  className="mt-1 self-start flex-row items-center gap-1.5 rounded-[999px] px-3 py-1"
+                  style={{ flexDirection: rowDir, backgroundColor: TIER_COLOR[committedTier.tierKey] + '18' }}
+                >
+                  <View className="h-2 w-2 rounded-full" style={{ backgroundColor: TIER_COLOR[committedTier.tierKey] }} />
+                  <AppText variant="semibold" className="text-[12px] leading-5" style={{ color: TIER_COLOR[committedTier.tierKey] }}>
+                    عضو {committedTier.labelAr}
+                  </AppText>
+                </View>
+              )}
             </View>
           </Pressable>
 

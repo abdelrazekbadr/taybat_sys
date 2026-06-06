@@ -1,10 +1,11 @@
 import { router } from 'expo-router';
 import React, { useEffect } from 'react';
-import { ActivityIndicator, FlatList, Image, RefreshControl, TouchableOpacity, View } from 'react-native';
+import { FlatList, Image, RefreshControl, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, type MD3Theme } from 'react-native-paper';
 
 import { AppText } from '@/components/common/AppText';
+import { MealSpinner } from '@/components/common/MealSpinner';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { useRTL } from '@/hooks/useRTL';
 import { useTopicsStore } from '@/stores/topics.store';
@@ -67,7 +68,7 @@ export default function TopicsScreen() {
 
       {isLoading && topics.length === 0 ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color={theme.colors.primary} />
+          <MealSpinner />
         </View>
       ) : (
         <FlatList
