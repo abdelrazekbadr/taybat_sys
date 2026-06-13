@@ -68,4 +68,21 @@ export class UserProfileRepositorySupabase implements IUserProfileRepository {
     if (!result) throw new NotFoundError('Profile');
     return result as UserProfile;
   }
+
+  async updateProfile(userId: string, data: Partial<UserProfile>): Promise<void> {
+    const payload = { ...data, updated_at: new Date().toISOString() };
+    log.debug('[Profile] updateProfile → userId:', userId, 'fields:', Object.keys(payload));
+    const { error } = await this.client
+      .from('profiles')
+      .update(payload)
+      .eq('id', userId);
+    if (error) {
+      log.error('[Profile] updateProfile ERROR:', {
+        code: error.code, message: error.message, details: error.details, hint: error.hint,
+        payload,
+      });
+      throw new ServerError(error);
+    }
+    log.debug('[Profile] updateProfile ← success');
+  }
 }

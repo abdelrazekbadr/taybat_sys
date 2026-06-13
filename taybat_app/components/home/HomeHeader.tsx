@@ -1,4 +1,4 @@
-import { Award, Bell } from 'lucide-react-native';
+import { Bell } from 'lucide-react-native';
 import React from 'react';
 import { View, TouchableOpacity, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -27,7 +27,7 @@ function getGreeting() {
 export function HomeHeader({ name, gender, avatarUrl, isGuest = false, onBellPress, onProfilePress, unreadCount = 0 }: HomeHeaderProps) {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
-  const { isRTL, rowDir } = useRTL();
+  const { rowDir } = useRTL();
   const avatarSource = avatarUrl ? { uri: avatarUrl } : getDefaultAvatarSource(gender, isGuest);
   const greeting = getGreeting();
   const badgeLabel = unreadCount > 9 ? '9+' : String(unreadCount);
@@ -44,15 +44,7 @@ export function HomeHeader({ name, gender, avatarUrl, isGuest = false, onBellPre
         activeOpacity={onProfilePress ? 0.75 : 1}
         disabled={!onProfilePress}
       >
-        <View className="relative h-[50px] w-[50px]">
-          <Image source={avatarSource} className="h-[50px] w-[50px] rounded-full bg-app-surfaceAlt" resizeMode="cover" />
-          <View
-            className="absolute bottom-[-3px] h-[22px] w-[22px] items-center justify-center rounded-full bg-app-background"
-            style={isRTL ? { right: -3 } : { left: -3 }}
-          >
-            <Award size={13} color={theme.colors.primary} fill={theme.colors.primary} strokeWidth={0} />
-          </View>
-        </View>
+        <Image source={avatarSource} className="h-[50px] w-[50px] rounded-full bg-app-surfaceAlt" resizeMode="cover" />
 
         <View className="gap-0.5">
           <AppText className="text-[12.5px] leading-[18px] text-app-textSoft">{greeting}</AppText>

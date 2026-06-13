@@ -51,17 +51,22 @@ function buildSegments(
   todayISO: string,
   planStartISO: string | null,
 ): { segments: Segment[]; cycleStartISO: string; cycleEndISO: string } {
-  // Cycle start: based on plan start date; fallback to rolling last 7 days
-  const cycleStartISO = planStartISO
-    ? getCycleStartISO(planStartISO, todayISO)
-    : (() => {
-        const d = new Date(todayISO);
-        d.setDate(d.getDate() - 6);
-        return d.toISOString().slice(0, 10);
-      })();
+  // No plan started yet — all dashes gray, no commitment calculated
+  if (!planStartISO) {
+    const start = new Date(todayISO);
+    start.setDate(start.getDate() - 6);
+    const cycleStartISO = start.toISOString().slice(0, 10);
+    const segments = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(start);
+      d.setDate(start.getDate() + i);
+      return { status: 'future' as DayStatus, dayNumber: d.getDate() };
+    });
+    return { segments, cycleStartISO, cycleEndISO: todayISO };
+  }
 
-  const cycleStart = new Date(cycleStartISO);
-  const cycleEndDate = new Date(cycleStartISO);
+  const cycleStartISO  = getCycleStartISO(planStartISO, todayISO);
+  const cycleStart     = new Date(cycleStartISO);
+  const cycleEndDate   = new Date(cycleStartISO);
   cycleEndDate.setDate(cycleEndDate.getDate() + 6);
   const cycleEndISO = cycleEndDate.toISOString().slice(0, 10);
 

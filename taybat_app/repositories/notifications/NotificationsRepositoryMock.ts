@@ -28,7 +28,7 @@ async function getReadIds(): Promise<Set<number>> {
 }
 
 export class NotificationsRepositoryMock implements INotificationsRepository {
-  async getNotifications(_userId: string): Promise<AppNotification[]> {
+  async getNotifications(_userId: string, _userRegisteredAt: string): Promise<AppNotification[]> {
     await mockDelay(200);
     const readIds = await getReadIds();
     return MOCK_NOTIFICATIONS.map((n) => ({ ...n, is_read: readIds.has(n.id) }));

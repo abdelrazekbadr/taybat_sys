@@ -1,8 +1,10 @@
 import { supabase } from '@/lib/supabase';
 import { authRepository, userProfileRepository } from '@/repositories/auth';
-import { EmailConfirmationRequiredError, toUserMessage } from '@/shared/errors/AppError';
+import { userRatingRepository } from '@/repositories/userRatings';
+import { AppError, EmailConfirmationRequiredError, toUserMessage } from '@/shared/errors/AppError';
 import { createLogger } from '@/lib/logger';
-import type { AuthResult, AuthProvider, LoginPayload, ProfileCompletionPayload, SignUpPayload, UserProfile } from '@/types';
+import { localDateISO } from '@/utils/dateUtils';
+import type { AuthResult, AuthProvider, Gender, LoginPayload, ProfileCompletionPayload, SignUpPayload, UserProfile } from '@/types';
 
 const log = createLogger('AuthService');
 
@@ -39,12 +41,14 @@ class AuthService {
   async loginWithOAuth(provider: Exclude<AuthProvider, 'email' | 'guest'>): Promise<AuthResult> {
     try {
       const session = await authRepository.loginWithOAuth(provider);
-      const email = `mock+${provider}@taybat.app`;
-      await this.ensureProfileRow(session.user_id, email, provider);
+      const email = session.email ?? `mock+${provider}@taybat.app`;
+      await this.ensureProfileRow(session.user_id, email, provider, session.name, session.birth_date, session.gender);
       const profile = await userProfileRepository.getProfile(session.user_id);
       if (!profile) throw new Error('حدث خطأ ما. حاول مرة أخرى');
-      return this.toAuthResult(profile);
+      return this.toAuthResult(profile, session.avatar_url);
     } catch (error: unknown) {
+      // Re-throw AppError as-is so the store can inspect error.code (e.g. OAUTH_CANCELED)
+      if (error instanceof AppError) throw error;
       throw new Error(toUserMessage(error));
     }
   }
@@ -52,7 +56,7 @@ class AuthService {
   async completeProfile(userId: string, email: string, data: ProfileCompletionPayload): Promise<UserProfile> {
     try {
       const existing = await userProfileRepository.getProfile(userId);
-      const planStartDate = existing?.plan_start_date ?? new Date().toISOString().split('T')[0];
+      const planStartDate = existing?.plan_start_date ?? localDateISO();
       const nextRatingDate =
         existing?.next_rating_date ??
         (() => {
@@ -60,13 +64,30 @@ class AuthService {
           dt.setDate(dt.getDate() + 7);
           return dt.toISOString().split('T')[0];
         })();
-      return await userProfileRepository.upsertProfile(userId, {
-        ...data,
+      const { initial_health_score, ...profileData } = data;
+      const profile = await userProfileRepository.upsertProfile(userId, {
+        ...profileData,
         email,
         plan_start_date: planStartDate,
         next_rating_date: nextRatingDate,
         profile_completed: true,
+        ...(initial_health_score ? { last_health_score: initial_health_score } : {}),
       });
+
+      if (data.initial_health_score) {
+        try {
+          await userRatingRepository.submitRating({
+            userId,
+            period_start: planStartDate,
+            health_score: data.initial_health_score,
+            improvement_goals_codes: '',
+          });
+        } catch (ratingErr: unknown) {
+          log.warn('[AuthService] completeProfile: baseline rating insert failed (non-fatal):', ratingErr instanceof Error ? ratingErr.message : ratingErr);
+        }
+      }
+
+      return profile;
     } catch (error: unknown) {
       log.error('[AuthService] completeProfile error:', error instanceof Error ? error.message : error);
       throw new Error(toUserMessage(error));
@@ -139,35 +160,42 @@ class AuthService {
     return () => subscription.unsubscribe();
   }
 
-  private async ensureProfileRow(userId: string, email: string, provider: AuthProvider): Promise<void> {
+  private async ensureProfileRow(
+    userId: string,
+    email: string,
+    provider: AuthProvider,
+    name?: string | null,
+    birthDate?: string | null,
+    gender?: Gender | null,
+  ): Promise<void> {
     const existing = await userProfileRepository.getProfile(userId);
     if (existing) return;
     await userProfileRepository.upsertProfile(userId, {
       id: userId,
       email,
       provider,
-      name: null,
-      gender: null,
-      birth_date: null,
+      name: name ?? null,
+      gender: gender ?? null,
+      birth_date: birthDate ?? null,
       birth_year: null,
       weight_kg: null,
       height_cm: null,
       activity_level: null,
       health_goals_codes: null,
-        health_conditions_codes: null,
+      health_conditions_codes: null,
       plan_start_date: null,
-        next_rating_date: null,
+      next_rating_date: null,
       profile_completed: false,
     });
   }
 
-  private toAuthResult(profile: UserProfile): AuthResult {
+  private toAuthResult(profile: UserProfile, avatarUrl?: string | null): AuthResult {
     return {
       user: {
         id: profile.id,
         email: profile.email,
         name: profile.name,
-        avatar_url: null,
+        avatar_url: avatarUrl ?? null,
         provider: profile.provider,
         profile_completed: profile.profile_completed,
       },

@@ -1,4 +1,4 @@
-import type { Gender } from './auth.types';
+import type { Gender, WeeklyScore } from './auth.types';
 
 export type ZoneColor = 1 | 2 | 3 | 4 | 5;
 
@@ -46,6 +46,9 @@ export interface Meal {
   /** comma-separated meal type ids: 1=إفطار 2=غداء 3=عشاء */
   meal_type_ids: string;
   sequence?: number;
+  max_day_frequency?: number | null;
+  max_week_frequency?: number | null;
+  max_month_frequency?: number | null;
 }
 
 export interface User {
@@ -62,6 +65,7 @@ export interface User {
   post_visibility: PostVisibility;
   follow_permission: FollowPermission;
   profile_completed: boolean;
+  registered_at: string;          // profiles.created_at — user's registration timestamp
 }
 
 export interface MealItemPreference {
@@ -85,8 +89,6 @@ export interface UserMeal {
   /** 1=شبعان  2=عادي  3=جائع  4=جوع شديد — null on legacy rows */
   hungry_state?: HungryState | null;
 }
-
-export type WeeklyScore = 1 | 2 | 3 | 4 | 5;
 
 export interface UserRating {
   id: number;

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 
 import { authService } from '@/api/auth/auth.service';
+import { AppError } from '@/shared/errors/AppError';
 import { createLogger } from '@/lib/logger';
 import type { AuthStatus, AuthUser, LoginPayload, ProfileCompletionPayload, SignUpPayload, UserProfile } from '@/types';
 
@@ -135,7 +136,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ status: 'authenticated', user: result.user, profile: result.profile, isLoading: false });
       return true;
     } catch (error: unknown) {
-      set({ status: 'unauthenticated', user: null, profile: null, isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر تسجيل الدخول' });
+      const isCanceled = error instanceof AppError && error.code === 'OAUTH_CANCELED';
+      set({
+        status: 'unauthenticated',
+        user: null,
+        profile: null,
+        isLoading: false,
+        // No error banner for user-initiated cancel — only real failures show a message
+        errorMessage: isCanceled ? '' : (error instanceof Error ? error.message : 'تعذّر تسجيل الدخول'),
+      });
       return false;
     }
   },

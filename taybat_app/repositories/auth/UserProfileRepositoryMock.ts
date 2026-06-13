@@ -52,4 +52,12 @@ export class UserProfileRepositoryMock implements IUserProfileRepository {
     await writeProfiles({ ...map, [userId]: next });
     return next;
   }
+
+  async updateProfile(userId: string, data: Partial<UserProfile>): Promise<void> {
+    await mockDelay();
+    const map = await readProfiles();
+    const existing = map[userId];
+    if (!existing) return;
+    await writeProfiles({ ...map, [userId]: { ...existing, ...data, updated_at: new Date().toISOString() } });
+  }
 }

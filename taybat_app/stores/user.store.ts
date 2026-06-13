@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 
+import { userProfileRepository } from '@/repositories/auth';
+import { toUserMessage } from '@/shared/errors/AppError';
 import type { AvatarConfig, User } from '@/types';
 import type { UserProfile } from '@/types/auth.types';
 
@@ -9,6 +11,7 @@ interface UserState {
   errorMessage: string;
   setUserFromProfile: (profile: UserProfile) => void;
   updateUser: (updates: Partial<User>) => void;
+  reloadProfile: () => Promise<void>;
   resetUser: () => void;
 }
 
@@ -37,6 +40,7 @@ export const useUserStore = create<UserState>((set) => ({
         post_visibility: 'public',
         follow_permission: 'everyone',
         profile_completed: profile.profile_completed,
+        registered_at: profile.created_at,
       },
       isLoading: false,
       errorMessage: '',
@@ -44,6 +48,17 @@ export const useUserStore = create<UserState>((set) => ({
 
   updateUser: (updates) =>
     set((state) => (state.user ? { user: { ...state.user, ...updates } } : state)),
+
+  reloadProfile: async () => {
+    const userId = useUserStore.getState().user?.id;
+    if (!userId) return;
+    try {
+      const profile = await userProfileRepository.getProfile(userId);
+      if (profile) useUserStore.getState().setUserFromProfile(profile);
+    } catch (error: unknown) {
+      set({ errorMessage: toUserMessage(error) });
+    }
+  },
 
   resetUser: () => set({ ...initialState }),
 }));

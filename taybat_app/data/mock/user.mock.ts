@@ -16,4 +16,5 @@ export const MOCK_USER: User = Object.freeze({
   post_visibility: 'public',
   follow_permission: 'everyone',
   profile_completed: true,
+  registered_at: '2026-04-01T00:00:00.000Z',
 });

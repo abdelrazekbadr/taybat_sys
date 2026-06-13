@@ -40,6 +40,7 @@ if (Platform.OS === 'ios') {
   I18nManager.forceRTL(false);
 }
 
+
 SplashScreen.preventAutoHideAsync();
 
 const queryClient = new QueryClient();
@@ -146,8 +147,13 @@ export default function RootLayout() {
     if (isAccessible && inAuth) {
       const isOnCompleteProfile = segments[1] === 'complete-profile';
       log.debug('[Layout] guard: isAccessible+inAuth | isOnCompleteProfile:', isOnCompleteProfile, '| profile_completed:', user?.profile_completed);
-      if (isOnCompleteProfile && user !== null) {
+      if (isOnCompleteProfile) {
         log.debug('[Layout] guard: staying on complete-profile');
+        return;
+      }
+      if (user && !user.profile_completed) {
+        log.debug('[Layout] guard: profile incomplete → navigating to complete-profile');
+        router.replace('/(auth)/complete-profile' as never);
         return;
       }
       log.debug('[Layout] guard: navigating to /(main)');

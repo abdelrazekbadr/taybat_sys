@@ -1,0 +1,40 @@
+<resources>
+  <string name="app_name">"الطيبات"</string>
+  <string name="template_ready">"مشروع القالب جاهز"</string>
+  <string name="template_description">"هذا قالب نظيف مبني على نفس الهيكل المعماري للتطبيق بدون أي منطق خاص بالأعمال."</string>
+  <string name="toggle_language">"تغيير اللغة"</string>
+  <string name="included_layers">"الطبقات المتوفرة"</string>
+  <string name="layers_list">"طبقة العرض، إدارة الحالة، الخدمات، التخزين، الترجمة، والبنية التحتية المشتركة."</string>
+  <string name="splash_title">"الطيبات"</string>
+  <string name="splash_tagline">"إبدأ رحلة الاستشفاء ..."</string>
+  <string name="splash_footer">"Premium Wellness 
+ فكرة د. ضياء العوضي "</string>
+  <string name="onboarding_skip">"تخطي"</string>
+  <string name="onboarding_next">"التالي"</string>
+  <string name="onboarding_1_title">"اسمع جسدك، لا تعد السعرات"</string>
+  <string name="onboarding_1_description">"نظام الطيبات يركز على الأكل عند الجوع الحقيقي واختيار أطعمة تشفي الجسم من الالتهاب"</string>
+  <string name="onboarding_1_feature_1">"أطعمة مسموحة محددة بوضوح"</string>
+  <string name="onboarding_1_feature_2">"الأكل عند الجوع الفعلي، لا على جدول"</string>
+  <string name="onboarding_1_feature_3">"الاستماع لإشارات جسدك"</string>
+  <string name="onboarding_2_title">"راقب شعورك يتحسن"</string>
+  <string name="onboarding_2_description">"كل أسبوع سنسأل عن شعورك ونقيس تحسنك من خلال الراحة والعافية، ليس الأرقام."</string>
+  <string name="onboarding_2_feature_1">"تقييمات أسبوعية بسيطة"</string>
+  <string name="onboarding_2_feature_2">"شارات التحفيز لتشجيعك"</string>
+  <string name="onboarding_2_feature_3">"رسوم بيانية توضح تحسنك"</string>
+  <string name="onboarding_3_title">"راقب شعورك يتحسن"</string>
+  <string name="onboarding_3_description">"كل أسبوع سنسأل عن شعورك ونقيس تحسنك من خلال الراحة والعافية، ليس الأرقام."</string>
+  <string name="onboarding_3_feature_1">"تقييمات أسبوعية بسيطة"</string>
+  <string name="onboarding_3_feature_2">"شارات التحفيز لتشجيعك"</string>
+  <string name="onboarding_3_feature_3">"رسوم بيانية توضح تحسنك"</string>
+  <string name="welcome_title">"لماذا تنضم إلى عائلة الطيبات؟"</string>
+  <string name="welcome_description">"رحلتك نحو الشفاء والراحة تبدأ هنا، بأسلوب حياة يفهم لغة جسدك."</string>
+  <string name="welcome_card_1_title">"مراقبة فاعلية نظامك الغذائي"</string>
+  <string name="welcome_card_1_desc">"نحن لا نعد السعرات، بل نراقب كيف يستعيد جسدك حيويته وتختفي آلامك تدريجياً."</string>
+  <string name="welcome_card_2_title">"تتبع السلوك والتحفيز الذكي"</string>
+  <string name="welcome_card_2_desc">"أدوات ذكية تساعدك على الالتزام بإشارات الجوع الحقيقي والوصول لمرحلة الاستشفاء التام."</string>
+  <string name="welcome_card_3_title">"مشاركة قصص النجاح"</string>
+  <string name="welcome_card_3_desc">"كن جزءاً من مجتمع ملهم يشارك تجارب التحسن والتعافي لرفع المعنويات وتبادل الخبرات."</string>
+  <string name="welcome_start_now">"ابدأ الآن"</string>
+  <string name="welcome_login">"تسجيل الدخول"</string>
+  <string name="auth">"[object Object]"</string>
+</resources>

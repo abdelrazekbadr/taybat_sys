@@ -12,5 +12,8 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: true,
     autoRefreshToken: true,
     detectSessionInUrl: false,
+    // PKCE is required for exchangeCodeForSession() in the Facebook OAuth flow.
+    // Email/password, OTP and signInWithIdToken (Google) are unaffected.
+    flowType: 'pkce',
   },
 });

@@ -18,10 +18,15 @@ export class TrackingRepositorySupabase implements ITrackingRepository {
   constructor(private readonly client: SupabaseClient) {}
 
   async getUserMeals(userId: string): Promise<UserMeal[]> {
+    // CommitmentCalendar navigates up to 2 months back; 90 days covers all consumers.
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 89);
+    const cutoffDate = localDateISO(cutoff);
     const { data, error } = await this.client
       .from('user_meals')
       .select('*')
       .eq('user_id', userId)
+      .gte('date', cutoffDate)
       .order('datetime', { ascending: false });
     if (error) throw new ServerError(error);
     return (data ?? []) as UserMeal[];

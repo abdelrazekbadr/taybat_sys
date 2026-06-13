@@ -61,7 +61,10 @@ export interface ProfileCompletionPayload {
   activity_level?: ActivityLevel;
   health_goals_codes?: string;
   health_conditions_codes?: string;
+  initial_health_score?: WeeklyScore;
 }
+
+export type WeeklyScore = 1 | 2 | 3 | 4 | 5;
 
 export interface AuthResult {
   user: AuthUser;
@@ -73,4 +76,14 @@ export interface AuthSession {
   access_token: string;
   user_id: string;
   expires_at: number;
+  /** Real email from OAuth provider — undefined in mock sessions */
+  email?: string;
+  /** Display name from OAuth provider — undefined in mock sessions */
+  name?: string | null;
+  /** Avatar URL from OAuth provider — undefined in mock sessions */
+  avatar_url?: string | null;
+  /** ISO birth date from Google People API — only set after Google sign-in */
+  birth_date?: string | null;
+  /** Gender from Google People API — only set after Google sign-in */
+  gender?: Gender | null;
 }

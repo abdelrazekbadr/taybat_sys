@@ -7,11 +7,20 @@ import type { INotificationsRepository } from './INotificationsRepository';
 export class NotificationsRepositorySupabase implements INotificationsRepository {
   constructor(private readonly client: SupabaseClient) {}
 
-  async getNotifications(userId: string): Promise<AppNotification[]> {
+  async getNotifications(userId: string, userRegisteredAt: string): Promise<AppNotification[]> {
+    // Cutoff = latest of (90 days ago, user's registration date).
+    // Prevents new users from seeing historical notifications and caps data to 90 days.
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 89);
+    const cutoff = userRegisteredAt > ninetyDaysAgo.toISOString()
+      ? userRegisteredAt
+      : ninetyDaysAgo.toISOString();
+
     const [{ data: notifications, error: nErr }, { data: reads, error: rErr }] = await Promise.all([
       this.client
         .from('app_notifications')
         .select('*')
+        .gte('created_at', cutoff)
         .order('created_at', { ascending: false }),
       this.client
         .from('notification_reads')

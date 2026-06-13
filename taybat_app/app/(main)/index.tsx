@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { AppState, View, ScrollView, RefreshControl, Alert, Pressable } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
-import { BarChart2, ChevronLeft, ChevronRight, Star, Utensils } from 'lucide-react-native';
+import { BarChart2, ChevronLeft, ChevronRight, Star, UserCircle, Utensils } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
@@ -19,10 +19,57 @@ import { useUserMealsStore } from '@/stores/userMeals.store';
 import { useUserStore } from '@/stores/user.store';
 import { useUserRatingStore } from '@/stores/userRating.store';
 import { daysOnPlan } from '@/utils/statsUtils';
+import { localDateISO } from '@/utils/dateUtils';
+import { toArabicNumerals } from '@/utils/zoneUtils';
+import type { Meal, UserMeal } from '@/types';
+
+function computeMealAlert(
+  meal: Meal | undefined,
+  userMeals: UserMeal[],
+  todayStr: string,
+): { alertNote: string; isOverLimit: boolean } {
+  if (!meal) return { alertNote: '', isOverLimit: false };
+
+  const mealId = meal.id;
+
+  const dayCount = userMeals.filter((m) => m.meal_id === mealId && m.date === todayStr).length;
+
+  const today = new Date();
+  const d7 = new Date(today);
+  d7.setDate(today.getDate() - 6);
+  const start7Str = localDateISO(d7);
+  const weekCount = userMeals.filter(
+    (m) => m.meal_id === mealId && m.date >= start7Str && m.date <= todayStr,
+  ).length;
+
+  const d30 = new Date(today);
+  d30.setDate(today.getDate() - 29);
+  const start30Str = localDateISO(d30);
+  const monthCount = userMeals.filter(
+    (m) => m.meal_id === mealId && m.date >= start30Str && m.date <= todayStr,
+  ).length;
+
+  if (meal.max_day_frequency != null && dayCount > meal.max_day_frequency) {
+    return { alertNote: 'لقد تجاوزت الحد الموصى به خلال اليوم', isOverLimit: true };
+  }
+  if (meal.max_week_frequency != null && weekCount > meal.max_week_frequency) {
+    return { alertNote: 'لقد تجاوزت الحد الموصى به خلال الأسبوع', isOverLimit: true };
+  }
+  if (meal.max_month_frequency != null && monthCount > meal.max_month_frequency) {
+    return { alertNote: 'لقد تجاوزت الحد الموصى به خلال الشهر', isOverLimit: true };
+  }
+
+  const count = weekCount;
+  return {
+    alertNote: `تناولتها ${toArabicNumerals(count)} ${count === 1 ? 'مرة' : 'مرات'} هذا الأسبوع`,
+    isOverLimit: false,
+  };
+}
 
 export default function HomeScreen() {
   const theme = useTheme();
   const { user } = useUserStore();
+  const reloadProfile = useUserStore((s) => s.reloadProfile);
   const { userMeals, todayMeals, initializeUserMeals } = useUserMealsStore();
   const refreshTodayMeals = useUserMealsStore((s) => s.refreshTodayMeals);
   const { meals, isLoading: mealsLoading, errorMessage: mealsError, initializeMeals, getMealById } = useMealsStore();
@@ -69,12 +116,14 @@ export default function HomeScreen() {
     setIsRefreshing(true);
     setCardKey((k) => k + 1);
     await Promise.all([
-      initializeUserMeals(),
+      reloadProfile(),
+      initializeUserMeals(true),
       initializeMeals(),
-      initializeRatings(),
+      initializeRatings(true),
+      loadNotifications(true),
     ]);
     setIsRefreshing(false);
-  }, [initializeUserMeals, initializeMeals, initializeRatings]);
+  }, [reloadProfile, initializeUserMeals, initializeMeals, initializeRatings, loadNotifications]);
 
   useEffect(() => {
     if (userMeals.length) checkPendingRating();
@@ -117,11 +166,12 @@ export default function HomeScreen() {
   }
 
   const dayNumber = daysOnPlan(user.plan_start_date);
+  const todayStr = localDateISO();
 
   return (
     <View className="flex-1 bg-app-background">
       <HomeHeader
-        name={user.name}
+        name={user.name || user.email.split('@')[0]}
         gender={user.gender}
         avatarUrl={user.avatar_url}
         onProfilePress={() => router.push('/(main)/user-profile')}
@@ -173,12 +223,15 @@ export default function HomeScreen() {
                   const slotIndex = um.id % 3;
                   const initialTab =
                     slotIndex === 0 ? 'breakfast' : slotIndex === 1 ? 'lunch' : 'dinner';
+                  const { alertNote, isOverLimit } = computeMealAlert(meal, userMeals, todayStr);
                   return (
                     <TodayMealRow
                       key={um.id}
                       userMeal={um}
                       mealName={meal?.name ?? 'وجبة'}
                       imageUrl={meal?.image_url}
+                      alertNote={alertNote}
+                      isOverLimit={isOverLimit}
                       onPress={() =>
                         router.push({
                           pathname: '/(main)/meal-detail',
@@ -259,22 +312,48 @@ export default function HomeScreen() {
             </View>
           </Pressable>
 
-          {/* Weekly rating banner */}
-          {pendingRating && (
+          {/* Complete profile prompt — shown when profile is not yet complete */}
+          {!user.profile_completed && (
+            <Pressable
+              onPress={() => router.push('/(auth)/complete-profile' as never)}
+              className="mt-[22px] overflow-hidden rounded-[18px] border border-app-primary bg-app-surface"
+              style={({ pressed }) => [{ opacity: pressed ? 0.88 : 1 }]}
+            >
+              <View className="flex-row" style={{ flexDirection: rowDir }}>
+                <View className="w-1 self-stretch bg-app-primary" />
+                <View className="flex-1 items-center gap-3 px-4 py-3.5" style={{ flexDirection: rowDir }}>
+                  <View className="h-11 w-11 items-center justify-center rounded-[14px]">
+                    <UserCircle size={22} color={theme.colors.primary} strokeWidth={1.8} />
+                  </View>
+                  <View className="flex-1">
+                    <AppText variant="bold" className="text-[14px] leading-6 text-app-navy">
+                      أكمل ملفك الشخصي
+                    </AppText>
+                    <AppText className="text-[12px] leading-5 text-app-textSoft">
+                      أدخل بياناتك لتخصيص تجربتك
+                    </AppText>
+                  </View>
+                  {isRTL
+                    ? <ChevronLeft  size={20} color={theme.colors.primary} strokeWidth={2.5} />
+                    : <ChevronRight size={20} color={theme.colors.primary} strokeWidth={2.5} />}
+                </View>
+              </View>
+            </Pressable>
+          )}
+
+          {/* Weekly rating banner — only when profile is complete */}
+          {user.profile_completed && pendingRating && (
             <Pressable
               onPress={() => router.push('/(main)/stats' as never)}
               className="mt-[22px] overflow-hidden rounded-[18px] border border-app-warning bg-app-surface"
               style={({ pressed }) => [{ opacity: pressed ? 0.88 : 1 }]}
             >
-              {/* Warning accent stripe on the start edge */}
               <View className="flex-row" style={{ flexDirection: rowDir }}>
                 <View className="w-1 self-stretch bg-app-warning" />
                 <View className="flex-1 items-center gap-3 px-4 py-3.5" style={{ flexDirection: rowDir }}>
-                  {/* Icon badge */}
                   <View className="h-11 w-11 items-center justify-center rounded-[14px] bg-app-warningSoft">
                     <Star size={22} color="#F5A623" fill="#F5A623" strokeWidth={0} />
                   </View>
-                  {/* Text */}
                   <View className="flex-1">
                     <AppText variant="bold" className="text-[14px] leading-6 text-app-navy">
                       حان وقت تقييمك الأسبوعي
@@ -283,7 +362,6 @@ export default function HomeScreen() {
                       أخبرنا كيف كان أسبوعك الصحي
                     </AppText>
                   </View>
-                  {/* Directional arrow */}
                   {isRTL
                     ? <ChevronLeft  size={20} color="#F5A623" strokeWidth={2.5} />
                     : <ChevronRight size={20} color="#F5A623" strokeWidth={2.5} />}

@@ -13,6 +13,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomInset } from '@/hooks/useBottomInset';
 import { MailCheck } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
@@ -26,6 +27,7 @@ export default function VerifyEmailScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const footerBottom = useBottomInset(32);
   const { rowDir } = useRTL();
   const { email } = useLocalSearchParams<{ email?: string }>();
 
@@ -140,13 +142,14 @@ export default function VerifyEmailScreen() {
           overflow: 'hidden',
         }}
       >
+        {/* Scrollable content — OTP + status messages only */}
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
             paddingHorizontal: 28,
             paddingTop: 36,
-            paddingBottom: insets.bottom + 32,
+            paddingBottom: 16,
             gap: 28,
           }}
         >
@@ -215,43 +218,50 @@ export default function VerifyEmailScreen() {
               </AppText>
             </View>
           ) : null}
-
-          {/* Resend button */}
-          <View style={{ alignItems: 'center', gap: 6 }}>
-            <Pressable
-              onPress={handleResend}
-              disabled={isLoading || countdown > 0}
-              style={({ pressed }) => ({
-                opacity: countdown > 0 || isLoading ? 0.45 : pressed ? 0.7 : 1,
-                flexDirection: rowDir,
-                alignItems: 'center',
-                gap: 4,
-              })}
-            >
-              <AppText
-                variant="semibold"
-                style={{ fontSize: 14, color: theme.colors.primary }}
-              >
-                {t('auth.verifyEmail.resend')}
-              </AppText>
-              {countdown > 0 && (
-                <AppText style={{ fontSize: 13, color: '#94A3B8' }}>
-                  ({t('auth.verifyEmail.resendIn')} {countdown}s)
-                </AppText>
-              )}
-            </Pressable>
-
-            {/* Back to login */}
-            <Pressable
-              onPress={() => router.replace('/(auth)/login' as never)}
-              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, marginTop: 8 })}
-            >
-              <AppText style={{ fontSize: 13, color: '#94A3B8' }}>
-                {t('auth.verifyEmail.backToLogin')}
-              </AppText>
-            </Pressable>
-          </View>
         </ScrollView>
+
+        {/* Fixed footer — always visible above the Android nav bar */}
+        <View
+          style={{
+            paddingBottom: footerBottom,
+            paddingHorizontal: 28,
+            paddingTop: 12,
+            alignItems: 'center',
+            gap: 6,
+          }}
+        >
+          <Pressable
+            onPress={handleResend}
+            disabled={isLoading || countdown > 0}
+            style={({ pressed }) => ({
+              opacity: countdown > 0 || isLoading ? 0.45 : pressed ? 0.7 : 1,
+              flexDirection: rowDir,
+              alignItems: 'center',
+              gap: 4,
+            })}
+          >
+            <AppText
+              variant="semibold"
+              style={{ fontSize: 14, color: theme.colors.primary }}
+            >
+              {t('auth.verifyEmail.resend')}
+            </AppText>
+            {countdown > 0 && (
+              <AppText style={{ fontSize: 13, color: '#94A3B8' }}>
+                ({t('auth.verifyEmail.resendIn')} {countdown}s)
+              </AppText>
+            )}
+          </Pressable>
+
+          <Pressable
+            onPress={() => router.replace('/(auth)/login' as never)}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, marginTop: 4 })}
+          >
+            <AppText style={{ fontSize: 13, color: '#94A3B8' }}>
+              {t('auth.verifyEmail.backToLogin')}
+            </AppText>
+          </Pressable>
+        </View>
       </View>
     </KeyboardAvoidingView>
   );

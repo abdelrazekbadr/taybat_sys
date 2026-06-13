@@ -1,10 +1,8 @@
 import { ExternalLink, Heart, Link, Pin, Share2, User, UserCheck, UserPlus, Users } from 'lucide-react-native';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, Dimensions, Image, Linking, Pressable, Share, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { ActivityIndicator, Image, Linking, Pressable, Share, TouchableOpacity, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
-import * as Sharing from 'expo-sharing';
-import { captureRef } from 'react-native-view-shot';
 
 import { AppText } from '@/components/common/AppText';
 import { FullScreenImageModal } from '@/components/common/FullScreenImageModal';
@@ -13,7 +11,6 @@ import { useMembershipStore } from '@/stores/membership.store';
 import type { CommunityPost } from '@/types';
 import { toRelativeArabicTime } from '@/utils/communityTime';
 import { SYSTEM_ADMIN_USER_ID } from '@/utils/constants';
-import { PostShareCard } from './PostShareCard';
 
 interface PostCardProps {
   post: CommunityPost;
@@ -28,7 +25,7 @@ const LOVE_COLOR = '#E11D48';
 const COLLAPSED_LINES = 4;
 // ~50 Arabic chars per line × 4 lines = 200 chars threshold
 const LONG_CONTENT_THRESHOLD = 200;
-const SCREEN_WIDTH = Dimensions.get('window').width;
+
 
 function extractLinkDomain(url: string): string {
   try {
@@ -41,7 +38,6 @@ function extractLinkDomain(url: string): string {
 export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPress }: PostCardProps) {
   const theme = useTheme();
   const { rowDir } = useRTL();
-  const shareCardRef = useRef<View>(null);
 
   const timeLabel = useMemo(() => toRelativeArabicTime(post.created_at), [post.created_at]);
   const heartColor = isLoved ? LOVE_COLOR : theme.colors.onSurfaceVariant;
@@ -76,36 +72,18 @@ export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPres
     if (isSharing) return;
     setIsSharing(true);
     try {
-      // Small delay so the off-screen view finishes layout
-      await new Promise<void>((r) => setTimeout(r, 80));
-      const uri = await captureRef(shareCardRef, { format: 'png', quality: 1, result: 'tmpfile' });
-      const available = await Sharing.isAvailableAsync();
-      if (available) {
-        await Sharing.shareAsync(uri, { mimeType: 'image/png', dialogTitle: 'مشاركة المنشور' });
-      } else {
-        await Share.share({ message: `${post.author_name}\n\n${post.content}` });
-      }
-    } catch {
-      // Fallback to plain-text share if capture fails
-      await Share.share({ message: `${post.author_name}\n\n${post.content}` });
-    } finally {
-      // Award supporter points once per post shared (deduped by post.id in DB)
+      const parts: string[] = [`${post.author_name}\n\n${post.content}`];
+      if (post.image_url) parts.push(post.image_url);
+      if (post.link_url) parts.push(post.link_url);
+      await Share.share({ message: parts.join('\n\n') });
       void useMembershipStore.getState().recordEvent('supporter', 'share_post', undefined, 'post', post.id);
+    } finally {
       setIsSharing(false);
     }
-  }, [isSharing, post.author_name, post.content, post.id]);
+  }, [isSharing, post.author_name, post.content, post.image_url, post.link_url, post.id]);
 
   return (
     <View className="bg-app-surface">
-      {/* ── Off-screen share card for capture ── */}
-      <View
-        style={{ position: 'absolute', top: -10000, left: 0, width: SCREEN_WIDTH }}
-        collapsable={false}
-        pointerEvents="none"
-      >
-        <PostShareCard ref={shareCardRef} post={post} width={SCREEN_WIDTH} />
-      </View>
-
       {/* ── Pinned indicator ── */}
       {post.is_pinned && (
         <View

@@ -69,7 +69,7 @@ function buildMonthGrid(
       hasLog:   data?.hasLog ?? false,
       avgHunger: data?.avgHunger ?? null,
       isFuture: iso > today,
-      isBefore: planStart ? iso < planStart : false,
+      isBefore: !planStart || iso < planStart,
       isToday:  iso === today,
     });
   }
@@ -250,7 +250,7 @@ export function CommitmentCalendar({ userMeals, planStartDate }: CommitmentCalen
                 );
               }
 
-              const isNA = cell.isBefore || cell.isFuture;
+              const isNA = cell.isBefore || cell.isFuture || (cell.isToday && !cell.hasLog);
               const bg   = isNA ? COMMIT_GREY : cell.hasLog ? COMMIT_GREEN : COMMIT_RED;
 
               return (

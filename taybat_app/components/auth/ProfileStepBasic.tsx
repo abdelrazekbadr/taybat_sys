@@ -104,6 +104,19 @@ export function ProfileStepBasic(props: {
     });
   }, [props.birthMonth, props.birthYear]);
 
+  const calculatedAge = React.useMemo(() => {
+    if (
+      typeof props.birthYear !== 'number' ||
+      typeof props.birthMonth !== 'number' ||
+      typeof props.birthDay !== 'number'
+    ) return null;
+    const today = new Date();
+    let age = today.getFullYear() - props.birthYear;
+    const m = today.getMonth() + 1 - props.birthMonth;
+    if (m < 0 || (m === 0 && today.getDate() < props.birthDay)) age--;
+    return age > 0 ? age : null;
+  }, [props.birthYear, props.birthMonth, props.birthDay]);
+
   return (
     <View style={{ gap: 20 }}>
 
@@ -169,9 +182,18 @@ export function ProfileStepBasic(props: {
 
       {/* ── Date of Birth (Year / Month / Day) ── */}
       <View style={{ gap: 8 }}>
-        <AppText variant="semibold" style={{ fontSize: 13, color: labelColor }}>
-          {t('auth.completeProfile.birthDate')}
-        </AppText>
+        <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 8 }}>
+          <AppText variant="semibold" style={{ fontSize: 13, color: labelColor }}>
+            {t('auth.completeProfile.birthDate')}
+          </AppText>
+          {calculatedAge !== null && (
+            <View className="rounded-full bg-app-successSoft px-[10px] py-[2px]">
+              <AppText variant="semibold" style={{ fontSize: 12, color: theme.colors.primary }}>
+                {`العمر: ${calculatedAge} سنة`}
+              </AppText>
+            </View>
+          )}
+        </View>
 
         <Pressable
           onPress={() => {

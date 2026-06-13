@@ -123,7 +123,9 @@ export default function UserProfileScreen() {
   const targetUserId: string = userId !== undefined ? userId : (user?.id ?? '');
   const isSystemUser  = targetUserId === 'system';
   const isOwnProfile  = userId === undefined || (user !== null && targetUserId === user?.id);
-  const displayName   = isOwnProfile ? (user?.name ?? '') : (paramName ?? '');
+  const displayName   = isOwnProfile
+    ? (user?.name || user?.email?.split('@')[0] || '')
+    : (paramName ?? '');
 
   // Refresh membership when viewing own profile
   useEffect(() => {
@@ -382,7 +384,7 @@ export default function UserProfileScreen() {
           </View>
         )}
 
-        {isOwnProfile && user !== null && !isSystemUser ? (
+        {isOwnProfile && user !== null && !isSystemUser && !user.profile_completed ? (
           <View className="mx-5 mt-6">
             <PrimaryButton title="استكمال الملف الشخصي" onPress={() => router.push('/(auth)/complete-profile' as never)} />
           </View>

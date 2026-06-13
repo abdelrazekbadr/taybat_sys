@@ -1,0 +1,40 @@
+<resources>
+  <string name="app_name">"Al-Taybat"</string>
+  <string name="template_ready">"Template project is ready"</string>
+  <string name="template_description">"This is a clean starter built from the same app architecture with no business logic included."</string>
+  <string name="toggle_language">"Toggle Language"</string>
+  <string name="included_layers">"Included layers"</string>
+  <string name="layers_list">"Presentation, state management, service, storage, localization, and shared infrastructure."</string>
+  <string name="splash_title">"Al-Taybat"</string>
+  <string name="splash_tagline">"Your recovery journey…"</string>
+  <string name="splash_footer">"PREMIUM WELLNESS
+Dr. Diaa Al-Awadi"</string>
+  <string name="onboarding_skip">"Skip"</string>
+  <string name="onboarding_next">"Next"</string>
+  <string name="onboarding_1_title">"Listen to your body, not calories"</string>
+  <string name="onboarding_1_description">"Al-Taybat focuses on eating when truly hungry and choosing foods that help your body heal from inflammation."</string>
+  <string name="onboarding_1_feature_1">"Clear allowed foods list"</string>
+  <string name="onboarding_1_feature_2">"Eat by real hunger, not schedules"</string>
+  <string name="onboarding_1_feature_3">"Follow your body's signals"</string>
+  <string name="onboarding_2_title">"Track how you feel improving"</string>
+  <string name="onboarding_2_description">"Each week we’ll ask how you feel and measure progress through comfort and wellbeing, not numbers."</string>
+  <string name="onboarding_2_feature_1">"Simple weekly check-ins"</string>
+  <string name="onboarding_2_feature_2">"Motivation badges"</string>
+  <string name="onboarding_2_feature_3">"Charts showing your improvement"</string>
+  <string name="onboarding_3_title">"Track how you feel improving"</string>
+  <string name="onboarding_3_description">"Each week we’ll ask how you feel and measure progress through comfort and wellbeing, not numbers."</string>
+  <string name="onboarding_3_feature_1">"Simple weekly check-ins"</string>
+  <string name="onboarding_3_feature_2">"Motivation badges"</string>
+  <string name="onboarding_3_feature_3">"Charts showing your improvement"</string>
+  <string name="welcome_title">"Why join Al-Taybat?"</string>
+  <string name="welcome_description">"Your journey to recovery and comfort starts here, with a lifestyle that understands your body."</string>
+  <string name="welcome_card_1_title">"Measure your diet effectiveness"</string>
+  <string name="welcome_card_1_desc">"We don’t count calories — we track how your body regains vitality and pain fades over time."</string>
+  <string name="welcome_card_2_title">"Smart habits and motivation"</string>
+  <string name="welcome_card_2_desc">"Helpful tools keep you aligned with true hunger cues and support full recovery."</string>
+  <string name="welcome_card_3_title">"Share success stories"</string>
+  <string name="welcome_card_3_desc">"Join a supportive community that shares progress, recovery, and practical experience."</string>
+  <string name="welcome_start_now">"Start now"</string>
+  <string name="welcome_login">"Log in"</string>
+  <string name="auth">"[object Object]"</string>
+</resources>

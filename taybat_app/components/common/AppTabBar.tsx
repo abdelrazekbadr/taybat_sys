@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { BookOpen, HandPlatter, House, User, Users, type LucideIcon } from 'lucide-react-native';
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomInset } from '@/hooks/useBottomInset';
 import { useTheme } from 'react-native-paper';
 
 import { useRTL } from '@/hooks/useRTL';
@@ -35,7 +35,7 @@ const TABS_LTR: TabItem[] = [
 
 export function AppTabBar({ active = 'home' }: AppTabBarProps) {
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
+  const tabBarBottom = useBottomInset(0);
   const { isRTL, rowDir } = useRTL();
   const tabs = isRTL ? TABS_RTL : TABS_LTR;
   const inactiveColor = theme.colors.onSurfaceVariant ?? theme.colors.outline;
@@ -69,7 +69,7 @@ export function AppTabBar({ active = 'home' }: AppTabBarProps) {
   return (
     <View
       className="flex-row items-center border-t border-app-lineSoft bg-app-surface px-2 pt-2.5"
-      style={{ flexDirection: rowDir, paddingBottom: Math.max(insets.bottom, 10) }}
+      style={{ flexDirection: rowDir, paddingBottom: tabBarBottom }}
     >
       {tabs.map((tab) => {
         if (tab.key === 'add') {

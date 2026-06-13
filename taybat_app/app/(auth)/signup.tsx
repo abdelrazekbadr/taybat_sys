@@ -14,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomInset } from '@/hooks/useBottomInset';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
@@ -45,6 +46,7 @@ export default function SignupScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const safeBottom = useBottomInset(0);
   const { rowDir } = useRTL();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -101,7 +103,7 @@ export default function SignupScreen() {
         keyboardDismissMode={Platform.OS === 'ios' ? 'interactive' : 'on-drag'}
         contentContainerStyle={{
           ...(Platform.OS === 'android' ? { flexGrow: 0 } : null),
-          paddingBottom: insets.bottom + scrollBottomPadding,
+          paddingBottom: safeBottom + scrollBottomPadding,
         }}
       >
         {/* ── Gradient hero ── */}
@@ -123,7 +125,7 @@ export default function SignupScreen() {
         {/* ── Card ── */}
         <View
           className={`flex-1 -mt-[28px] rounded-t-[28px] px-6 pt-7 ${cardBg}`}
-          style={{ paddingBottom: insets.bottom + 24 }}
+          style={{ paddingBottom: safeBottom + 24 }}
         >
           {/* Title */}
           <View className="items-center mb-6">

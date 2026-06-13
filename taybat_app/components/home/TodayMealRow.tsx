@@ -18,6 +18,8 @@ interface TodayMealRowProps {
   userMeal: UserMeal;
   mealName: string;
   imageUrl?: string;
+  alertNote?: string;
+  isOverLimit?: boolean;
   onPress: () => void;
   onReplacePress?: () => void;
   onDeletePress?: () => void;
@@ -29,6 +31,8 @@ export function TodayMealRow({
   userMeal,
   mealName,
   imageUrl,
+  alertNote,
+  isOverLimit,
   onPress,
   onReplacePress,
   onDeletePress,
@@ -107,6 +111,17 @@ export function TodayMealRow({
             <View className="h-[3px] w-[3px] rounded-full bg-app-muted2" />
             <AppText className="text-[10.5px] leading-5 text-app-textSoft">{timeLabel}</AppText>
           </View>
+
+          {alertNote ? (
+            <AppText
+              numberOfLines={2}
+              className={`text-[10.5px] leading-5${isOverLimit ? '' : ' text-app-textSoft'}`}
+              style={isOverLimit ? { color: theme.colors.error } : undefined}
+              variant={isOverLimit ? 'bold' : 'regular'}
+            >
+              {alertNote}
+            </AppText>
+          ) : null}
 
           <View className="flex-row items-center" style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}>
             <StarRating value={zoneMeta.stars} size={13} gap={2} />

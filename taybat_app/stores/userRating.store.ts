@@ -11,12 +11,15 @@ import { useUserStore } from './user.store';
 
 export type SubmitUserRatingPayload = Omit<CreateUserRatingPayload, 'userId'>;
 
+const RATINGS_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 interface UserRatingState {
   ratings: UserRating[];
   pendingRating: boolean;
   isLoading: boolean;
   errorMessage: string;
-  initializeRatings: () => Promise<void>;
+  lastFetchedAt: number | null;
+  initializeRatings: (force?: boolean) => Promise<void>;
   submitRating: (payload: SubmitUserRatingPayload) => Promise<boolean>;
   checkPendingRating: () => void;
   resetUserRatings: () => void;
@@ -27,6 +30,7 @@ const initialState = {
   pendingRating: false,
   isLoading: false,
   errorMessage: '',
+  lastFetchedAt: null as number | null,
 };
 
 const isoDate = (value: string) => value.slice(0, 10);
@@ -46,12 +50,17 @@ const addDaysISO = (iso: string, days: number) => {
 export const useUserRatingStore = create<UserRatingState>((set, get) => ({
   ...initialState,
 
-  initializeRatings: async () => {
+  initializeRatings: async (force = false) => {
+    const { lastFetchedAt } = get();
+    if (!force && lastFetchedAt && Date.now() - lastFetchedAt < RATINGS_CACHE_TTL_MS && get().ratings.length > 0) {
+      get().checkPendingRating();
+      return;
+    }
     set({ isLoading: true, errorMessage: '' });
     try {
       const user = useUserStore.getState().user;
       const ratings = user ? await userRatingRepository.getRatings(user.id) : [];
-      set({ ratings, isLoading: false });
+      set({ ratings, isLoading: false, lastFetchedAt: Date.now() });
       if (user?.plan_start_date) {
         try {
           const desiredDueDate = ratings.length
@@ -65,7 +74,7 @@ export const useUserRatingStore = create<UserRatingState>((set, get) => ({
 
           const needsFix = !user.next_rating_date || isoDate(user.next_rating_date) !== desiredDueDate;
           if (needsFix) {
-            await userProfileRepository.upsertProfile(user.id, { next_rating_date: desiredDueDate });
+            await userProfileRepository.updateProfile(user.id, { next_rating_date: desiredDueDate });
             useUserStore.getState().updateUser({ next_rating_date: desiredDueDate });
           }
         } catch {}
@@ -87,7 +96,7 @@ export const useUserRatingStore = create<UserRatingState>((set, get) => ({
       const rating = await userRatingRepository.submitRating({ ...payload, userId: user.id });
       const nextRatingDate = addDaysISO(rating.submitted_at, 7);
       try {
-        await userProfileRepository.upsertProfile(user.id, {
+        await userProfileRepository.updateProfile(user.id, {
           next_rating_date: nextRatingDate,
           last_health_score: rating.health_score,
           last_improvement_goals_codes: rating.improvement_goals_codes,

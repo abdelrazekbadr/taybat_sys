@@ -11,7 +11,7 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react-native';
@@ -30,7 +30,7 @@ import { useHealthConditionsStore } from '@/stores/healthConditions.store';
 import { useHealthGoalsStore } from '@/stores/healthGoals.store';
 import { useRTL } from '@/hooks/useRTL';
 import { parseCsvStringList, parseISODateParts, toFiniteNumber } from '@/utils/parseUtils';
-import type { ActivityLevel, Gender } from '@/types';
+import type { ActivityLevel, Gender, WeeklyScore } from '@/types';
 
 const log = createLogger('CompleteProfile');
 
@@ -47,6 +47,7 @@ type FormValues = {
   weight_kg?: number;
   height_cm?: number;
   activity_level?: ActivityLevel;
+  initial_health_score?: WeeklyScore;
   health_goals_codes: string[];
   health_conditions_codes: string[];
 };
@@ -58,10 +59,13 @@ const STEP_META = [
   { title: 'حالاتك الصحية',        subtitle: 'حدد حالتك الصحيه لمتابعتها' },
 ] as const;
 
+const FOOTER_BUTTON_HEIGHT = 54;
+const FOOTER_BACK_BUTTON_FLEX = 0.7;
+
 export default function CompleteProfileScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
-  const insets = useSafeAreaInsets();
+  const { top: topInset } = useSafeAreaInsets();
   const { isRTL, rowDir } = useRTL();
   const { user, isLoading, errorMessage, completeProfile, clearError } = useAuthStore();
   const profile = useAuthStore((s) => s.profile);
@@ -86,6 +90,7 @@ export default function CompleteProfileScreen() {
       weight_kg: undefined,
       height_cm: undefined,
       activity_level: undefined,
+      initial_health_score: undefined,
       health_goals_codes: [],
       health_conditions_codes: [],
     },
@@ -223,6 +228,10 @@ export default function CompleteProfileScreen() {
         setError('activity_level', { type: 'manual', message: 'يرجى اختيار مستوى النشاط' });
         ok = false;
       }
+      if (!values.initial_health_score) {
+        setError('initial_health_score' as never, { type: 'manual', message: 'يرجى تقييم صحتك قبل البدء بالنظام' });
+        ok = false;
+      }
       return ok;
     }
 
@@ -277,6 +286,7 @@ export default function CompleteProfileScreen() {
       weight_kg: values.weight_kg!,
       height_cm: values.height_cm!,
       activity_level: values.activity_level!,
+      initial_health_score: values.initial_health_score,
       health_goals_codes: values.health_goals_codes.join(','),
       health_conditions_codes: values.health_conditions_codes.length > 0 ? values.health_conditions_codes.join(',') : undefined,
     };
@@ -300,6 +310,7 @@ export default function CompleteProfileScreen() {
   const BackIcon = isRTL ? ArrowRight : ArrowLeft;
   const PrevIcon = isRTL ? ChevronRight : ChevronLeft;
   const NextIcon = isRTL ? ChevronLeft : ChevronRight;
+  const footerBottomPadding = Platform.OS === 'android' ? 16 : 12;
 
   return (
     <KeyboardAvoidingView
@@ -310,7 +321,7 @@ export default function CompleteProfileScreen() {
         colors={[theme.colors.primary, theme.colors.secondary]}
         start={gradStart}
         end={gradEnd}
-        style={{ paddingTop: insets.top + 12, paddingBottom: 44, paddingHorizontal: 20 }}
+        style={{ paddingTop: topInset + 12, paddingBottom: 44, paddingHorizontal: 20 }}
       >
         <View style={{ flexDirection: rowDir, alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
           {step > 0 ? (
@@ -327,9 +338,9 @@ export default function CompleteProfileScreen() {
               <BackIcon size={22} color={theme.colors.onPrimary} strokeWidth={2} />
             </Pressable>
           ) : (
-            <View style={{ width: 38 }} />
+            <View style={{ width: 38, height: 38 }} />
           )}
-          <View style={{ width: 38 }} />
+          <View style={{ width: 38, height: 38 }} />
         </View>
 
         <AppText
@@ -344,16 +355,21 @@ export default function CompleteProfileScreen() {
       </LinearGradient>
 
       <View
-        className="flex-1 -mt-7 rounded-t-[28px] bg-app-surface overflow-hidden"
+        className="flex-1 -mt-7 rounded-t-[28px] bg-app-surface"
       >
         <View className="px-6 pt-6 pb-2">
             <StepIndicator steps={4} activeIndex={step} />
         </View>
 
         <ScrollView
+          style={{ flex: 1 }}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 24 }}
+          contentContainerStyle={{
+            paddingHorizontal: 24,
+            paddingTop: 20,
+            paddingBottom: 24,
+          }}
         >
           {step === 0 && (
             <ProfileStepBasic
@@ -385,6 +401,9 @@ export default function CompleteProfileScreen() {
               activityLevel={values.activity_level}
               onChangeActivityLevel={(v) => { clearErrors('activity_level'); setValue('activity_level', v, { shouldDirty: true }); }}
               activityError={formState.errors.activity_level?.message}
+              initialHealthScore={values.initial_health_score ?? null}
+              onChangeInitialHealthScore={(v) => { clearErrors('initial_health_score' as never); setValue('initial_health_score', v, { shouldDirty: true }); }}
+              initialHealthScoreError={(formState.errors as Record<string, { message?: string }>)['initial_health_score']?.message}
               disabled={isLoading}
             />
           )}
@@ -408,17 +427,24 @@ export default function CompleteProfileScreen() {
             />
           )}
         </ScrollView>
+      </View>
 
+      <SafeAreaView
+        edges={['bottom']}
+        style={{
+          backgroundColor: theme.colors.surface,
+          borderTopWidth: 1,
+          borderTopColor: theme.colors.outlineVariant ?? theme.colors.outline,
+        }}
+      >
+        {/* Footer stays above system navigation and the ScrollView reserves its real height. */}
         <View
           style={{
-            paddingBottom: insets.bottom + 20,
             paddingHorizontal: 24,
             paddingTop: 12,
+            paddingBottom: footerBottomPadding,
             gap: 10,
-            borderTopWidth: 1,
-            borderTopColor: theme.colors.outlineVariant ?? theme.colors.outline,
           }}
-          className="bg-app-surface"
         >
           {errorMessage ? (
             <View
@@ -437,19 +463,32 @@ export default function CompleteProfileScreen() {
             </View>
           ) : null}
 
-          <View style={{ flexDirection: rowDir, gap: 10 }}>
-            {step > 0 ? (
+          {step > 0 ? (
+            <View style={{ flexDirection: rowDir, gap: 10, alignItems: 'stretch' }}>
               <OutlineButton
                 title={t('auth.completeProfile.back')}
                 onPress={goBack}
                 disabled={isLoading}
-                flex={0.7}
+                flex={FOOTER_BACK_BUTTON_FLEX}
                 textColor={theme.colors.primary}
                 icon={<PrevIcon size={18} color={theme.colors.primary} strokeWidth={2.5} />}
+                className="h-[54px]"
               />
-            ) : null}
 
-            <View style={{ flex: 1 }}>
+              <View style={{ flex: 1, minHeight: FOOTER_BUTTON_HEIGHT }}>
+                <PrimaryButton
+                  title={isLastStep ? t('auth.completeProfile.save') : t('auth.completeProfile.next')}
+                  onPress={isLastStep ? submit : handleNext}
+                  loading={isLoading}
+                  disabled={isLoading}
+                  trailingIcon={!isLastStep && isRTL ? <NextIcon size={18} color={theme.colors.onPrimary} strokeWidth={2.8} /> : undefined}
+                  leadingIcon={!isLastStep && !isRTL ? <NextIcon size={18} color={theme.colors.onPrimary} strokeWidth={2.8} /> : undefined}
+                  className="h-[54px]"
+                />
+              </View>
+            </View>
+          ) : (
+            <View style={{ minHeight: FOOTER_BUTTON_HEIGHT }}>
               <PrimaryButton
                 title={isLastStep ? t('auth.completeProfile.save') : t('auth.completeProfile.next')}
                 onPress={isLastStep ? submit : handleNext}
@@ -457,11 +496,12 @@ export default function CompleteProfileScreen() {
                 disabled={isLoading}
                 trailingIcon={!isLastStep && isRTL ? <NextIcon size={18} color={theme.colors.onPrimary} strokeWidth={2.8} /> : undefined}
                 leadingIcon={!isLastStep && !isRTL ? <NextIcon size={18} color={theme.colors.onPrimary} strokeWidth={2.8} /> : undefined}
+                className="h-[54px]"
               />
             </View>
-          </View>
+          )}
         </View>
-      </View>
+      </SafeAreaView>
     </KeyboardAvoidingView>
   );
 }

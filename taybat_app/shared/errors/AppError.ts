@@ -7,6 +7,7 @@ export type ErrorCode =
   | 'NOT_FOUND'
   | 'PERMISSION'
   | 'SERVER'
+  | 'OAUTH_CANCELED'
   | 'UNKNOWN';
 
 export class AppError extends Error {

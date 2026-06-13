@@ -9,12 +9,15 @@ import { useMealsStore } from './meals.store';
 import { useMembershipStore } from './membership.store';
 import { useUserStore } from './user.store';
 
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
 interface UserMealsState {
   userMeals: UserMeal[];
   todayMeals: UserMeal[];
   isLoading: boolean;
   errorMessage: string;
-  initializeUserMeals: () => Promise<void>;
+  lastFetchedAt: number | null;
+  initializeUserMeals: (force?: boolean) => Promise<void>;
   refreshTodayMeals: () => void;
   logMeal: (mealId: number, hungryState?: HungryState | null) => Promise<boolean>;
   replaceMeal: (userMealId: number, mealId: number) => Promise<boolean>;
@@ -28,6 +31,7 @@ const initialState = {
   todayMeals: [] as UserMeal[],
   isLoading: false,
   errorMessage: '',
+  lastFetchedAt: null as number | null,
 };
 
 const todayIsoDate = () => localDateISO();
@@ -35,7 +39,12 @@ const todayIsoDate = () => localDateISO();
 export const useUserMealsStore = create<UserMealsState>((set, get) => ({
   ...initialState,
 
-  initializeUserMeals: async () => {
+  initializeUserMeals: async (force = false) => {
+    const { lastFetchedAt, userMeals: cached } = get();
+    if (!force && lastFetchedAt && Date.now() - lastFetchedAt < CACHE_TTL_MS && cached.length > 0) {
+      get().refreshTodayMeals();
+      return;
+    }
     set({ isLoading: true, errorMessage: '' });
     try {
       const user = useUserStore.getState().user;
@@ -45,7 +54,7 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
       }
       const today = todayIsoDate();
       const userMeals = await trackingRepository.getUserMeals(user.id);
-      set({ userMeals, todayMeals: userMeals.filter((m) => m.date === today), isLoading: false });
+      set({ userMeals, todayMeals: userMeals.filter((m) => m.date === today), isLoading: false, lastFetchedAt: Date.now() });
     } catch (error: unknown) {
       set({ userMeals: [], todayMeals: [], isLoading: false, errorMessage: toUserMessage(error) });
     }

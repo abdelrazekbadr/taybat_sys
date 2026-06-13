@@ -14,6 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useBottomInset } from '@/hooks/useBottomInset';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
@@ -45,6 +46,7 @@ export default function LoginScreen() {
   const { t } = useTranslation();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
+  const cardBottom = useBottomInset(24);
   const { rowDir } = useRTL();
   const [showPassword, setShowPassword] = React.useState(false);
   const [rememberMe, setRememberMe] = React.useState(false);
@@ -113,6 +115,7 @@ export default function LoginScreen() {
   };
 
   const handleGuest = () => {
+    clearError();
     setGuestMode();
     router.replace('/(main)' as never);
   };
@@ -158,7 +161,7 @@ export default function LoginScreen() {
         {/* ── Card ── */}
         <View
           className={`flex-1 -mt-[28px] rounded-t-[28px] px-6 pt-7 ${cardBg}`}
-          style={{ paddingBottom: insets.bottom + 24 }}
+          style={{ paddingBottom: cardBottom }}
         >
           {/* Greeting */}
           <View className="items-center mb-6">
@@ -279,7 +282,7 @@ export default function LoginScreen() {
               </Pressable>
 
               <Pressable
-                onPress={() => router.push('/(auth)/reset-password' as never)}
+                onPress={() => { clearError(); router.push('/(auth)/reset-password' as never); }}
                 disabled={isLoading}
                 style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
               >
@@ -339,18 +342,14 @@ export default function LoginScreen() {
                   <View className={`flex-1 h-px ${lineCls}`} />
                 </View>
 
-                <View className="flex-row justify-center gap-3">
+                <View className="items-center">
                   <OutlineButton
                     title="Google"
                     onPress={handleGoogle}
                     disabled={isLoading}
-                    icon={<MaterialCommunityIcons name="google" size={22} color="#EA4335" />}
-                  />
-                  <OutlineButton
-                    title="Facebook"
-                    onPress={handleFacebook}
-                    disabled={isLoading}
-                    icon={<MaterialCommunityIcons name="facebook" size={22} color="#1877F2" />}
+                    imageSource={require('../../assets/icons/google.png')}
+                    imageSize={22}
+                    className="w-full"
                   />
                 </View>
               </>
@@ -362,7 +361,7 @@ export default function LoginScreen() {
                 {t('auth.login.noAccount')}
               </AppText>
               <Pressable
-                onPress={() => router.replace('/(auth)/signup' as never)}
+                onPress={() => { clearError(); router.replace('/(auth)/signup' as never); }}
                 disabled={isLoading}
                 style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
               >

@@ -2,13 +2,13 @@ import React from 'react';
 import { Pressable, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from 'react-native-paper';
-import { ChevronDown, Ruler, Scale } from 'lucide-react-native';
+import { ChevronDown, Frown, Laugh, Meh, PartyPopper, Ruler, Scale, Smile } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
 import { OptionSelector, type OptionItem } from '@/components/common/OptionSelector';
 import { SelectionModal } from '@/components/common/SelectionModal';
 import { useRTL } from '@/hooks/useRTL';
-import type { ActivityLevel } from '@/types';
+import type { ActivityLevel, WeeklyScore } from '@/types';
 
 const weightOptions = Array.from({ length: 171 }).map((_, idx) => {
   const value = idx + 30;
@@ -19,6 +19,14 @@ const heightOptions = Array.from({ length: 101 }).map((_, idx) => {
   const value = idx + 120;
   return { value, label: `${value}` };
 });
+
+const SCORE_OPTIONS: OptionItem<WeeklyScore>[] = [
+  { key: 1, icon: { kind: 'lucide', Icon: Frown },       label: 'سيء جداً' },
+  { key: 2, icon: { kind: 'lucide', Icon: Meh },         label: 'سيء' },
+  { key: 3, icon: { kind: 'lucide', Icon: Smile },       label: 'عادي' },
+  { key: 4, icon: { kind: 'lucide', Icon: Laugh },       label: 'جيد' },
+  { key: 5, icon: { kind: 'lucide', Icon: PartyPopper }, label: 'ممتاز' },
+];
 
 const ACTIVITY_OPTIONS: { key: ActivityLevel; labelKey: string; hint: string }[] = [
   { key: 'sedentary', labelKey: 'auth.completeProfile.sedentary', hint: 'قليل الحركة : جالس معظم الوقت' },
@@ -37,6 +45,9 @@ export function ProfileStepHealth(props: {
   activityLevel: ActivityLevel | undefined;
   onChangeActivityLevel: (v: ActivityLevel) => void;
   activityError?: string;
+  initialHealthScore: WeeklyScore | null;
+  onChangeInitialHealthScore: (v: WeeklyScore) => void;
+  initialHealthScoreError?: string;
   disabled?: boolean;
 }) {
   const { t } = useTranslation();
@@ -61,9 +72,12 @@ export function ProfileStepHealth(props: {
       <View style={{ flexDirection: rowDir, gap: 12 }}>
         {/* Weight */}
         <View style={{ flex: 1, gap: 6 }}>
-          <AppText variant="semibold" style={{ fontSize: 13, color: labelColor }}>
-            {t('auth.completeProfile.weight')}
-          </AppText>
+          <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6 }}>
+            <Scale size={15} color={labelColor} strokeWidth={1.5} />
+            <AppText variant="semibold" style={{ fontSize: 13, color: labelColor }}>
+              {t('auth.completeProfile.weight')}
+            </AppText>
+          </View>
           <Pressable
             onPress={() => setWeightOpen(true)}
             disabled={props.disabled}
@@ -75,19 +89,23 @@ export function ProfileStepHealth(props: {
               backgroundColor: surfaceVariant,
               flexDirection: rowDir,
               alignItems: 'center',
+              justifyContent: 'flex-start',
               paddingHorizontal: 14,
-              gap: 10,
               opacity: pressed ? 0.85 : 1,
             })}
           >
-            <View style={{ width: 18, alignItems: 'center' }}>
+            <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6 }}>
               <ChevronDown size={14} color={labelColor} strokeWidth={1.5} />
-            </View>
-            <AppText style={{ flex: 1, fontSize: 14, color: props.weightKg ? theme.colors.onSurface : labelColor, textAlign: 'center' }}>
-              {typeof props.weightKg === 'number' ? `${props.weightKg} كجم` : '--- كجم'}
-            </AppText>
-            <View style={{ width: 18, alignItems: 'center' }}>
-              <Scale size={16} color={labelColor} strokeWidth={1.5} />
+              <AppText
+                style={{
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: props.weightKg ? theme.colors.onSurface : labelColor,
+                }}
+              >
+                {typeof props.weightKg === 'number' ? `${props.weightKg} كجم` : '--- كجم'}
+              </AppText>
+              
             </View>
           </Pressable>
           {props.weightError ? (
@@ -99,9 +117,12 @@ export function ProfileStepHealth(props: {
 
         {/* Height */}
         <View style={{ flex: 1, gap: 6 }}>
-          <AppText variant="semibold" style={{ fontSize: 13, color: labelColor }}>
-            {t('auth.completeProfile.height')}
-          </AppText>
+          <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6 }}>
+            <Ruler size={15} color={labelColor} strokeWidth={1.5} />
+            <AppText variant="semibold" style={{ fontSize: 13, color: labelColor }}>
+              {t('auth.completeProfile.height')}
+            </AppText>
+          </View>
           <Pressable
             onPress={() => setHeightOpen(true)}
             disabled={props.disabled}
@@ -113,19 +134,22 @@ export function ProfileStepHealth(props: {
               backgroundColor: surfaceVariant,
               flexDirection: rowDir,
               alignItems: 'center',
+              justifyContent: 'flex-start',
               paddingHorizontal: 14,
-              gap: 10,
               opacity: pressed ? 0.85 : 1,
             })}
           >
-            <View style={{ width: 18, alignItems: 'center' }}>
-              <Ruler size={16} color={labelColor} strokeWidth={1.5} />
-            </View>
-            <AppText style={{ flex: 1, fontSize: 14, color: props.heightCm ? theme.colors.onSurface : labelColor, textAlign: 'center' }}>
-              {typeof props.heightCm === 'number' ? `${props.heightCm} سم` : '--- سم'}
-            </AppText>
-            <View style={{ width: 18, alignItems: 'center' }}>
+            <View style={{ flexDirection: rowDir, alignItems: 'center', gap: 6 }}>
               <ChevronDown size={14} color={labelColor} strokeWidth={1.5} />
+              <AppText
+                style={{
+                  fontSize: 14,
+                  lineHeight: 20,
+                  color: props.heightCm ? theme.colors.onSurface : labelColor,
+                }}
+              >
+                {typeof props.heightCm === 'number' ? `${props.heightCm} سم` : '--- سم'}
+              </AppText>
             </View>
           </Pressable>
           {props.heightError ? (
@@ -156,6 +180,32 @@ export function ProfileStepHealth(props: {
         {props.activityError ? (
           <AppText style={{ fontSize: 12, marginStart: 8, color: theme.colors.error }}>
             {props.activityError}
+          </AppText>
+        ) : null}
+      </View>
+
+      {/* ── Baseline health score ── */}
+      <View style={{ gap: 8 }}>
+        <AppText variant="semibold" style={{ fontSize: 13, color: props.initialHealthScoreError ? theme.colors.error : labelColor }}>
+          ما هو تقييم صحتك بشكل عام قبل التزامك بنظام الطيبات؟
+        </AppText>
+        <AppText style={{ fontSize: 12, color: labelColor, opacity: 0.7 }}>
+          سيساعدنا هذا في قياس تقدمك الحقيقي مع النظام
+        </AppText>
+        <OptionSelector
+          mode="single"
+          layout="iconTop"
+          variant="soft"
+          options={SCORE_OPTIONS}
+          value={props.initialHealthScore}
+          onChange={props.onChangeInitialHealthScore}
+          disabled={props.disabled}
+          wrapperClassName="flex-row gap-2"
+          itemClassName="flex-1"
+        />
+        {props.initialHealthScoreError ? (
+          <AppText style={{ fontSize: 12, marginStart: 8, color: theme.colors.error }}>
+            {props.initialHealthScoreError}
           </AppText>
         ) : null}
       </View>

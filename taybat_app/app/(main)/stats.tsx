@@ -380,8 +380,9 @@ export default function StatsScreen() {
     );
   }, [dueDate]);
 
+  const ratingBlocked    = !user?.plan_start_date || !user?.profile_completed;
   const effectivePending = force === 'pending' ? true : force === 'locked' ? false : pendingRating;
-  const canSubmit = effectivePending;
+  const canSubmit        = !ratingBlocked && effectivePending;
 
   const filteredRatings = useMemo(
     () => toHealthTimelineInDays(ratings, dayFilter),
@@ -511,8 +512,9 @@ export default function StatsScreen() {
               </View>
               {!canSubmit ? (
                 <AppText className="mt-2 text-[11px] leading-5 text-app-textSoft">
-                  {daysUntilDue > 0 && `متاح بعد ${toArabicNumerals(daysUntilDue)} أيام - `}
-                  قم بالالتزام بتسجيل وجباتك يوميا حتي تستطيع التقييم بالموعد القادم
+                  {ratingBlocked
+                    ? 'أكمل ملفك الشخصي أولاً لتفعيل التقييم الأسبوعي'
+                    : `${daysUntilDue > 0 ? `متاح بعد ${toArabicNumerals(daysUntilDue)} أيام - ` : ''}قم بالالتزام بتسجيل وجباتك يومياً حتى تستطيع التقييم بالموعد القادم`}
                 </AppText>
               ) : (
                 <AppText className="mt-2 text-[12.5px] leading-6 text-app-textSoft">

@@ -9,14 +9,16 @@ import type { AppNotification } from '@/types';
 import { useUserStore } from './user.store';
 
 const USE_MOCK = process.env.EXPO_PUBLIC_USE_MOCK !== 'false';
+const NOTIF_CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutes — realtime channel handles live updates
 
 interface NotificationsState {
   notifications: AppNotification[];
   unreadCount: number;
   isLoading: boolean;
   errorMessage: string;
+  lastFetchedAt: number | null;
 
-  loadNotifications: () => Promise<void>;
+  loadNotifications: (force?: boolean) => Promise<void>;
   markAsRead: (notificationId: number) => Promise<void>;
   markAllAsRead: () => Promise<void>;
   resetNotifications: () => void;
@@ -27,6 +29,7 @@ const initialState = {
   unreadCount: 0,
   isLoading: false,
   errorMessage: '',
+  lastFetchedAt: null as number | null,
 };
 
 let realtimeChannel: RealtimeChannel | null = null;
@@ -59,13 +62,19 @@ function teardownNotificationsChannel() {
 export const useNotificationsStore = create<NotificationsState>((set, get) => ({
   ...initialState,
 
-  loadNotifications: async () => {
+  loadNotifications: async (force = false) => {
+    const { lastFetchedAt } = get();
+    if (!force && lastFetchedAt && Date.now() - lastFetchedAt < NOTIF_CACHE_TTL_MS && get().notifications.length > 0) {
+      return;
+    }
     set({ isLoading: true, errorMessage: '' });
     try {
-      const userId = useUserStore.getState().user?.id ?? '';
-      const notifications = await notificationsRepository.getNotifications(userId);
+      const user = useUserStore.getState().user;
+      const userId = user?.id ?? '';
+      const userRegisteredAt = user?.registered_at ?? new Date(0).toISOString();
+      const notifications = await notificationsRepository.getNotifications(userId, userRegisteredAt);
       const unreadCount = notifications.filter((n) => !n.is_read).length;
-      set({ notifications, unreadCount, isLoading: false });
+      set({ notifications, unreadCount, isLoading: false, lastFetchedAt: Date.now() });
       setupNotificationsChannel();
     } catch (error: unknown) {
       set({ isLoading: false, errorMessage: toUserMessage(error) });
