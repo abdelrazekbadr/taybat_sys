@@ -129,6 +129,11 @@ export default function CompleteProfileScreen() {
       setValue('activity_level', profile.activity_level, { shouldDirty: false });
     }
 
+    const score = profile.last_health_score;
+    if (!dirty.initial_health_score && score != null && score >= 1 && score <= 5) {
+      setValue('initial_health_score', score as WeeklyScore, { shouldDirty: false });
+    }
+
     if (!dirty.health_goals_codes) {
       const codes = parseCsvStringList(profile.health_goals_codes);
       if (codes.length > 0) setValue('health_goals_codes', codes, { shouldDirty: false });
@@ -293,10 +298,9 @@ export default function CompleteProfileScreen() {
 
     const ok = await completeProfile(payload);
     log.debug('[CompleteProfile] completeProfile returned ok:', ok, '| isLoading:', useAuthStore.getState().isLoading, '| profile_completed:', useAuthStore.getState().user?.profile_completed);
-    if (ok) {
-      log.debug('[CompleteProfile] calling router.replace /(main)');
-      router.replace('/(main)' as never);
-    } else {
+    // No explicit replace here on success — the root layout guard handles the
+    // authenticated + profile_completed → /(main) transition.
+    if (!ok) {
       log.debug('[CompleteProfile] ok=false, errorMessage:', useAuthStore.getState().errorMessage);
     }
   };

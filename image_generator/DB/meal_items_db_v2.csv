@@ -1,0 +1,94 @@
+code,id,name,name_en,description,description_en,category,zone,rating,frequency,notes,image_url,active,max_day_frequency,max_week_frequency,max_month_frequency
+CB01,1,أرز أبيض,White rice,,,1,1,5,,,,TRUE,2,14,60
+CB02,3,أرز بالشعيرية,Vermicelli rice,,,1,1,5,,,,TRUE,2,14,60
+CB03,4,أرز بالمكسرات,Rice with nuts,,,1,3,4,,,,TRUE,1,2,8
+CB04,2,أرز بسمتي,Basmati rice,,,1,1,5,,,,TRUE,2,14,60
+CB05,8,بطاطا حلوة مشوية,Roasted sweet potato,,,1,4,5,,,,TRUE,1,1,4
+CB06,9,بطاطا حلوة مهروسة,Mashed sweet potato,,,1,4,5,,,,TRUE,1,1,4
+CB07,6,بطاطس مسلوقة,Boiled potatoes,,,1,1,5,,,,TRUE,2,14,60
+CB08,66,بطاطس مقلية,Fried potatoes,,,1,1,4,,,,TRUE,1,7,30
+CB09,7,بطاطس مهروسة,Mashed potatoes,,,1,1,5,,,,TRUE,2,14,60
+CB10,5,توست قمح كامل الحبة,Whole wheat toast,,,1,2,4,,,,TRUE,1,7,30
+CB11,70,حبات ذرة مشوية,Roasted corn kernels,,,1,3,3,,,,TRUE,1,2,8
+CB12,10,فشار ذرة طبيعي,Natural popcorn,,,1,3,3,,,,TRUE,1,2,8
+MT01,65,شوربة لحم,Meat broth,,,2,3,4,,,,TRUE,1,2,8
+MT02,18,كبدة مسلوقة,Boiled liver,,,2,3,4,,,,TRUE,1,2,8
+MT03,67,كفتة لحم بقري,Beef kofta,,,2,3,3,,,,TRUE,1,2,8
+MT04,68,كفتة لحم خروف,Lamb kofta,,,2,3,3,,,,TRUE,1,2,8
+MT05,17,لحم أرانب مسلوق,Boiled rabbit,,,2,3,4,,,,TRUE,1,2,8
+MT06,14,لحم إبل مسلوق,Boiled camel meat,,,2,3,4,,,,TRUE,1,2,8
+MT07,11,لحم بتلو مسلوق,Boiled beef,,,2,3,4,,,,TRUE,1,2,8
+MT08,13,لحم ضأن مسلوق,Boiled lamb,,,2,3,3,,,,TRUE,1,2,8
+MT09,12,لحم ضأن مشوي,Grilled lamb,,,2,3,3,,,,TRUE,1,2,8
+MT10,15,لحم ماعز مسلوق,Boiled goat meat,,,2,3,4,,,,TRUE,1,2,8
+MT11,16,لحم ماعز مشوي,Grilled goat meat,,,2,3,3,,,,TRUE,1,2,8
+MT12,19,محشي كوسا وباذنجان وفلفل بالأرز,Stuffed zucchini eggplant and pepper with rice,,,2,4,3,,,,TRUE,1,1,4
+MT13,82,الممبار المحشي,Stuffed sausage casing,,,2,3,3,,,,TRUE,1,2,8
+MT14,83,كوارع الأنعام المسلوقة,Boiled livestock trotters,,,2,3,3,,,,TRUE,1,2,8
+FS01,22,تونة بحرية طبيعية مشوية,Grilled natural sea tuna,,,3,3,4,,,,TRUE,1,2,8
+FS02,20,سمك سردين بحري مشوي,Grilled sea sardine,,,3,3,4,,,,TRUE,1,2,8
+FS03,21,سمك ماكريل بحري مشوي,Grilled sea mackerel,,,3,3,4,,,,TRUE,1,2,8
+BD01,69,حمام محشي,Stuffed pigeon,,,4,4,3,,,,TRUE,1,1,4
+BD02,23,حمام مشوي,Grilled pigeon,,,4,3,4,,,,TRUE,1,2,8
+BD03,24,سمان مشوي,Grilled quail,,,4,3,4,,,,TRUE,1,2,8
+DF01,25,زبدة بلدي,Country butter,,,5,1,5,,,,TRUE,2,14,60
+DF02,26,سمن بلدي,Country ghee,,,5,1,5,,,,TRUE,2,14,60
+DF03,27,قشطة طبيعية,Natural cream,,,5,1,5,,,,TRUE,2,14,60
+DF04,71,سكر طبيعي,Natural sugar,,,5,1,4,,,,TRUE,1,7,30
+CH01,28,جبنة جودة,Gouda cheese,,,6,2,4,,,,TRUE,1,7,30
+CH02,29,جبنة شيدر,Cheddar cheese,,,6,2,4,,,,TRUE,1,7,30
+CH03,30,جبنة فلمنك,Edam cheese,,,6,2,4,,,,TRUE,1,7,30
+CH04,31,جبنة موتزاريلا,Mozzarella cheese,,,6,2,4,,,,TRUE,1,7,30
+CH05,84,جبنة ريكفورد,Roquefort cheese,,,6,2,4,,,,TRUE,1,7,30
+CH06,85,جبنة كشكفال,Kashkaval cheese,,,6,2,4,,,,TRUE,1,7,30
+FR01,39,برقوق طازج,Fresh plums,,,7,3,3,,,,TRUE,1,2,8
+FR02,36,تفاح مقشّر,Peeled apple,,,7,4,4,,,,TRUE,1,1,4
+FR03,32,تمر,Dates,,,7,1,5,,,,TRUE,2,14,60
+FR04,41,تين طازج,Fresh figs,,,7,3,4,,,,TRUE,1,2,8
+FR05,35,رمان طازج,Fresh pomegranate,,,7,3,4,,,,TRUE,1,2,8
+FR06,42,زبيب,Raisins,,,7,3,3,,,,TRUE,1,2,8
+FR07,43,عصير جوافة معلب طبيعي,Natural canned guava juice,,,7,3,3,,,,TRUE,1,2,8
+FR08,34,عنب أسود,Black grapes,,,7,3,4,,,,TRUE,1,2,8
+FR09,37,فراولة طازجة,Fresh strawberries,,,7,3,3,,,,TRUE,1,2,8
+FR10,38,كرز طازج,Fresh cherries,,,7,3,4,,,,TRUE,1,2,8
+FR11,40,مشمش طازج,Fresh apricots,,,7,3,3,,,,TRUE,1,2,8
+FR12,33,موز,Banana,,,7,3,4,,,,TRUE,1,2,8
+FR13,86,عصير عنب معلب طبيعي,Natural canned grape juice,,,7,3,3,,,,TRUE,1,2,8
+FR14,87,عصير كريز معلب طبيعي,Natural canned cherry juice,,,7,3,3,,,,TRUE,1,2,8
+FR15,88,عصير توت معلب طبيعي,Natural canned mulberry juice,,,7,3,3,,,,TRUE,1,2,8
+FR16,89,قمر الدين المعلب,Canned apricot nectar,,,7,3,3,,,,TRUE,1,2,8
+FR17,90,جوافة طازجة بدون بذر,Fresh seedless guava,,,7,4,3,,,,TRUE,1,1,4
+FR18,91,توت مجفف,Dried mulberries,,,7,3,3,,,,TRUE,1,2,8
+FR19,92,تين مجفف,Dried figs,,,7,3,3,,,,TRUE,1,2,8
+NT01,47,عين الجمل,Walnuts,,,8,3,3,,,,TRUE,1,2,8
+NT02,46,فستق,Pistachios,,,8,3,3,,,,TRUE,1,2,8
+NT03,48,فول سوداني,Peanuts,,,8,3,3,,,,TRUE,1,2,8
+NT04,45,كاجو,Cashews,,,8,3,3,,,,TRUE,1,2,8
+NT05,44,لوز,Almonds,,,8,4,3,,,,TRUE,1,1,4
+SW01,55,حلاوة طحينية غامقة,Dark tahini halva,,,9,3,3,,,,TRUE,1,2,8
+SW02,56,شوكولاتة داكنة 70%,Dark chocolate 70%+,,,9,2,4,,,,TRUE,1,7,30
+SW03,50,عسل أسود (دبس),Black honey (molasses),,,9,3,4,,,,TRUE,1,2,8
+SW04,49,عسل طبيعي,Natural honey,,,9,2,5,,,,TRUE,1,7,30
+SW05,52,مربى تين طبيعية,Natural fig jam,,,9,4,3,,,,TRUE,1,1,4
+SW06,54,مربى فراولة طبيعية,Natural strawberry jam,,,9,4,3,,,,TRUE,1,1,4
+SW07,53,مربى مشمش طبيعية,Natural apricot jam,,,9,4,3,,,,TRUE,1,1,4
+SW08,51,نوتيلا,Nutella,,,9,2,3,,,,TRUE,1,7,30
+SW09,72,شمع العسل,Honeycomb,,,9,3,4,,,,TRUE,1,2,8
+SW10,73,غذاء ملكات النحل,Royal jelly,,,9,3,4,,,,TRUE,1,2,8
+SW11,74,حبوب اللقاح الطبيعية,Natural bee pollen,,,9,3,4,,,,TRUE,1,2,8
+SW12,75,اللبان الذكر (الكُندر),Frankincense (Boswellia),,,9,3,4,,,,TRUE,1,2,8
+SW13,76,المستكة اليونانية,Greek mastic,,,9,3,4,,,,TRUE,1,2,8
+SW14,77,حلاوة المولد (نوجا),Nougat halva,,,9,3,3,,,,TRUE,1,2,8
+OL01,57,زيتون كالاماتا,Kalamata olives,,,10,3,4,,,,TRUE,1,2,8
+DR01,58,شاي أخضر,Green tea,,,11,3,4,,,,TRUE,1,2,8
+DR02,59,قهوة تركية,Turkish coffee,,,11,2,4,,,,TRUE,1,7,30
+DR03,60,ماء دافئ,Warm water,,,11,1,5,,,,TRUE,2,14,60
+HB01,61,شاي زعتر,Thyme tea,,,12,3,4,,,,TRUE,1,7,30
+HB02,62,كراوية دافئة,Warm caraway tea,,,12,3,4,,,,TRUE,1,7,30
+HB03,63,ينسون دافئ,Warm anise tea,,,12,3,4,,,,TRUE,1,7,30
+HB04,78,كمون دافئ,Warm cumin tea,,,12,3,4,,,,TRUE,1,7,30
+OI01,64,زيت زيتون,Olive oil,,,13,1,5,,,,TRUE,2,14,60
+OI02,79,زيت الذرة وعباد الشمس,Corn and sunflower oil,,,13,1,4,,,,TRUE,1,7,30
+OI03,80,خل قصب السكر الطبيعي,Natural sugarcane vinegar,,,13,3,4,,,,TRUE,1,7,30
+OI04,81,خل التفاح الطبيعي,Natural apple cider vinegar,,,13,3,4,,,,TRUE,1,7,30
+OI05,,شاى اخضر,,,,,,4,,,,,1,2,8

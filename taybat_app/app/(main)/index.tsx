@@ -13,6 +13,7 @@ import { CommitmentCard } from '@/components/home/CommitmentCard';
 import { HomeHeader } from '@/components/home/HomeHeader';
 import { TodayMealRow } from '@/components/home/TodayMealRow';
 import { WeeklyProgressBar } from '@/components/home/WeeklyProgressBar';
+import { useAuthStore } from '@/stores/auth.store';
 import { useMealsStore } from '@/stores/meals.store';
 import { useNotificationsStore } from '@/stores/notifications.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
@@ -21,7 +22,26 @@ import { useUserRatingStore } from '@/stores/userRating.store';
 import { daysOnPlan } from '@/utils/statsUtils';
 import { localDateISO } from '@/utils/dateUtils';
 import { toArabicNumerals } from '@/utils/zoneUtils';
-import type { Meal, UserMeal } from '@/types';
+import type { Meal, User, UserMeal } from '@/types';
+
+// Placeholder profile used when rendering the home screen for an unauthenticated guest.
+// Provides null-safe defaults so every component renders without crashing.
+const GUEST_USER: User = {
+  id: '',
+  email: '',
+  name: 'زائر',
+  gender: null,
+  avatar_url: null,
+  avatar_config: null,
+  plan_start_date: null,
+  next_rating_date: null,
+  language: 'ar',
+  theme: 'light',
+  post_visibility: 'public',
+  follow_permission: 'everyone',
+  profile_completed: false,
+  registered_at: '',
+};
 
 function computeMealAlert(
   meal: Meal | undefined,
@@ -68,11 +88,12 @@ function computeMealAlert(
 
 export default function HomeScreen() {
   const theme = useTheme();
+  const authStatus = useAuthStore((s) => s.status);
   const { user } = useUserStore();
   const reloadProfile = useUserStore((s) => s.reloadProfile);
   const { userMeals, todayMeals, initializeUserMeals } = useUserMealsStore();
   const refreshTodayMeals = useUserMealsStore((s) => s.refreshTodayMeals);
-  const { meals, isLoading: mealsLoading, errorMessage: mealsError, initializeMeals, getMealById } = useMealsStore();
+  const { meals, isLoading: mealsLoading, errorMessage: mealsError, initializeMeals, getMealById, getMealImageUri } = useMealsStore();
   const { pendingRating, initializeRatings, checkPendingRating } = useUserRatingStore();
   const unreadCount = useNotificationsStore((s) => s.unreadCount);
   const loadNotifications = useNotificationsStore((s) => s.loadNotifications);
@@ -81,38 +102,58 @@ export default function HomeScreen() {
   const [cardKey, setCardKey] = useState(0);
   const deleteMeal = useUserMealsStore((s) => s.deleteMeal);
 
+  const isGuest = authStatus === 'guest';
+
+  // Show an alert prompting the guest to sign in before performing write actions.
+  const requireLogin = useCallback(() => {
+    Alert.alert(
+      'تسجيل الدخول مطلوب',
+      'سجّل دخولك للاستمتاع بكامل مميزات التطبيق',
+      [
+        { text: 'لاحقاً', style: 'cancel' },
+        { text: 'تسجيل الدخول', onPress: () => router.push('/(auth)/login' as never) },
+      ],
+    );
+  }, []);
+
   useEffect(() => {
+    if (isGuest) return;
     if (!userMeals.length) initializeUserMeals();
-  }, [initializeUserMeals, userMeals.length]);
+  }, [isGuest, initializeUserMeals, userMeals.length]);
 
   // Re-filter todayMeals by the current calendar date whenever the screen gains
   // focus or the app returns to the foreground — handles overnight date changes.
   useFocusEffect(
     useCallback(() => {
+      if (isGuest) return;
       refreshTodayMeals();
-    }, [refreshTodayMeals]),
+    }, [isGuest, refreshTodayMeals]),
   );
 
   useEffect(() => {
+    if (isGuest) return;
     const sub = AppState.addEventListener('change', (state) => {
       if (state === 'active') refreshTodayMeals();
     });
     return () => sub.remove();
-  }, [refreshTodayMeals]);
+  }, [isGuest, refreshTodayMeals]);
 
   useEffect(() => {
     if (!meals.length) initializeMeals();
   }, [initializeMeals, meals.length]);
 
   useEffect(() => {
+    if (isGuest) return;
     initializeRatings();
-  }, [initializeRatings]);
+  }, [isGuest, initializeRatings]);
 
   useEffect(() => {
+    if (isGuest) return;
     loadNotifications();
-  }, [loadNotifications]);
+  }, [isGuest, loadNotifications]);
 
   const handleRefresh = useCallback(async () => {
+    if (isGuest) return;
     setIsRefreshing(true);
     setCardKey((k) => k + 1);
     await Promise.all([
@@ -123,13 +164,17 @@ export default function HomeScreen() {
       loadNotifications(true),
     ]);
     setIsRefreshing(false);
-  }, [reloadProfile, initializeUserMeals, initializeMeals, initializeRatings, loadNotifications]);
+  }, [isGuest, reloadProfile, initializeUserMeals, initializeMeals, initializeRatings, loadNotifications]);
 
   useEffect(() => {
+    if (isGuest) return;
     if (userMeals.length) checkPendingRating();
-  }, [userMeals, checkPendingRating]);
+  }, [isGuest, userMeals, checkPendingRating]);
 
-  if (!user) {
+  // For guests use the placeholder profile so the same UI renders without a real user.
+  const displayUser: User | null = isGuest ? GUEST_USER : user;
+
+  if (!displayUser) {
     return (
       <View className="flex-1 items-center justify-center bg-app-background">
         <MealSpinner />
@@ -137,48 +182,44 @@ export default function HomeScreen() {
     );
   }
 
-  if (mealsLoading && !meals.length) {
-    return (
-      <View className="flex-1 items-center justify-center bg-app-background">
-        <MealSpinner />
-      </View>
-    );
-  }
-
-  if (mealsError && !meals.length) {
-    return (
-      <View className="flex-1 items-center justify-center gap-4 bg-app-background px-8">
-        <AppText variant="bold" className="text-center text-[16px]" style={{ color: theme.colors.error }}>
-          تعذّر تحميل البيانات
-        </AppText>
-        <AppText className="text-center text-[13px] leading-5 text-app-textMuted">
-          {mealsError}
-        </AppText>
-        <Pressable
-          onPress={() => { void initializeMeals(); }}
-          className="mt-2 rounded-full px-6 py-2.5"
-          style={{ backgroundColor: theme.colors.primary }}
-        >
-          <AppText variant="semibold" className="text-[14px] text-white">إعادة المحاولة</AppText>
-        </Pressable>
-      </View>
-    );
-  }
-
-  const dayNumber = daysOnPlan(user.plan_start_date);
+  const showMealsLoading = mealsLoading && !meals.length;
+  const showMealsError = mealsError && !meals.length;
+  const dayNumber = daysOnPlan(displayUser.plan_start_date);
   const todayStr = localDateISO();
 
   return (
     <View className="flex-1 bg-app-background">
       <HomeHeader
-        name={user.name || user.email.split('@')[0]}
-        gender={user.gender}
-        avatarUrl={user.avatar_url}
+        name={displayUser.name || displayUser.email.split('@')[0]}
+        gender={displayUser.gender}
+        avatarUrl={displayUser.avatar_url}
+        isGuest={isGuest}
         onProfilePress={() => router.push('/(main)/user-profile')}
-        onBellPress={() => router.push('/(main)/notifications')}
-        unreadCount={unreadCount}
+        onBellPress={isGuest ? requireLogin : () => router.push('/(main)/notifications')}
+        unreadCount={isGuest ? 0 : unreadCount}
       />
 
+      {showMealsLoading ? (
+        <View className="flex-1 items-center justify-center">
+          <MealSpinner />
+        </View>
+      ) : showMealsError ? (
+        <View className="flex-1 items-center justify-center gap-4 px-8">
+          <AppText variant="bold" className="text-center text-[16px]" style={{ color: theme.colors.error }}>
+            تعذّر تحميل البيانات
+          </AppText>
+          <AppText className="text-center text-[13px] leading-5 text-app-textMuted">
+            {mealsError}
+          </AppText>
+          <Pressable
+            onPress={() => { void initializeMeals(); }}
+            className="mt-2 rounded-full px-6 py-2.5"
+            style={{ backgroundColor: theme.colors.primary }}
+          >
+            <AppText variant="semibold" className="text-[14px] text-white">إعادة المحاولة</AppText>
+          </Pressable>
+        </View>
+      ) : (
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -195,7 +236,7 @@ export default function HomeScreen() {
           <CommitmentCard
             key={cardKey}
             dayNumber={dayNumber}
-            planStartDate={user.plan_start_date}
+            planStartDate={displayUser.plan_start_date}
             onAddMeal={() => router.push('/(main)/select-meal')}
           />
 
@@ -229,7 +270,8 @@ export default function HomeScreen() {
                       key={um.id}
                       userMeal={um}
                       mealName={meal?.name ?? 'وجبة'}
-                      imageUrl={meal?.image_url}
+                      rating={meal?.rating ?? 0}
+                      imageUri={meal ? getMealImageUri(meal) : null}
                       alertNote={alertNote}
                       isOverLimit={isOverLimit}
                       onPress={() =>
@@ -283,7 +325,7 @@ export default function HomeScreen() {
 
           {/* Stats link */}
           <Pressable
-            onPress={() =>
+            onPress={isGuest ? requireLogin : () =>
               router.push({
                 pathname: '/(main)/stats',
                 params: { initialTab: pendingRating ? 'evaluation' : 'timeline' },
@@ -312,8 +354,8 @@ export default function HomeScreen() {
             </View>
           </Pressable>
 
-          {/* Complete profile prompt — shown when profile is not yet complete */}
-          {!user.profile_completed && (
+          {/* Complete profile prompt — not shown for guests */}
+          {!isGuest && !displayUser.profile_completed && (
             <Pressable
               onPress={() => router.push('/(auth)/complete-profile' as never)}
               className="mt-[22px] overflow-hidden rounded-[18px] border border-app-primary bg-app-surface"
@@ -342,7 +384,7 @@ export default function HomeScreen() {
           )}
 
           {/* Weekly rating banner — only when profile is complete */}
-          {user.profile_completed && pendingRating && (
+          {!isGuest && displayUser.profile_completed && pendingRating && (
             <Pressable
               onPress={() => router.push('/(main)/stats' as never)}
               className="mt-[22px] overflow-hidden rounded-[18px] border border-app-warning bg-app-surface"
@@ -374,12 +416,13 @@ export default function HomeScreen() {
           <View className="mt-[22px]">
             <WeeklyProgressBar
               userMeals={userMeals}
-              planStartDate={user.plan_start_date}
-              onPress={() => router.push('/(main)/meal-history' as never)}
+              planStartDate={displayUser.plan_start_date}
+              onPress={isGuest ? requireLogin : () => router.push('/(main)/meal-history' as never)}
             />
           </View>
         </View>
       </ScrollView>
+      )}
 
       <AppTabBar active="home" />
     </View>

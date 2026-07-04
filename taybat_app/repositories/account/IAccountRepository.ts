@@ -14,4 +14,5 @@ export interface IAccountRepository {
   updateFollowPermission(userId: string, value: FollowPermission): Promise<void>;
   getFavoriteMealIds(userId: string): Promise<number[]>;
   saveFavoriteMealIds(userId: string, ids: number[]): Promise<void>;
+  deleteAccount(): Promise<void>;
 }

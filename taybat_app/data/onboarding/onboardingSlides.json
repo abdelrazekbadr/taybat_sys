@@ -60,32 +60,6 @@
     ]
   },
   {
-    "id": "onboarding3",
-    "image": "onboarding3",
-    "title": {
-      "ar": "راقب شعورك يتحسن",
-      "en": "Track how you feel improving"
-    },
-    "description": {
-      "ar": "كل أسبوع سنسأل عن شعورك ونقيس تحسنك من خلال الراحة والعافية، ليس الأرقام.",
-      "en": "Each week we’ll ask how you feel and measure progress through comfort and wellbeing, not numbers."
-    },
-    "features": [
-      {
-        "icon": "check-bold",
-        "text": { "ar": "تقييمات أسبوعية بسيطة", "en": "Simple weekly check-ins" }
-      },
-      {
-        "icon": "check-bold",
-        "text": { "ar": "شارات التحفيز لتشجيعك", "en": "Motivation badges" }
-      },
-      {
-        "icon": "check-bold",
-        "text": { "ar": "رسوم بيانية توضح تحسنك", "en": "Charts showing your improvement" }
-      }
-    ]
-  },
-  {
     "id": "welcome",
     "image": "welcome",
     "title": {

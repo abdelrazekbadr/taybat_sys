@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Image, Pressable, ScrollView, View } from 'react-native';
+import { Pressable, ScrollView, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
 import { ChevronLeft, ChevronRight, Heart } from 'lucide-react-native';
 
 import { AppText, AppTextInput } from '@/components/common/AppText';
+import { MealImage } from '@/components/common/MealImage';
 import { MealSpinner } from '@/components/common/MealSpinner';
 import { GradientTabs } from '@/components/common/GradientTabs';
 import { StarRating } from '@/components/common/StarRating';
@@ -16,7 +17,7 @@ import { useMealsStore } from '@/stores/meals.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import { useUserStore } from '@/stores/user.store';
 import type { Meal } from '@/types';
-import { getZoneMeta, toArabicNumerals } from '@/utils/zoneUtils';
+import { toArabicNumerals } from '@/utils/zoneUtils';
 
 const defaultFoodImage = require('../../assets/images/food/risotto.png');
 
@@ -55,8 +56,8 @@ function MealCard(props: {
 }) {
   const theme = useTheme();
   const { rowDir } = useRTL();
-  const zoneMeta = getZoneMeta(props.meal.dominant_zone);
-  const imageSource = props.meal.image_url ? { uri: props.meal.image_url } : defaultFoodImage;
+  const getMealImageUri = useMealsStore((s) => s.getMealImageUri);
+  const imageUri = getMealImageUri(props.meal);
   const ingredientsCount =
     typeof props.meal.meal_item_codes === 'string' && props.meal.meal_item_codes.trim().length > 0
       ? props.meal.meal_item_codes.split(',').filter(Boolean).length
@@ -71,7 +72,7 @@ function MealCard(props: {
     >
       <View className="items-center gap-3" style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}>
         <View className="h-[54px] w-[54px] flex-shrink-0 overflow-hidden rounded-[16px] border border-app-line bg-app-surfaceAlt">
-          <Image source={imageSource} className="h-full w-full" resizeMode="cover" />
+          <MealImage uri={imageUri} defaultSource={defaultFoodImage} className="h-full w-full" resizeMode="cover" />
         </View>
 
         <View className="flex-1" style={{ minWidth: 0 }}>
@@ -90,7 +91,7 @@ function MealCard(props: {
           </View>
 
           <View className="mt-1 flex-row items-center" style={{ flexDirection: rowDir }}>
-            <StarRating value={zoneMeta.stars} size={13} gap={2} />
+            <StarRating value={props.meal.rating} size={13} gap={2} />
           </View>
         </View>
 

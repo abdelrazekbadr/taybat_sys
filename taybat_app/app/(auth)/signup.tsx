@@ -79,7 +79,8 @@ export default function SignupScreen() {
       router.replace({ pathname: '/(auth)/verify-email', params: { email: parsed.data.email } } as never);
       return;
     }
-    router.replace('/(auth)/complete-profile' as never);
+    // No explicit replace here — the root layout guard handles the
+    // authenticated + !profile_completed → complete-profile transition.
   });
 
   const isDark = theme.dark;

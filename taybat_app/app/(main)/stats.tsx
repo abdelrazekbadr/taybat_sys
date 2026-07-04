@@ -6,6 +6,7 @@ import {
   Laugh,
   Meh,
   PartyPopper,
+  Share2,
   Smile,
 } from 'lucide-react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
@@ -24,13 +25,20 @@ import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { CommitmentCalendar } from '@/components/stats/CommitmentCalendar';
 import { useRTL } from '@/hooks/useRTL';
+import {
+  cancelRatingNotification,
+  scheduleRatingNotification,
+} from '@/services/notifications';
+import { buildStatsTopic, shareContent } from '@/services/sharing';
 import { useHealthGoalsStore } from '@/stores/healthGoals.store';
+import { useMembershipStore } from '@/stores/membership.store';
+import { useNotificationSettingsStore } from '@/stores/notificationSettings.store';
 import { useUserStore } from '@/stores/user.store';
 import { useUserRatingStore } from '@/stores/userRating.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import type { UserRating, WeeklyScore } from '@/types';
 import { localDateISO } from '@/utils/dateUtils';
-import { nextRatingDate, toHealthTimelineInDays } from '@/utils/statsUtils';
+import { daysOnPlan, nextRatingDate, toHealthTimelineInDays } from '@/utils/statsUtils';
 import { toArabicNumerals } from '@/utils/zoneUtils';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -118,7 +126,7 @@ function formatArabicDate(isoDate: string) {
 
 function shortDate(isoDate: string): string {
   const d = new Date(isoDate);
-  return `${toArabicNumerals(d.getDate())} ${MONTHS_SHORT[d.getMonth()].slice(0, 3)}`;
+  return `${toArabicNumerals(d.getDate())} ${MONTHS_SHORT[d.getMonth()]}`;
 }
 
 // ─── PeriodFilter ──────────────────────────────────────────────────────────
@@ -166,19 +174,29 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
   const yFor = (v: number) =>
     CHART_H - CHART_PY - ((Math.max(1, Math.min(5, v)) - 1) / 4) * (CHART_H - CHART_PY * 2);
 
-  // Center single point; spread multiple evenly
-  const xFor = (idx: number) =>
-    ratings.length === 1
-      ? CHART_SVG_W / 2
-      : CHART_PX + idx * (CHART_SVG_W - CHART_PX * 2) / (ratings.length - 1);
+  // Center single point; spread multiple evenly — oldest on the left,
+  // newest on the right, same orientation in RTL and LTR. Used for the
+  // date labels, which render as plain Views and are not auto-mirrored.
+  const xFor = (idx: number) => {
+    if (ratings.length === 1) return CHART_SVG_W / 2;
+    return CHART_PX + idx * (CHART_SVG_W - CHART_PX * 2) / (ratings.length - 1);
+  };
+
+  // The <Svg> canvas itself gets auto-mirrored by the OS under RTL (unlike
+  // plain Views), so its internal points need a pre-emptive counter-mirror
+  // to land in the same oldest-left/newest-right order as the date labels.
+  const svgXFor = (idx: number) => {
+    if (ratings.length === 1) return CHART_SVG_W / 2;
+    const orderedIdx = isRTL ? ratings.length - 1 - idx : idx;
+    return CHART_PX + orderedIdx * (CHART_SVG_W - CHART_PX * 2) / (ratings.length - 1);
+  };
 
   const pathD = useMemo(() => {
     if (ratings.length < 2) return '';
-    const step = (CHART_SVG_W - CHART_PX * 2) / (ratings.length - 1);
     return ratings
-      .map((r, i) => `${i === 0 ? 'M' : 'L'} ${CHART_PX + i * step} ${yFor(r.health_score)}`)
+      .map((r, i) => `${i === 0 ? 'M' : 'L'} ${svgXFor(i)} ${yFor(r.health_score)}`)
       .join(' ');
-  }, [ratings]);
+  }, [ratings, isRTL]);
 
   // Y-axis label column
   const YAxisLabels = () => (
@@ -250,7 +268,7 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
 
                 {/* Dots + score labels — each coloured by its score value */}
                 {ratings.map((r, i) => {
-                  const cx    = xFor(i);
+                  const cx    = svgXFor(i);
                   const cy    = yFor(r.health_score);
                   const color = SCORE_COLORS[r.health_score] ?? theme.colors.primary;
                   return (
@@ -272,12 +290,12 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
               </Svg>
 
               {/* X-axis date labels */}
-              <View style={{ height: 18, position: 'relative' }}>
+              <View style={{ height: 20, position: 'relative' }}>
                 {ratings.map((r, i) => {
                   // Skip dense labels: always show first/last, sample middle
                   const step = Math.max(1, Math.ceil((ratings.length - 1) / 4));
                   if (i !== 0 && i !== ratings.length - 1 && i % step !== 0) return null;
-                  const labelW = 40;
+                  const labelW = 64;
                   return (
                     <View
                       key={i}
@@ -288,7 +306,10 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
                         width: labelW,
                       }}
                     >
-                      <AppText className="text-center text-[9px] text-app-textSoft">
+                      <AppText
+                        numberOfLines={1}
+                        className="text-center text-[9px] text-app-textSoft"
+                      >
                         {shortDate(r.submitted_at)}
                       </AppText>
                     </View>
@@ -389,6 +410,30 @@ export default function StatsScreen() {
     [ratings, dayFilter],
   );
 
+  const latestRating = useMemo(() => {
+    if (!ratings.length) return null;
+    return ratings.reduce((latest, r) =>
+      new Date(r.submitted_at).getTime() > new Date(latest.submitted_at).getTime() ? r : latest,
+    );
+  }, [ratings]);
+
+  const dayNo = daysOnPlan(user?.plan_start_date);
+  const [isSharingStats, setIsSharingStats] = useState(false);
+
+  const handleShareStats = async () => {
+    if (isSharingStats || !latestRating) return;
+    setIsSharingStats(true);
+    try {
+      const topic = buildStatsTopic(latestRating.health_score, 'هذا الأسبوع');
+      const { shared } = await shareContent(topic, dayNo);
+      if (shared) {
+        void useMembershipStore.getState().recordEvent('supporter', 'share_stats', undefined, 'stat', latestRating.id);
+      }
+    } finally {
+      setIsSharingStats(false);
+    }
+  };
+
   const didApplyInitialTab = useRef(false);
   const sheetEntrance = useRef(new Animated.Value(0)).current;
 
@@ -456,6 +501,16 @@ export default function StatsScreen() {
     });
 
     if (!ok) { setLocalError(errorMessage || 'تعذّر إرسال التقييم'); return; }
+
+    // Reschedule (or cancel) the rating notification for the new next_rating_date
+    const notifState = useNotificationSettingsStore.getState();
+    const newNextDate = useUserStore.getState().user?.next_rating_date ?? null;
+    if (notifState.ratingReminder && newNextDate) {
+      void scheduleRatingNotification(newNextDate, notifState.config);
+    } else {
+      void cancelRatingNotification();
+    }
+
     form.reset();
     setSuccessKey((k) => k + 1);
   });
@@ -637,9 +692,20 @@ export default function StatsScreen() {
 
             {/* Health improvement chart — period filter lives directly above it */}
             <View className="mt-5">
-              <AppText variant="bold" className="mb-2 text-[13px] text-app-navy">
-                مسار التحسن الصحي
-              </AppText>
+              <View className="mb-2 items-center justify-between" style={{ flexDirection: rowDir }}>
+                <AppText variant="bold" className="text-[13px] text-app-navy">
+                  مسار التحسن الصحي
+                </AppText>
+                {latestRating ? (
+                  <Pressable
+                    onPress={handleShareStats}
+                    disabled={isSharingStats}
+                    style={({ pressed }) => ({ opacity: pressed || isSharingStats ? 0.6 : 1 })}
+                  >
+                    <Share2 size={16} color={theme.colors.primary} strokeWidth={2.2} />
+                  </Pressable>
+                ) : null}
+              </View>
               <PeriodFilter value={dayFilter} onChange={setDayFilter} />
             </View>
             <HealthTimelineChart ratings={filteredRatings} />

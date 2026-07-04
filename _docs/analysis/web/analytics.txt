@@ -1,0 +1,13 @@
+
+
+2. Register the domain in Google Search Console (15 min)
+
+Go to https://search.google.com/search-console → Add property → al-tayabat.com
+Verify via the HTML tag method (gives you a content="..." string) — send it to me and I'll drop it into metadata.verification.google in layout.tsx in one line, no redeploy logic needed beyond that.
+Once verified: 
+Sitemaps → submit https://al-tayabat.com/sitemap.xml (already live, just needs submitting).
+
+________
+#Copy the TXT record below into the DNS configuration for al-tayabat.com
+google-site-verification=zMPU20dSkzSzK5EVsSFX6n2kZyTdxJJP-Am9g79exKw
+_________

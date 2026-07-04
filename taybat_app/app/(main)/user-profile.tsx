@@ -11,6 +11,7 @@ import { AppText } from '@/components/common/AppText';
 import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { StarRating } from '@/components/common/StarRating';
 import { useRTL } from '@/hooks/useRTL';
+import { useAuthStore } from '@/stores/auth.store';
 import { useCommunityStore } from '@/stores/community.store';
 import { useHealthGoalsStore } from '@/stores/healthGoals.store';
 import { useMembershipStore } from '@/stores/membership.store';
@@ -108,6 +109,7 @@ export default function UserProfileScreen() {
   const { userId, name: paramName } = useLocalSearchParams<{ userId?: string; name?: string }>();
 
   const { user }       = useUserStore();
+  const isGuest        = useAuthStore((s) => s.status) === 'guest';
   const { userMeals }  = useUserMealsStore();
   const { ratings }    = useUserRatingStore();
   const goals          = useHealthGoalsStore((s) => s.goals);
@@ -124,13 +126,13 @@ export default function UserProfileScreen() {
   const isSystemUser  = targetUserId === 'system';
   const isOwnProfile  = userId === undefined || (user !== null && targetUserId === user?.id);
   const displayName   = isOwnProfile
-    ? (user?.name || user?.email?.split('@')[0] || '')
+    ? (isGuest ? 'زائر' : (user?.name || user?.email?.split('@')[0] || ''))
     : (paramName ?? '');
 
-  // Refresh membership when viewing own profile
+  // Refresh membership when viewing own profile (guests have no membership data)
   useEffect(() => {
-    if (isOwnProfile) void fetchMembership();
-  }, [isOwnProfile, fetchMembership]);
+    if (isOwnProfile && !isGuest) void fetchMembership();
+  }, [isOwnProfile, isGuest, fetchMembership]);
 
   const planDays = useMemo(() => {
     if (!isOwnProfile || !user?.plan_start_date) return 0;
@@ -384,11 +386,17 @@ export default function UserProfileScreen() {
           </View>
         )}
 
-        {isOwnProfile && user !== null && !isSystemUser && !user.profile_completed ? (
-          <View className="mx-5 mt-6">
-            <PrimaryButton title="استكمال الملف الشخصي" onPress={() => router.push('/(auth)/complete-profile' as never)} />
-          </View>
-        ) : null}
+        {isOwnProfile && !isSystemUser && (
+          isGuest ? (
+            <View className="mx-5 mt-6">
+              <PrimaryButton title="تسجيل الدخول" onPress={() => router.push('/(auth)/login' as never)} />
+            </View>
+          ) : !user?.profile_completed ? (
+            <View className="mx-5 mt-6">
+              <PrimaryButton title="استكمال الملف الشخصي" onPress={() => router.push('/(auth)/complete-profile' as never)} />
+            </View>
+          ) : null
+        )}
 
       </ScrollView>
     </View>

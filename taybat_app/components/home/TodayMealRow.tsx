@@ -1,23 +1,24 @@
 import React from 'react';
-import { View, TouchableOpacity, Image, Animated } from 'react-native';
+import { View, TouchableOpacity, Animated } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { useTheme } from 'react-native-paper';
 
 import { ArrowLeftRight, Trash2 } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
+import { MealImage } from '@/components/common/MealImage';
 import { StarRating } from '@/components/common/StarRating';
 import { useRTL } from '@/hooks/useRTL';
 import type { UserMeal } from '@/types';
 import { formatArabicTime } from '@/utils/statsUtils';
-import { getZoneMeta } from '@/utils/zoneUtils';
 
 const defaultFoodImage = require('../../assets/images/food/risotto.png');
 
 interface TodayMealRowProps {
   userMeal: UserMeal;
   mealName: string;
-  imageUrl?: string;
+  rating: number;
+  imageUri?: string | null;
   alertNote?: string;
   isOverLimit?: boolean;
   onPress: () => void;
@@ -30,7 +31,8 @@ const MEAL_SLOT_LABELS = ['الإفطار', 'الغداء', 'العشاء'];
 export function TodayMealRow({
   userMeal,
   mealName,
-  imageUrl,
+  rating,
+  imageUri,
   alertNote,
   isOverLimit,
   onPress,
@@ -38,12 +40,10 @@ export function TodayMealRow({
   onDeletePress,
 }: TodayMealRowProps) {
   const theme = useTheme();
-  const zoneMeta = getZoneMeta(userMeal.zone_summary);
   const { rowDir } = useRTL();
   const slotIndex = userMeal.id % 3;
   const slotLabel = MEAL_SLOT_LABELS[slotIndex] ?? 'وجبة';
   const timeLabel = formatArabicTime(userMeal.datetime);
-  const imageSource = imageUrl ? { uri: imageUrl } : defaultFoodImage;
 
   const renderDeleteAction = (
     _progress: Animated.AnimatedInterpolation<number>,
@@ -96,7 +96,7 @@ export function TodayMealRow({
         activeOpacity={0.7}
       >
         <View className="h-[54px] w-[54px] flex-shrink-0 overflow-hidden rounded-[16px] border border-app-line bg-app-surfaceAlt">
-          <Image source={imageSource} className="h-full w-full" resizeMode="cover" />
+          <MealImage uri={imageUri ?? null} defaultSource={defaultFoodImage} className="h-full w-full" resizeMode="cover" />
         </View>
 
         <View className="flex-1 gap-0.5" style={{ minWidth: 0 }}>
@@ -124,7 +124,7 @@ export function TodayMealRow({
           ) : null}
 
           <View className="flex-row items-center" style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}>
-            <StarRating value={zoneMeta.stars} size={13} gap={2} />
+            <StarRating value={rating} size={13} gap={2} />
           </View>
         </View>
 

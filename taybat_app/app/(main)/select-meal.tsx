@@ -1,7 +1,7 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, ScrollView, TouchableOpacity, ActivityIndicator, Image, Alert } from 'react-native'; // ActivityIndicator kept for add-button (38px circle)
+import { View, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'; // ActivityIndicator kept for add-button (38px circle)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 
@@ -9,15 +9,16 @@ import { ChevronLeft, ChevronRight, LayersPlus } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
-import { MealSpinner } from '@/components/common/MealSpinner';
+import { MealImage } from '@/components/common/MealImage';
 import { GradientTabs } from '@/components/common/GradientTabs';
+import { Skeleton } from '@/components/common/Skeleton';
 import { StarRating } from '@/components/common/StarRating';
 import { useAuthGate } from '@/hooks/useAuthGate';
 import { useRTL } from '@/hooks/useRTL';
 import { useMealsStore } from '@/stores/meals.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import type { Meal } from '@/types';
-import { getZoneMeta, toArabicNumerals } from '@/utils/zoneUtils';
+import { toArabicNumerals } from '@/utils/zoneUtils';
 
 // RTL-first order: with auto-flip, first item lands on the RIGHT.
 // فطار should be on the right in Arabic → put it first.
@@ -50,6 +51,7 @@ export default function SelectMealScreen() {
   const resolvedInitialTab: TabKey =
     initialTabValue === 'lunch' ? 'lunch' : initialTabValue === 'dinner' ? 'dinner' : 'breakfast';
   const [activeTab, setActiveTab] = useState<TabKey>(resolvedInitialTab);
+  const [isTabSwitching, setIsTabSwitching] = useState(false);
   const { isRTL, rowDir } = useRTL();
 
   useEffect(() => {
@@ -59,6 +61,21 @@ export default function SelectMealScreen() {
   useEffect(() => {
     if (!userMeals.length) initializeUserMeals();
   }, [initializeUserMeals, userMeals.length]);
+
+  // Filtering by tab is instant (already-loaded data), but a list this size
+  // re-renders heavily enough to feel unresponsive without any feedback —
+  // a brief skeleton flash reassures the user something happened.
+  useEffect(() => {
+    if (!isTabSwitching) return;
+    const timer = setTimeout(() => setIsTabSwitching(false), 280);
+    return () => clearTimeout(timer);
+  }, [isTabSwitching, activeTab]);
+
+  const handleTabChange = (tab: TabKey) => {
+    if (tab === activeTab) return;
+    setIsTabSwitching(true);
+    setActiveTab(tab);
+  };
 
   const activeTypeNum = TAB_TYPE_NUM[activeTab];
   const filteredMeals: Meal[] = meals.filter((m) =>
@@ -114,14 +131,16 @@ export default function SelectMealScreen() {
           className="self-center"
           style={{ width: '100%', maxWidth: 380 }}
         >
-          <GradientTabs options={TABS} value={activeTab} onChange={setActiveTab} />
+          <GradientTabs options={TABS} value={activeTab} onChange={handleTabChange} />
         </View>
       </View>
 
       {/* list */}
-      {isLoading ? (
-        <View className="flex-1 items-center justify-center">
-          <MealSpinner />
+      {isLoading || isTabSwitching ? (
+        <View className="flex-1">
+          <View className="px-[22px] pb-6">
+            <MealListSkeleton />
+          </View>
         </View>
       ) : (
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -151,6 +170,34 @@ export default function SelectMealScreen() {
   );
 }
 
+function MealCardSkeleton() {
+  const { rowDir } = useRTL();
+  return (
+    <View
+      className="flex-row items-center gap-3.5 rounded-[18px] border border-app-lineSoft bg-app-surface p-3.5"
+      style={{ flexDirection: rowDir }}
+    >
+      <Skeleton className="h-[54px] w-[54px] rounded-[16px]" />
+      <View className="flex-1 gap-2">
+        <Skeleton className="h-[12px] w-3/4 rounded-md" />
+        <Skeleton className="h-[10.5px] w-1/2 rounded-md" />
+        <Skeleton className="h-[13px] w-[90px] rounded-md" />
+      </View>
+      <Skeleton className="h-[38px] w-[38px] rounded-full" />
+    </View>
+  );
+}
+
+function MealListSkeleton() {
+  return (
+    <View className="gap-2.5">
+      {[1, 2, 3, 4, 5].map((i) => (
+        <MealCardSkeleton key={i} />
+      ))}
+    </View>
+  );
+}
+
 function MealCard({
   meal,
   lastWeekCount,
@@ -163,13 +210,13 @@ function MealCard({
   onPress: () => void;
 }) {
   const theme = useTheme();
-  const zoneMeta = getZoneMeta(meal.dominant_zone);
   const { rowDir } = useRTL();
   const { requireAuth } = useAuthGate();
   const logMeal = useUserMealsStore((s) => s.logMeal);
   const replaceMeal = useUserMealsStore((s) => s.replaceMeal);
+  const getMealImageUri = useMealsStore((s) => s.getMealImageUri);
   const [isAdding, setIsAdding] = useState(false);
-  const imageSource = meal.image_url ? { uri: meal.image_url } : defaultFoodImage;
+  const imageUri = getMealImageUri(meal);
   const ingredientsCount =
     typeof meal.meal_item_codes === 'string' && meal.meal_item_codes.trim().length > 0
       ? meal.meal_item_codes.split(',').filter(Boolean).length
@@ -199,7 +246,7 @@ function MealCard({
       activeOpacity={0.7}
     >
       <View className="h-[54px] w-[54px] flex-shrink-0 overflow-hidden rounded-[16px] border border-app-line bg-app-surfaceAlt">
-        <Image source={imageSource} className="h-full w-full" resizeMode="cover" />
+        <MealImage uri={imageUri} defaultSource={defaultFoodImage} className="h-full w-full" resizeMode="cover" />
       </View>
 
       <View className="flex-1 gap-0.5" style={{ minWidth: 0 }}>
@@ -218,7 +265,7 @@ function MealCard({
         </View>
 
         <View className="flex-row items-center" style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}>
-          <StarRating value={zoneMeta.stars} size={13} gap={2} />
+          <StarRating value={meal.rating} size={13} gap={2} />
         </View>
       </View>
 

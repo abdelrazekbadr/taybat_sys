@@ -9,6 +9,7 @@ import { PostCard } from '@/components/community/PostCard';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { AppText } from '@/components/common/AppText';
 import { GradientTabs } from '@/components/common/GradientTabs';
+import { useAuthGate } from '@/hooks/useAuthGate';
 import { useRTL } from '@/hooks/useRTL';
 import { useCommunityStore } from '@/stores/community.store';
 import { useUserStore } from '@/stores/user.store';
@@ -26,6 +27,7 @@ export default function CommunityScreen() {
 
   const [activeTab, setActiveTab] = useState<CommunityTab>('posts');
   const { user } = useUserStore();
+  const { requireAuth } = useAuthGate();
   const { posts, userReactions, userFollows, isLoading, isLoadingMore, hasMore, errorMessage, initializeCommunity, loadMorePosts, refreshPosts, toggleReaction, toggleFollow } =
     useCommunityStore();
 
@@ -89,9 +91,9 @@ export default function CommunityScreen() {
               <PostCard
                 post={item}
                 isLoved={userReactions.includes(item.id)}
-                onLovePress={() => toggleReaction(item.id)}
+                onLovePress={() => requireAuth(() => toggleReaction(item.id))}
                 isFollowing={isFollowable ? userFollows.includes(item.user_id) : undefined}
-                onFollowPress={isFollowable ? () => toggleFollow(item.user_id) : undefined}
+                onFollowPress={isFollowable ? () => requireAuth(() => toggleFollow(item.user_id)) : undefined}
               />
             );
           }}

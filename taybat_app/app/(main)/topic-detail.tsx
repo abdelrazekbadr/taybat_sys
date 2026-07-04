@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, Easing, Image, ScrollView, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, type MD3Theme } from 'react-native-paper';
@@ -28,6 +28,7 @@ import {
   Leaf,
   Milk,
   Scale,
+  Share2,
   ShieldAlert,
   ShieldCheck,
   ShieldX,
@@ -45,7 +46,11 @@ import {
 
 import { AppText } from '@/components/common/AppText';
 import { useRTL } from '@/hooks/useRTL';
+import { buildTopicTopic, shareContent } from '@/services/sharing';
+import { useMembershipStore } from '@/stores/membership.store';
 import { useTopicsStore } from '@/stores/topics.store';
+import { useUserStore } from '@/stores/user.store';
+import { daysOnPlan } from '@/utils/statsUtils';
 
 const defaultTopicImage = require('../../assets/images/onboarding2_woman_heart.png');
 const imageMobileApp = require('../../assets/topics/mobile_app.png');
@@ -124,11 +129,27 @@ export default function TopicDetailScreen() {
 
   const fetchTopics    = useTopicsStore((s) => s.fetchTopics);
   const getTopicByCode = useTopicsStore((s) => s.getTopicByCode);
+  const { user } = useUserStore();
+  const dayNo = daysOnPlan(user?.plan_start_date);
+  const [isSharingTopic, setIsSharingTopic] = useState(false);
 
   useEffect(() => { fetchTopics(); }, [fetchTopics]);
 
   const code = Array.isArray(topicCode) ? topicCode[0] : topicCode;
   const topic = code ? getTopicByCode(code) : undefined;
+
+  const handleShareTopic = async () => {
+    if (isSharingTopic || !topic) return;
+    setIsSharingTopic(true);
+    try {
+      const { shared } = await shareContent(buildTopicTopic(topic.title, topic.description), dayNo);
+      if (shared) {
+        void useMembershipStore.getState().recordEvent('supporter', 'share_topic', undefined, 'topic', topic.id);
+      }
+    } finally {
+      setIsSharingTopic(false);
+    }
+  };
 
   const accentColor = topic ? resolveAccentColor(theme, topic.code, topic.accent_color) : theme.colors.primary;
   const imageSource  = topic ? resolveTopicImage(topic.code, topic.image_url) : defaultTopicImage;
@@ -206,7 +227,15 @@ export default function TopicDetailScreen() {
                 <ChevronLeft size={25} color={theme.colors.onSurface} strokeWidth={2.5} />
               )}
             </TouchableOpacity>
-            <View className="w-11" />
+            <TouchableOpacity
+              className="h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface shadow-lg shadow-black/10"
+              style={{ elevation: 5 }}
+              onPress={handleShareTopic}
+              disabled={isSharingTopic}
+              activeOpacity={0.8}
+            >
+              <Share2 size={20} color={theme.colors.onSurface} strokeWidth={2.2} />
+            </TouchableOpacity>
           </View>
         </View>
       </View>

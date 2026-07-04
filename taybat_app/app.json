@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Al-Taybat الطيبات",
+    "name": "الطيبات",
     "slug": "taybat-app",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -16,7 +16,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.tayabat.sys"
+      "bundleIdentifier": "com.tayabat.sys",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
       "adaptiveIcon": {
@@ -24,7 +25,12 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.tayabat.sys",
-      "softwareKeyboardLayoutMode": "resize"
+      "googleServicesFile": "./google-services.json",
+      "softwareKeyboardLayoutMode": "resize",
+      "permissions": [
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.RECEIVE_BOOT_COMPLETED"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -34,13 +40,31 @@
     },
     "plugins": [
       "expo-router",
+      "@react-native-firebase/app",
       [
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.REPLACE_WITH_YOUR_REVERSED_IOS_CLIENT_ID"
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/app_icon.png",
+          "color": "#10B981",
+          "sounds": []
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ],
+      "@react-native-firebase/analytics"
     ],
     "experiments": {
       "typedRoutes": true

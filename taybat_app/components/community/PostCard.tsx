@@ -1,16 +1,19 @@
 import { ExternalLink, Heart, Link, Pin, Share2, User, UserCheck, UserPlus, Users } from 'lucide-react-native';
 import React, { useCallback, useMemo, useState } from 'react';
-import { ActivityIndicator, Image, Linking, Pressable, Share, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Linking, Pressable, TouchableOpacity, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { router } from 'expo-router';
 
 import { AppText } from '@/components/common/AppText';
 import { FullScreenImageModal } from '@/components/common/FullScreenImageModal';
 import { useRTL } from '@/hooks/useRTL';
+import { buildPostTopic, shareContent } from '@/services/sharing';
 import { useMembershipStore } from '@/stores/membership.store';
+import { useUserStore } from '@/stores/user.store';
 import type { CommunityPost } from '@/types';
 import { toRelativeArabicTime } from '@/utils/communityTime';
 import { SYSTEM_ADMIN_USER_ID } from '@/utils/constants';
+import { daysOnPlan } from '@/utils/statsUtils';
 
 interface PostCardProps {
   post: CommunityPost;
@@ -38,6 +41,8 @@ function extractLinkDomain(url: string): string {
 export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPress }: PostCardProps) {
   const theme = useTheme();
   const { rowDir } = useRTL();
+  const { user } = useUserStore();
+  const dayNo = daysOnPlan(user?.plan_start_date);
 
   const timeLabel = useMemo(() => toRelativeArabicTime(post.created_at), [post.created_at]);
   const heartColor = isLoved ? LOVE_COLOR : theme.colors.onSurfaceVariant;
@@ -72,15 +77,19 @@ export function PostCard({ post, isLoved, onLovePress, isFollowing, onFollowPres
     if (isSharing) return;
     setIsSharing(true);
     try {
-      const parts: string[] = [`${post.author_name}\n\n${post.content}`];
-      if (post.image_url) parts.push(post.image_url);
-      if (post.link_url) parts.push(post.link_url);
-      await Share.share({ message: parts.join('\n\n') });
-      void useMembershipStore.getState().recordEvent('supporter', 'share_post', undefined, 'post', post.id);
+      // Deliberately text-only — post.image_url/link_url are never included.
+      // A bare image/link URL in the shared text gets unfurled by WhatsApp/
+      // iMessage/Telegram into a rich preview card, turning this into an
+      // image share instead of a text share.
+      const topic = buildPostTopic(post.author_name, post.content);
+      const { shared } = await shareContent(topic, dayNo);
+      if (shared) {
+        void useMembershipStore.getState().recordEvent('supporter', 'share_post', undefined, 'post', post.id);
+      }
     } finally {
       setIsSharing(false);
     }
-  }, [isSharing, post.author_name, post.content, post.image_url, post.link_url, post.id]);
+  }, [isSharing, post.author_name, post.content, post.id, dayNo]);
 
   return (
     <View className="bg-app-surface">

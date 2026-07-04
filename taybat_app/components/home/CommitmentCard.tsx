@@ -1,12 +1,13 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
 import { Share2, Trophy, Utensils } from 'lucide-react-native';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Animated, Platform, View, TouchableOpacity } from 'react-native';
 import { useTheme } from 'react-native-paper';
 
 import { AppText } from '@/components/common/AppText';
 import { useRTL } from '@/hooks/useRTL';
+import { buildDayStreakTopic, shareContent } from '@/services/sharing';
 import { useMembershipStore } from '@/stores/membership.store';
 import { toArabicNumerals } from '@/utils/zoneUtils';
 
@@ -31,6 +32,7 @@ export function CommitmentCard({ dayNumber, planStartDate, onAddMeal }: Commitme
   const { isRTL, rowDir } = useRTL();
   const entrance = useRef(new Animated.Value(0)).current;
   const shake    = useRef(new Animated.Value(0)).current;
+  const [isSharingDay, setIsSharingDay] = useState(false);
 
   const committedPoints  = useMembershipStore((s) => s.committedPoints);
   const supporterPoints  = useMembershipStore((s) => s.supporterPoints);
@@ -107,6 +109,21 @@ export function CommitmentCard({ dayNumber, planStartDate, onAddMeal }: Commitme
   // iOS uses explicit CSS RTL (no native coordinate flip) — mirror progress bars manually
   const flipBar    = Platform.OS === 'ios' && isRTL;
 
+  const handleShareDay = async () => {
+    if (isSharingDay) return;
+    setIsSharingDay(true);
+    try {
+      const { shared } = await shareContent(buildDayStreakTopic(), dayNumber);
+      // Reuses 'share_stats' — the closest existing supporter-track rule for a
+      // personal-progress share; see _docs/analysis/share_enhancement_plan.md §4.4.
+      if (shared) {
+        void useMembershipStore.getState().recordEvent('supporter', 'share_stats', undefined, 'stat', dayNumber);
+      }
+    } finally {
+      setIsSharingDay(false);
+    }
+  };
+
   return (
     <View className="rounded-[26px] shadow-xl shadow-black/20" style={{ elevation: 10 }}>
       <Animated.View style={[animatedStyle, { borderRadius: 26, overflow: 'hidden' }]}>
@@ -129,10 +146,20 @@ export function CommitmentCard({ dayNumber, planStartDate, onAddMeal }: Commitme
           <View className="gap-0">
             {/* Day + plan start row */}
             <View className="items-center justify-between" style={{ flexDirection: rowDir }}>
-              <View className="rounded-full bg-white/25 px-2.5">
-                <AppText variant="bold" className="text-[11px] text-white">
-                  اليوم {toArabicNumerals(dayNumber)} من رحلتك
-                </AppText>
+              <View className="items-center gap-1.5" style={{ flexDirection: rowDir }}>
+                <View className="rounded-full bg-white/25 px-2.5">
+                  <AppText variant="bold" className="text-[11px] text-white">
+                    اليوم {toArabicNumerals(dayNumber)} من رحلتك
+                  </AppText>
+                </View>
+                <TouchableOpacity
+                  onPress={handleShareDay}
+                  disabled={isSharingDay}
+                  className="h-6 w-6 items-center justify-center rounded-full bg-white/20"
+                  activeOpacity={0.75}
+                >
+                  <Share2 size={12} color="white" strokeWidth={2.4} />
+                </TouchableOpacity>
               </View>
               {planStartDate ? (
                 <View className="rounded-full bg-white/15 px-2.5">

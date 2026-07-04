@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "379067998392",
+    "project_id": "al-tayabatcom-123b4",
+    "storage_bucket": "al-tayabatcom-123b4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:379067998392:android:5d7205485b592a645e544d",
+        "android_client_info": {
+          "package_name": "com.tayabat.sys"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDaQED_Q8uee1cVQUW4lXs5K8lh9hg3xXA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

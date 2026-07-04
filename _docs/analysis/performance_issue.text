@@ -1,0 +1,18 @@
+Recommended actions (pure performance/UX — no changes to data sync logic)
+These all address the causes I found, without touching how/when data is fetched or refreshed:
+
+Replace the fake tab system with a real persistent tabs navigator (or keep the (main) stack screens mounted instead of replace-ing them). This is the highest-impact fix — it stops every bottom-tab press from fully unmounting/remounting a heavy screen. It's a pure navigation-structure change; initializeX() calls and their if (!x.length) guards stay exactly as they are — they'll just fire less often because screens stay alive, not because their logic changed.
+
+Give action buttons an instant pressed-state distinct from the network wait — e.g. swap TouchableOpacity/activeOpacity for Pressable with its pressed render-prop to apply an immediate scale/opacity change the moment the finger touches down, before isAdding/isLoading even has a chance to flip. Pure UI; the underlying logMeal/replaceMeal/deleteMeal calls are untouched.
+
+Split full-store destructuring into per-field selectors in select-meal.tsx and meal-history.tsx (currently const { meals, initializeMeals, isLoading } = useMealsStore() and similar) so each component only re-renders when the fields it actually reads change. Same store, same actions — just narrower subscriptions.
+
+React.memo the list row components (MealCard, TodayMealRow, MealCardSkeleton) so a re-render in the parent screen doesn't force every visible row (and its MealImage/Skeleton animation) to re-render too.
+
+Switch the meal lists from ScrollView + .map() to a virtualized list (FlatList/FlashList) in select-meal.tsx and meal-history.tsx, so only on-screen rows mount their MealImage + animated skeleton at once instead of the whole list eagerly.
+
+Test the same interactions in a release/standalone build before doing anything else — if tabs/back suddenly feel snappy there, most of the remaining "slowness" is dev-mode/debugger overhead, not something code changes can fix anyway, and it tells you how much of the above is worth prioritizing.
+
+One thing I'd flag rather than fix silently
+Gating the useFocusEffect re-checks in index.tsx (refreshTodayMeals) and account.tsx (checkPermission) so they don't re-run on every tab return would also help — but that changes when data refreshes, which sounds like exactly what you want left alone. I left it off this list; say so if you want it included.
+

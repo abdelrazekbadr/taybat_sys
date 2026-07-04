@@ -59,7 +59,7 @@ export default function MealHistoryScreen() {
   const [period, setPeriod] = useState<PeriodKey>('7');
 
   const { userMeals } = useUserMealsStore();
-  const { getMealById } = useMealsStore();
+  const { getMealById, getMealImageUri } = useMealsStore();
 
   const BackIcon = isRTL ? ArrowRight : ArrowLeft;
   const androidRTL = Platform.OS === 'android' && isRTL;
@@ -162,7 +162,8 @@ export default function MealHistoryScreen() {
                         key={userMeal.id}
                         userMeal={userMeal}
                         mealName={meal?.name ?? 'وجبة'}
-                        imageUrl={meal?.image_url}
+                        rating={meal?.rating ?? 0}
+                        imageUri={meal ? getMealImageUri(meal) : null}
                         onPress={() =>
                           router.push({
                             pathname: '/(main)/meal-detail',

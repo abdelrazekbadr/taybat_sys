@@ -26,6 +26,8 @@ interface AuthState {
   setGuestMode: () => void;
   logout: () => Promise<void>;
   sendPasswordReset: (email: string) => Promise<boolean>;
+  verifyResetOtp: (email: string, token: string) => Promise<boolean>;
+  updatePassword: (newPassword: string) => Promise<boolean>;
   clearError: () => void;
   resetAuth: () => void;
 }
@@ -55,13 +57,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         set({ status: 'unauthenticated', user: null, profile: null, isLoading: false });
       }
     } catch (error: unknown) {
-      set({
-        status: 'error',
-        user: null,
-        profile: null,
-        isLoading: false,
-        errorMessage: error instanceof Error ? error.message : 'حدث خطأ ما. حاول مرة أخرى',
-      });
+      if (error instanceof AppError && error.code === 'SESSION_EXPIRED') {
+        // Stale/already-used refresh token from a previous session — not a real error,
+        // just an invalid local session. Clear it so the SDK stops retrying the dead token.
+        await authService.logout().catch(() => {});
+        set({ status: 'unauthenticated', user: null, profile: null, isLoading: false, errorMessage: '' });
+      } else {
+        set({
+          status: 'error',
+          user: null,
+          profile: null,
+          isLoading: false,
+          errorMessage: error instanceof Error ? error.message : 'حدث خطأ ما. حاول مرة أخرى',
+        });
+      }
     }
 
     // Wire Supabase auth state listener once (no-op in mock mode)
@@ -201,7 +210,31 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false });
       return true;
     } catch (error: unknown) {
-      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر إرسال الرابط' });
+      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر إرسال الرمز' });
+      return false;
+    }
+  },
+
+  verifyResetOtp: async (email, token) => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      await authService.verifyResetOtp(email, token);
+      set({ isLoading: false });
+      return true;
+    } catch (error: unknown) {
+      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'رمز التحقق غير صحيح أو منتهي الصلاحية' });
+      return false;
+    }
+  },
+
+  updatePassword: async (newPassword) => {
+    set({ isLoading: true, errorMessage: '' });
+    try {
+      await authService.updatePassword(newPassword);
+      set({ isLoading: false });
+      return true;
+    } catch (error: unknown) {
+      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر تحديث كلمة المرور' });
       return false;
     }
   },

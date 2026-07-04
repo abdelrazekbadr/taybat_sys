@@ -39,9 +39,12 @@ export interface MealItem {
 export interface Meal {
   id: number;
   name: string;
+  /** unique meal identifier, e.g. "M001" — used to derive image filename {code}.png */
+  code: string;
   /** comma-separated meal_item codes from meal_items.code */
   meal_item_codes: string;
   dominant_zone: ZoneColor;
+  rating: number;
   image_url: string;
   /** comma-separated meal type ids: 1=إفطار 2=غداء 3=عشاء */
   meal_type_ids: string;

@@ -12,6 +12,8 @@ export interface SettingsRowProps {
   onPress?: () => void;
   showChevron?: boolean;
   rightElement?: React.ReactNode;
+  leftIcon?: React.ReactNode;
+  iconBg?: string;
   destructive?: boolean;
 }
 
@@ -21,6 +23,8 @@ export function SettingsRow({
   onPress,
   showChevron = true,
   rightElement,
+  leftIcon,
+  iconBg,
   destructive = false,
 }: SettingsRowProps) {
   const theme = useTheme();
@@ -35,7 +39,16 @@ export function SettingsRow({
       className="px-4 py-3.5"
       style={({ pressed }) => [{ opacity: !onPress ? 1 : pressed ? 0.85 : 1 }]}
     >
-      <View className="flex-row items-center" style={{ flexDirection: rowDir }}>
+      <View className="flex-row items-center gap-3" style={{ flexDirection: rowDir }}>
+        {leftIcon && (
+          <View
+            className="h-[34px] w-[34px] items-center justify-center rounded-[10px]"
+            style={{ backgroundColor: iconBg ?? theme.colors.surfaceVariant }}
+          >
+            {leftIcon}
+          </View>
+        )}
+
         <AppText variant="semibold" className="flex-1 text-[14px] leading-6" style={{ color: labelColor }}>
           {label}
         </AppText>

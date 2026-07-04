@@ -75,6 +75,11 @@ export class AccountRepositorySupabase implements IAccountRepository {
     if (insertError) throw new ServerError(insertError);
   }
 
+  async deleteAccount(): Promise<void> {
+    const { error } = await this.client.rpc('delete_user_account');
+    if (error) throw new ServerError(error);
+  }
+
   private async upsertPreference(userId: string, patch: Record<string, unknown>): Promise<void> {
     const { error } = await this.client
       .from('user_preferences')

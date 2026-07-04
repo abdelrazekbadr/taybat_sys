@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Dimensions,
   Image,
@@ -18,7 +18,6 @@ import { useBottomInset } from '@/hooks/useBottomInset';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react-native';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useShallow } from 'zustand/react/shallow';
 
 import { AppText, AppTextInput } from '@/components/common/AppText';
@@ -26,8 +25,6 @@ import { OutlineButton } from '@/components/common/OutlineButton';
 import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { useAuthStore } from '@/stores/auth.store';
 import { useRTL } from '@/hooks/useRTL';
-import { storageService } from '@/shared/storage/storageService';
-import { STORAGE_KEYS } from '@/shared/storage/storageKeys';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { testSupabaseConnection } from '@/utils/supabaseTest';
 
@@ -49,7 +46,6 @@ export default function LoginScreen() {
   const cardBottom = useBottomInset(24);
   const { rowDir } = useRTL();
   const [showPassword, setShowPassword] = React.useState(false);
-  const [rememberMe, setRememberMe] = React.useState(false);
 
   const { control, handleSubmit, setError } = useForm<LoginForm>({
     defaultValues: { email: '', password: '' },
@@ -68,18 +64,6 @@ export default function LoginScreen() {
     ),
   );
 
-  useEffect(() => {
-    storageService.get<boolean>(STORAGE_KEYS.REMEMBER_ME).then((v) => {
-      if (v) setRememberMe(true);
-    });
-  }, []);
-
-  const handleRememberToggle = () => {
-    const next = !rememberMe;
-    setRememberMe(next);
-    storageService.set(STORAGE_KEYS.REMEMBER_ME, next);
-  };
-
   const submit = handleSubmit(async (values) => {
     clearError();
     const parsed = loginSchema.safeParse(values);
@@ -92,26 +76,20 @@ export default function LoginScreen() {
       }
       return;
     }
-    const ok = await loginWithEmail(parsed.data);
-    if (!ok) return;
-    const user = useAuthStore.getState().user;
-    router.replace((user?.profile_completed ? '/(main)' : '/(auth)/complete-profile') as never);
+    // Navigation after a successful login is handled by the root layout guard
+    // reacting to the authStatus change — replacing here too would double-navigate
+    // and remount the destination screen twice (visible as a flicker).
+    await loginWithEmail(parsed.data);
   });
 
   const handleGoogle = async () => {
     clearError();
-    const ok = await loginWithOAuth('google');
-    if (!ok) return;
-    const user = useAuthStore.getState().user;
-    router.replace((user?.profile_completed ? '/(main)' : '/(auth)/complete-profile') as never);
+    await loginWithOAuth('google');
   };
 
   const handleFacebook = async () => {
     clearError();
-    const ok = await loginWithOAuth('facebook');
-    if (!ok) return;
-    const user = useAuthStore.getState().user;
-    router.replace((user?.profile_completed ? '/(main)' : '/(auth)/complete-profile') as never);
+    await loginWithOAuth('facebook');
   };
 
   const handleGuest = () => {
@@ -257,30 +235,8 @@ export default function LoginScreen() {
               )}
             />
 
-            {/* Remember me + Forgot password */}
-            <View className="flex-row items-center justify-between">
-              <Pressable
-                onPress={handleRememberToggle}
-                className="flex-row items-center gap-2"
-                style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
-              >
-                <View
-                  className="w-5 h-5 rounded items-center justify-center"
-                  style={{
-                    borderWidth: 1.5,
-                    borderColor: rememberMe ? theme.colors.primary : isDark ? '#475569' : '#CBD5E1',
-                    backgroundColor: rememberMe ? theme.colors.primary : 'transparent',
-                  }}
-                >
-                  {rememberMe && (
-                    <MaterialCommunityIcons name="check" size={13} color="#ffffff" />
-                  )}
-                </View>
-                <AppText className={`text-[13px] ${mutedText}`}>
-                  {t('auth.login.rememberMe')}
-                </AppText>
-              </Pressable>
-
+            {/* Forgot password */}
+            <View className="items-end">
               <Pressable
                 onPress={() => { clearError(); router.push('/(auth)/reset-password' as never); }}
                 disabled={isLoading}

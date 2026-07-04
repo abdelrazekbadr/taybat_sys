@@ -1,5 +1,5 @@
 <resources>
-  <string name="app_name">"Al-Taybat"</string>
+  <string name="app_name">"الطيبات"</string>
   <string name="template_ready">"Template project is ready"</string>
   <string name="template_description">"This is a clean starter built from the same app architecture with no business logic included."</string>
   <string name="toggle_language">"Toggle Language"</string>

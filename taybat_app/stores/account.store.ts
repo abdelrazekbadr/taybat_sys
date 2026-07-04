@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { z } from 'zod';
 
+import { authService } from '@/api/auth/auth.service';
 import { accountRepository } from '@/repositories/account';
 import { toUserMessage } from '@/shared/errors/AppError';
 import type { AvatarConfig, FollowPermission, PostVisibility } from '@/types';
@@ -30,6 +31,7 @@ interface AccountState {
   updatePostVisibility: (value: PostVisibility) => Promise<boolean>;
   updateFollowPermission: (value: FollowPermission) => Promise<boolean>;
   logout: () => Promise<boolean>;
+  deleteAccount: () => Promise<boolean>;
 
   resetAccount: () => void;
 }
@@ -157,6 +159,23 @@ export const useAccountStore = create<AccountState>((set) => ({
   logout: async () => {
     set({ isSaving: true, errorMessage: '' });
     try {
+      await resetAllAppStores();
+      set({ ...initialState, isSaving: false });
+      return true;
+    } catch (error: unknown) {
+      set({ isSaving: false, errorMessage: toUserMessage(error) });
+      return false;
+    }
+  },
+
+  deleteAccount: async () => {
+    set({ isSaving: true, errorMessage: '' });
+    try {
+      // Revoke OAuth tokens BEFORE deleting from the database so the revocation
+      // request reaches Google's servers while the session is still valid.
+      // This forces the account picker to appear on the next Google sign-in.
+      await authService.revokeOAuthTokens();
+      await accountRepository.deleteAccount();
       await resetAllAppStores();
       set({ ...initialState, isSaving: false });
       return true;

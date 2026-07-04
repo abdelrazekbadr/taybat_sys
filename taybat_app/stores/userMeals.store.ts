@@ -3,10 +3,12 @@ import { create } from 'zustand';
 import { trackingRepository } from '@/repositories/tracking';
 import { toUserMessage } from '@/shared/errors/AppError';
 import type { HungryState, UserMeal } from '@/types';
+import { FASTING_MEAL_CODE } from '@/utils/constants';
 import { localDateISO } from '@/utils/dateUtils';
 
 import { useMealsStore } from './meals.store';
 import { useMembershipStore } from './membership.store';
+import { useNotificationSettingsStore } from './notificationSettings.store';
 import { useUserStore } from './user.store';
 
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
@@ -54,7 +56,9 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
       }
       const today = todayIsoDate();
       const userMeals = await trackingRepository.getUserMeals(user.id);
-      set({ userMeals, todayMeals: userMeals.filter((m) => m.date === today), isLoading: false, lastFetchedAt: Date.now() });
+      const todayMeals = userMeals.filter((m) => m.date === today);
+      set({ userMeals, todayMeals, isLoading: false, lastFetchedAt: Date.now() });
+      void useNotificationSettingsStore.getState().refreshMealReminder(todayMeals.length > 0);
     } catch (error: unknown) {
       set({ userMeals: [], todayMeals: [], isLoading: false, errorMessage: toUserMessage(error) });
     }
@@ -63,11 +67,11 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
   refreshTodayMeals: () => {
     const today = todayIsoDate();
     const user  = useUserStore.getState().user;
-    set({
-      todayMeals: user
-        ? get().userMeals.filter((m) => m.user_id === user.id && m.date === today)
-        : [],
-    });
+    const todayMeals = user
+      ? get().userMeals.filter((m) => m.user_id === user.id && m.date === today)
+      : [];
+    set({ todayMeals });
+    void useNotificationSettingsStore.getState().refreshMealReminder(todayMeals.length > 0);
   },
 
   getMealsByDate: (date) => get().userMeals.filter((m) => m.date === date),
@@ -86,7 +90,15 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
         return false;
       }
       const today = todayIsoDate();
-      const todayCount = get().userMeals.filter((m) => m.user_id === user.id && m.date === today).length;
+      const todayUserMeals = get().userMeals.filter((m) => m.user_id === user.id && m.date === today);
+
+      // Fasting is a once-per-day fact, not a repeatable meal slot.
+      if (meal.code === FASTING_MEAL_CODE && todayUserMeals.some((m) => m.meal_id === meal.id)) {
+        set({ isLoading: false, errorMessage: 'لقد سجّلت صيامك لهذا اليوم بالفعل' });
+        return false;
+      }
+
+      const todayCount = todayUserMeals.length;
       if (todayCount >= 3) {
         set({ isLoading: false, errorMessage: 'تم الوصول للحد اليومي (3 وجبات)' });
         return false;
@@ -101,7 +113,9 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
         hungryState: hungryState ?? null,
       });
       const nextMeals = [...get().userMeals, entry];
-      set({ userMeals: nextMeals, todayMeals: nextMeals.filter((m) => m.user_id === user.id && m.date === today), isLoading: false });
+      const todayMeals = nextMeals.filter((m) => m.user_id === user.id && m.date === today);
+      set({ userMeals: nextMeals, todayMeals, isLoading: false });
+      void useNotificationSettingsStore.getState().refreshMealReminder(todayMeals.length > 0);
       if (isFirstMealToday) {
         void useMembershipStore.getState().recordEvent('committed', 'add_daily_meal');
       }
@@ -125,13 +139,22 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
         set({ isLoading: false, errorMessage: 'Meal not found' });
         return false;
       }
+
+      const today = todayIsoDate();
+      const todayUserMeals = get().userMeals.filter((m) => m.user_id === user.id && m.date === today);
+
+      // Fasting is a once-per-day fact, not a repeatable meal slot.
+      if (meal.code === FASTING_MEAL_CODE && todayUserMeals.some((m) => m.meal_id === meal.id && m.id !== userMealId)) {
+        set({ isLoading: false, errorMessage: 'لقد سجّلت صيامك لهذا اليوم بالفعل' });
+        return false;
+      }
+
       const updated = await trackingRepository.replaceMeal(userMealId, {
         userId: user.id,
         mealId: meal.id,
         mealItemCodes: meal.meal_item_codes,
         zoneSummary: meal.dominant_zone,
       });
-      const today = todayIsoDate();
       const nextMeals = get().userMeals.map((m) => (m.id === userMealId ? updated : m));
       set({ userMeals: nextMeals, todayMeals: nextMeals.filter((m) => m.user_id === user.id && m.date === today), isLoading: false });
       return true;
@@ -150,11 +173,9 @@ export const useUserMealsStore = create<UserMealsState>((set, get) => ({
       const user = useUserStore.getState().user;
       const today = todayIsoDate();
       const nextMeals = get().userMeals.filter((m) => m.id !== id);
-      set({
-        userMeals: nextMeals,
-        todayMeals: user ? nextMeals.filter((m) => m.user_id === user.id && m.date === today) : [],
-        isLoading: false,
-      });
+      const todayMeals = user ? nextMeals.filter((m) => m.user_id === user.id && m.date === today) : [];
+      set({ userMeals: nextMeals, todayMeals, isLoading: false });
+      void useNotificationSettingsStore.getState().refreshMealReminder(todayMeals.length > 0);
       // Only remove the day's committed points when this was the LAST meal for that day
       if (targetMeal) {
         const remainingMealsForDay = nextMeals.filter((m) => m.date === targetMeal.date);

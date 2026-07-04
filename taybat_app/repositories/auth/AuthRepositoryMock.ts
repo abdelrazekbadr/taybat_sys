@@ -105,6 +105,10 @@ export class AuthRepositoryMock implements IAuthRepository {
     await storageService.remove(STORAGE_KEYS.AUTH_SESSION);
   }
 
+  async revokeOAuthTokens(): Promise<void> {
+    // No OAuth tokens in mock mode
+  }
+
   async getSession(): Promise<AuthSession | null> {
     await mockDelay(250);
     const raw = await storageService.get<unknown>(STORAGE_KEYS.AUTH_SESSION);
@@ -136,5 +140,13 @@ export class AuthRepositoryMock implements IAuthRepository {
 
   async resendVerificationEmail(_email: string): Promise<void> {
     await mockDelay(600);
+  }
+
+  async verifyResetOtp(_email: string, _token: string): Promise<void> {
+    await mockDelay(500);
+  }
+
+  async updatePassword(_password: string): Promise<void> {
+    await mockDelay(400);
   }
 }

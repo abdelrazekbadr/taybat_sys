@@ -1,5 +1,6 @@
+import { NativeModules } from 'react-native';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { AppError, InvalidCredentialsError, EmailAlreadyUsedError, EmailConfirmationRequiredError, NetworkError, ServerError } from '@/shared/errors/AppError';
+import { AppError, InvalidCredentialsError, EmailAlreadyUsedError, EmailConfirmationRequiredError, NetworkError, ServerError, SessionExpiredError } from '@/shared/errors/AppError';
 import { createLogger } from '@/lib/logger';
 import type { AuthProvider, AuthSession, LoginPayload, SignUpPayload } from '@/types';
 import type { IAuthRepository } from './IAuthRepository';
@@ -193,16 +194,34 @@ export class AuthRepositorySupabase implements IAuthRepository {
   }
 
   async logout(): Promise<void> {
-    // Sign out from Google SDK so the account picker shows on next login.
-    // Wrapped in try/catch — safe to ignore if user logged in via email or
-    // if the native module isn't linked in this build.
-    try {
-      const { GoogleSignin } = await import('@react-native-google-signin/google-signin');
-      await GoogleSignin.signOut();
-    } catch {}
+    // Guard against Expo Go / builds without the native binary.
+    // The module's top-level getEnforcing() throws an Invariant Violation before
+    // our try/catch can fire, so we check native availability first.
+    if (NativeModules.RNGoogleSignin) {
+      try {
+        const { GoogleSignin } = await import('@react-native-google-signin/google-signin');
+        await GoogleSignin.signOut();
+      } catch {}
+    }
 
+    // Try global sign-out (invalidates session on server). If the server rejects
+    // (e.g. user was already deleted from auth.users after account deletion),
+    // fall back to local-only so AsyncStorage is always cleared.
     const { error } = await this.client.auth.signOut();
-    if (error) throw this.mapError(error);
+    if (error) {
+      await this.client.auth.signOut({ scope: 'local' });
+    }
+  }
+
+  async revokeOAuthTokens(): Promise<void> {
+    // Same native-availability guard as logout() — see comment there.
+    if (NativeModules.RNGoogleSignin) {
+      try {
+        const { GoogleSignin } = await import('@react-native-google-signin/google-signin');
+        await GoogleSignin.revokeAccess();
+        await GoogleSignin.signOut();
+      } catch {}
+    }
   }
 
   async getSession(): Promise<AuthSession | null> {
@@ -232,6 +251,20 @@ export class AuthRepositorySupabase implements IAuthRepository {
     if (error) throw this.mapError(error);
   }
 
+  async verifyResetOtp(email: string, token: string): Promise<void> {
+    log.debug('[Auth] verifyResetOtp → supabase.auth.verifyOtp type:recovery', email);
+    const { error } = await this.client.auth.verifyOtp({ email, token, type: 'recovery' });
+    log.debug('[Auth] verifyResetOtp ←', { error });
+    if (error) throw this.mapError(error);
+  }
+
+  async updatePassword(password: string): Promise<void> {
+    log.debug('[Auth] updatePassword → supabase.auth.updateUser');
+    const { error } = await this.client.auth.updateUser({ password });
+    log.debug('[Auth] updatePassword ←', { error });
+    if (error) throw this.mapError(error);
+  }
+
   private toSession(session: NonNullable<Awaited<ReturnType<SupabaseClient['auth']['getSession']>>['data']['session']>): AuthSession {
     const meta = session.user.user_metadata ?? {};
     return {
@@ -257,8 +290,12 @@ export class AuthRepositorySupabase implements IAuthRepository {
       return new NetworkError(error);
     if (error.status === 0 || msg.includes('network') || msg.includes('fetch') || msg.includes('failed to fetch'))
       return new NetworkError(error);
+    if (msg.includes('refresh token') || error.code === 'refresh_token_not_found' || error.code === 'refresh_token_already_used')
+      return new SessionExpiredError();
     if (msg.includes('token') || msg.includes('otp') || error.code === 'otp_expired')
       return new AppError('INVALID_CREDENTIALS', 'رمز التحقق غير صحيح أو منتهي الصلاحية');
+    if (error.code === 'same_password' || msg.includes('should be different from the old password'))
+      return new AppError('INVALID_CREDENTIALS', 'كلمة المرور الجديدة يجب أن تختلف عن كلمة المرور الحالية');
     return new ServerError(error);
   }
 }

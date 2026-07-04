@@ -14,9 +14,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 import i18n from '@/localization/i18n';
 import { createLogger } from '@/lib/logger';
+import { setAnalyticsUser, trackEvent } from '@/services/analytics';
+import { useScreenTracking } from '@/hooks/useScreenTracking';
+import { initNotificationChannel, syncAllNotifications } from '@/services/notifications';
 import { useAppStore } from '@/stores/app.store';
 import { useAuthStore } from '@/stores/auth.store';
+import { useNotificationSettingsStore } from '@/stores/notificationSettings.store';
 import { useThemeStore } from '@/stores/theme.store';
+import { useUserMealsStore } from '@/stores/userMeals.store';
+import { useUserStore } from '@/stores/user.store';
 import { buildNavigationTheme, buildPaperTheme } from '@/theme';
 import './_nativewind-interop';
 import './global.css';
@@ -60,6 +66,7 @@ export default function RootLayout() {
     Cairo_700Bold: require('../assets/fonts/Cairo-Bold.ttf'),
     ...MaterialCommunityIcons.font,
   });
+  useScreenTracking();
   const [isBootstrapped, setIsBootstrapped] = React.useState(false);
   const [isLangReady, setIsLangReady] = React.useState(false);
   const [isSplashHidden, setIsSplashHidden] = React.useState(false);
@@ -76,10 +83,29 @@ export default function RootLayout() {
     const run = async () => {
       await initializeThemeMode();
       await initializeApp();
+      // initNotificationChannel can throw if the native module isn't ready yet
+      // (e.g. Expo Go, first install before a native rebuild). Never let it
+      // block bootstrapping — the app must always start.
+      try { await initNotificationChannel(); } catch {}
       setIsBootstrapped(true);
     };
     run().catch(() => {});
   }, [initializeApp, initializeThemeMode]);
+
+  // Log a single app_open per cold start. Fire-and-forget — never blocks boot.
+  React.useEffect(() => {
+    void trackEvent('app_open');
+  }, []);
+
+  // Keep the Firebase analytics user id in sync with auth: set on login,
+  // clear on logout/unauthenticated so events aren't mis-attributed.
+  React.useEffect(() => {
+    if (authStatus === 'authenticated') {
+      void setAnalyticsUser(useAuthStore.getState().user?.id ?? null);
+    } else if (authStatus === 'unauthenticated' || authStatus === 'guest') {
+      void setAnalyticsUser(null);
+    }
+  }, [authStatus]);
 
   React.useEffect(() => {
     const run = async () => {
@@ -144,7 +170,7 @@ export default function RootLayout() {
     const inMain = segments[0] === '(main)';
     const isAccessible = authStatus === 'authenticated' || authStatus === 'guest';
 
-    if (isAccessible && inAuth) {
+    if (isAccessible && inAuth && authStatus !== 'guest') {
       const isOnCompleteProfile = segments[1] === 'complete-profile';
       log.debug('[Layout] guard: isAccessible+inAuth | isOnCompleteProfile:', isOnCompleteProfile, '| profile_completed:', user?.profile_completed);
       if (isOnCompleteProfile) {
@@ -163,6 +189,29 @@ export default function RootLayout() {
       router.replace('/(auth)/login' as never);
     }
   }, [authStatus, segments]);
+
+  React.useEffect(() => {
+    if (authStatus !== 'authenticated') return;
+    const run = async () => {
+      const store = useNotificationSettingsStore.getState();
+      // Load user toggles from AsyncStorage, then fetch timing config from Supabase.
+      // Run in parallel — config fetch is independent of stored toggle values.
+      await Promise.all([store.loadSettings(), store.loadConfig()]);
+      const s = useNotificationSettingsStore.getState();
+      const nextRatingDateISO = useUserStore.getState().user?.next_rating_date ?? null;
+      const hasLoggedMealToday = useUserMealsStore.getState().todayMeals.length > 0;
+      await syncAllNotifications({
+        fastReminder: s.fastReminder,
+        mealReminder: s.mealReminder,
+        ratingReminder: s.ratingReminder,
+        hasLoggedMealToday,
+        nextRatingDateISO,
+        config: s.config,
+      });
+    };
+    run().catch((e: unknown) => log.warn('syncAllNotifications failed', e));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authStatus]);
 
   const paperTheme = React.useMemo(
     () => buildPaperTheme({ mode, systemIsDark }),

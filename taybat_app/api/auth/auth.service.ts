@@ -117,6 +117,12 @@ class AuthService {
     }
   }
 
+  async revokeOAuthTokens(): Promise<void> {
+    try {
+      await authRepository.revokeOAuthTokens();
+    } catch {}
+  }
+
   async sendPasswordReset(email: string): Promise<void> {
     try {
       await authRepository.sendPasswordReset(email);
@@ -141,6 +147,22 @@ class AuthService {
   async resendVerificationEmail(email: string): Promise<void> {
     try {
       await authRepository.resendVerificationEmail(email);
+    } catch (error: unknown) {
+      throw new Error(toUserMessage(error));
+    }
+  }
+
+  async verifyResetOtp(email: string, token: string): Promise<void> {
+    try {
+      await authRepository.verifyResetOtp(email, token);
+    } catch (error: unknown) {
+      throw new Error(toUserMessage(error));
+    }
+  }
+
+  async updatePassword(password: string): Promise<void> {
+    try {
+      await authRepository.updatePassword(password);
     } catch (error: unknown) {
       throw new Error(toUserMessage(error));
     }

@@ -70,4 +70,8 @@ export class AccountRepositoryMock implements IAccountRepository {
   async saveFavoriteMealIds(_userId: string, ids: number[]): Promise<void> {
     await storageService.set(STORAGE_KEYS.MEAL_FAVORITES, ids);
   }
+
+  async deleteAccount(): Promise<void> {
+    // Mock: no-op — resetAllAppStores in the store action clears local state
+  }
 }

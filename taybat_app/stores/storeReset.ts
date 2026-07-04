@@ -18,6 +18,7 @@ import { useNotificationsStore } from './notifications.store';
 import { useTopicsStore } from './topics.store';
 import { useUserRatingStore } from './userRating.store';
 import { useMembershipStore } from './membership.store';
+import { useNotificationSettingsStore } from './notificationSettings.store';
 
 export async function resetAllAppStores(): Promise<void> {
   await Promise.all([
@@ -30,6 +31,7 @@ export async function resetAllAppStores(): Promise<void> {
     storageService.remove(STORAGE_KEYS.COMMUNITY_REACTIONS),
     storageService.remove(STORAGE_KEYS.COMMUNITY_FOLLOWS),
     storageService.remove(STORAGE_KEYS.NOTIFICATION_READS),
+    storageService.remove(STORAGE_KEYS.NOTIFICATION_SETTINGS),
     useThemeStore.getState().resetTheme(),
   ]);
 
@@ -44,5 +46,6 @@ export async function resetAllAppStores(): Promise<void> {
   useTopicsStore.getState().resetTopics();
   useNotificationsStore.getState().resetNotifications();
   useMembershipStore.getState().resetMembership();
+  useNotificationSettingsStore.getState().resetNotificationSettings();
   useUserStore.getState().resetUser();
 }

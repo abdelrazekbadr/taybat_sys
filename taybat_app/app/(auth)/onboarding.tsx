@@ -14,12 +14,11 @@ import slidesJson from '@/data/onboarding/onboardingSlides.json';
 
 const onboarding1_img = require('../../assets/images/onboarding1_woman_listen.png');
 const onboarding2_img = require('../../assets/images/onboarding2_woman_heart.png');
-const onboarding3_img = require('../../assets/images/onboarding3_man_wellness.jpg');
 const onboarding4_img = require('../../assets/images/onboarding4_family.png');
 
 type IconName = keyof typeof MaterialCommunityIcons.glyphMap;
 
-type SlideImageKey = 'onboarding1' | 'onboarding2' | 'onboarding3' | 'welcome';
+type SlideImageKey = 'onboarding1' | 'onboarding2' | 'welcome';
 
 type LocalizedText = {
   ar: string;
@@ -57,8 +56,6 @@ function resolveSlideImage(key: SlideImageKey): ImageSourcePropType {
       return onboarding1_img;
     case 'onboarding2':
       return onboarding2_img;
-    case 'onboarding3':
-      return onboarding3_img;
     case 'welcome':
       return onboarding4_img;
   }

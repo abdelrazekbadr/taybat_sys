@@ -12,3 +12,4 @@ export * from './user.store';
 export * from './userMeals.store';
 export * from './userRating.store';
 export * from './membership.store';
+export * from './notificationSettings.store';
