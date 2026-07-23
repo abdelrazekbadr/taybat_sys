@@ -18,6 +18,11 @@ export const STORAGE_KEYS = {
   NOTIFICATION_READS: '@taybat/notification_reads',
   MEMBERSHIP_MOCK_EVENTS: '@taybat/membership_mock_events',
   NOTIFICATION_SETTINGS: '@taybat/notification_settings',
+  // Offline-first caches (persisted store state)
+  CACHE_MEALS: '@taybat/cache_meals',
+  CACHE_USER_MEALS: '@taybat/cache_user_meals',
+  CACHE_USER_PROFILE: '@taybat/cache_user_profile',
+  CACHE_TOPICS: '@taybat/cache_topics',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

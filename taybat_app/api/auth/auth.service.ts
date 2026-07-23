@@ -1,10 +1,22 @@
 import { supabase } from '@/lib/supabase';
 import { authRepository, userProfileRepository } from '@/repositories/auth';
 import { userRatingRepository } from '@/repositories/userRatings';
-import { AppError, EmailConfirmationRequiredError, toUserMessage } from '@/shared/errors/AppError';
+import {
+  AppError,
+  EmailConfirmationRequiredError,
+  toUserMessage,
+} from '@/shared/errors/AppError';
 import { createLogger } from '@/lib/logger';
-import { localDateISO } from '@/utils/dateUtils';
-import type { AuthResult, AuthProvider, Gender, LoginPayload, ProfileCompletionPayload, SignUpPayload, UserProfile } from '@/types';
+import { addDaysToISODate, localDateISO } from '@/utils/dateUtils';
+import type {
+  AuthResult,
+  AuthProvider,
+  Gender,
+  LoginPayload,
+  ProfileCompletionPayload,
+  SignUpPayload,
+  UserProfile,
+} from '@/types';
 
 const log = createLogger('AuthService');
 
@@ -33,16 +45,28 @@ class AuthService {
         log.info('[AuthService] signUpWithEmail: email confirmation required');
         return null;
       }
-      log.error('[AuthService] signUpWithEmail error:', error instanceof Error ? error.message : error);
+      log.error(
+        '[AuthService] signUpWithEmail error:',
+        error instanceof Error ? error.message : error,
+      );
       throw new Error(toUserMessage(error));
     }
   }
 
-  async loginWithOAuth(provider: Exclude<AuthProvider, 'email' | 'guest'>): Promise<AuthResult> {
+  async loginWithOAuth(
+    provider: Exclude<AuthProvider, 'email' | 'guest'>,
+  ): Promise<AuthResult> {
     try {
       const session = await authRepository.loginWithOAuth(provider);
       const email = session.email ?? `mock+${provider}@taybat.app`;
-      await this.ensureProfileRow(session.user_id, email, provider, session.name, session.birth_date, session.gender);
+      await this.ensureProfileRow(
+        session.user_id,
+        email,
+        provider,
+        session.name,
+        session.birth_date,
+        session.gender,
+      );
       const profile = await userProfileRepository.getProfile(session.user_id);
       if (!profile) throw new Error('حدث خطأ ما. حاول مرة أخرى');
       return this.toAuthResult(profile, session.avatar_url);
@@ -53,17 +77,16 @@ class AuthService {
     }
   }
 
-  async completeProfile(userId: string, email: string, data: ProfileCompletionPayload): Promise<UserProfile> {
+  async completeProfile(
+    userId: string,
+    email: string,
+    data: ProfileCompletionPayload,
+  ): Promise<UserProfile> {
     try {
       const existing = await userProfileRepository.getProfile(userId);
       const planStartDate = existing?.plan_start_date ?? localDateISO();
       const nextRatingDate =
-        existing?.next_rating_date ??
-        (() => {
-          const dt = new Date(planStartDate);
-          dt.setDate(dt.getDate() + 7);
-          return dt.toISOString().split('T')[0];
-        })();
+        existing?.next_rating_date ?? addDaysToISODate(planStartDate, 7);
       const { initial_health_score, ...profileData } = data;
       const profile = await userProfileRepository.upsertProfile(userId, {
         ...profileData,
@@ -71,7 +94,9 @@ class AuthService {
         plan_start_date: planStartDate,
         next_rating_date: nextRatingDate,
         profile_completed: true,
-        ...(initial_health_score ? { last_health_score: initial_health_score } : {}),
+        ...(initial_health_score
+          ? { last_health_score: initial_health_score }
+          : {}),
       });
 
       if (data.initial_health_score) {
@@ -83,13 +108,19 @@ class AuthService {
             improvement_goals_codes: '',
           });
         } catch (ratingErr: unknown) {
-          log.warn('[AuthService] completeProfile: baseline rating insert failed (non-fatal):', ratingErr instanceof Error ? ratingErr.message : ratingErr);
+          log.warn(
+            '[AuthService] completeProfile: baseline rating insert failed (non-fatal):',
+            ratingErr instanceof Error ? ratingErr.message : ratingErr,
+          );
         }
       }
 
       return profile;
     } catch (error: unknown) {
-      log.error('[AuthService] completeProfile error:', error instanceof Error ? error.message : error);
+      log.error(
+        '[AuthService] completeProfile error:',
+        error instanceof Error ? error.message : error,
+      );
       throw new Error(toUserMessage(error));
     }
   }
@@ -106,6 +137,22 @@ class AuthService {
       return this.toAuthResult(profile);
     } catch (error: unknown) {
       throw new Error(toUserMessage(error));
+    }
+  }
+
+  /**
+   * Reads only the locally persisted session (no profile fetch, no network
+   * requirement) — used to distinguish "the profile re-fetch failed because
+   * we're offline" from "the session itself is genuinely gone", so
+   * initializeAuth() can fall back to the cached profile instead of forcing
+   * the user back to login just because they have no connection.
+   */
+  async getLocalSessionUserId(): Promise<string | null> {
+    try {
+      const session = await authRepository.getSession();
+      return session?.user_id ?? null;
+    } catch {
+      return null;
     }
   }
 
@@ -139,7 +186,10 @@ class AuthService {
       if (!profile) throw new Error('حدث خطأ ما. حاول مرة أخرى');
       return this.toAuthResult(profile);
     } catch (error: unknown) {
-      log.error('[AuthService] verifyEmailOtp error:', error instanceof Error ? error.message : error);
+      log.error(
+        '[AuthService] verifyEmailOtp error:',
+        error instanceof Error ? error.message : error,
+      );
       throw new Error(toUserMessage(error));
     }
   }
@@ -174,7 +224,9 @@ class AuthService {
     const USE_MOCK = process.env.EXPO_PUBLIC_USE_MOCK !== 'false';
     if (USE_MOCK) return () => {};
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         onSignOut();
       }
@@ -211,7 +263,10 @@ class AuthService {
     });
   }
 
-  private toAuthResult(profile: UserProfile, avatarUrl?: string | null): AuthResult {
+  private toAuthResult(
+    profile: UserProfile,
+    avatarUrl?: string | null,
+  ): AuthResult {
     return {
       user: {
         id: profile.id,

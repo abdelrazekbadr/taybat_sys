@@ -57,6 +57,28 @@ Each `repositories/[domain]/index.ts` exports a singleton. **Always import the s
 
 ---
 
+## Environments — Dev vs Prod (Supabase)
+
+Two separate Supabase projects. Never assume which one a tool call or env file targets — check first.
+
+⚠️ **The Supabase dashboard project *names* are backwards from their actual role** (historical — `mbbbdhyhtqkxakmblzmk` was originally the dev project before go-live, and kept its dashboard name when its role flipped). Go by **project ref**, not by the name shown in the Supabase dashboard.
+
+| | Dev | Prod |
+| --- | --- | --- |
+| Project ref | `bmyachyraddxekojqnoi` | `mbbbdhyhtqkxakmblzmk` |
+| Supabase dashboard name (misleading, ignore) | "taybat-app-prod" | "taybat-app-dev" |
+| Project URL | `https://bmyachyraddxekojqnoi.supabase.co` | `https://mbbbdhyhtqkxakmblzmk.supabase.co` |
+| MCP server name | `supabase` | `supabase-prod` |
+| Contains | fresh reference/config data only, no real users | **real user accounts, ratings, posts — production traffic** |
+
+- Both MCP servers are declared in `.mcp.json` / `.claude/settings.json` (root and `taybat_app/`) — which one is actually *connected* in a given Claude Code session depends on what was live when that session started; MCP servers don't hot-reload from config changes mid-session. If `supabase-prod` tools aren't available, restart the session.
+- `mbbbdhyhtqkxakmblzmk` (now prod) holds real, pre-existing users — treat any write there with production caution, not dev-sandbox casualness, regardless of what its dashboard name suggests.
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY` uses the **publishable key** format (`sb_publishable_...`) for both environments now — Supabase's current recommendation, `@supabase/supabase-js ^2` accepts it. Get the correct one per-project via the Supabase MCP `get_publishable_keys` tool rather than assuming — don't cross-paste one project's key with another's URL, it fails with "Invalid API key."
+- **App env files are being re-pointed to match this swap** — as of 2026-07-12 this was in progress; verify `taybat_app/.env` and `taybat_app/.env.production` actually point at the right ref before trusting either blindly.
+- Full setup/runbook: `_docs/analysis/golive/01-supabase-production-setup.md`.
+
+---
+
 ## Zustand Store Pattern
 
 ```typescript

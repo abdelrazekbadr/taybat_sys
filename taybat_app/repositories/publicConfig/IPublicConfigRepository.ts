@@ -32,9 +32,17 @@ export const DEFAULT_SHARE_CONFIG: ShareConfig = {
 export const DEFAULT_MEAL_IMAGE_BASE_URL =
   'https://mbbbdhyhtqkxakmblzmk.supabase.co/storage/v1/object/public/taybat_app_assets/meals/';
 
+// Minimum number of committed days (meals logged) within the last 7 days
+// required before the weekly rating can be submitted. Mirrors
+// public_config.rating_max_allowed_commitment — falls back to this value if
+// the row is missing/unparsable.
+export const DEFAULT_RATING_MIN_COMMITMENT_DAYS = 5;
+
 export interface IPublicConfigRepository {
   getNotificationConfig(): Promise<NotificationConfig>;
   getShareConfig(): Promise<ShareConfig>;
   /** Base URL meal images are served from: {baseUrl}{meal.code}.png */
   getMealImageBaseUrl(): Promise<string>;
+  /** Minimum committed days (out of the last 7) required to submit a weekly rating. */
+  getRatingMinCommitmentDays(): Promise<number>;
 }

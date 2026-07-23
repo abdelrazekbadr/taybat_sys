@@ -1,7 +1,13 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, ScrollView, TouchableOpacity, ActivityIndicator, Alert } from 'react-native'; // ActivityIndicator kept for add-button (38px circle)
+import {
+  View,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+  Alert,
+} from 'react-native'; // ActivityIndicator kept for add-button (38px circle)
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 
@@ -11,11 +17,13 @@ import { AppText } from '@/components/common/AppText';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { MealImage } from '@/components/common/MealImage';
 import { GradientTabs } from '@/components/common/GradientTabs';
+import { OfflineState } from '@/components/common/OfflineState';
 import { Skeleton } from '@/components/common/Skeleton';
 import { StarRating } from '@/components/common/StarRating';
 import { useAuthGate } from '@/hooks/useAuthGate';
 import { useRTL } from '@/hooks/useRTL';
 import { useMealsStore } from '@/stores/meals.store';
+import { useNetworkStore } from '@/stores/network.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import type { Meal } from '@/types';
 import { toArabicNumerals } from '@/utils/zoneUtils';
@@ -47,9 +55,16 @@ export default function SelectMealScreen() {
   }>();
   const { meals, initializeMeals, isLoading } = useMealsStore();
   const { userMeals, initializeUserMeals } = useUserMealsStore();
-  const initialTabValue = Array.isArray(initialTab) ? initialTab[0] : initialTab;
+  const isOnline = useNetworkStore((s) => s.isOnline);
+  const initialTabValue = Array.isArray(initialTab)
+    ? initialTab[0]
+    : initialTab;
   const resolvedInitialTab: TabKey =
-    initialTabValue === 'lunch' ? 'lunch' : initialTabValue === 'dinner' ? 'dinner' : 'breakfast';
+    initialTabValue === 'lunch'
+      ? 'lunch'
+      : initialTabValue === 'dinner'
+        ? 'dinner'
+        : 'breakfast';
   const [activeTab, setActiveTab] = useState<TabKey>(resolvedInitialTab);
   const [isTabSwitching, setIsTabSwitching] = useState(false);
   const { isRTL, rowDir } = useRTL();
@@ -79,7 +94,10 @@ export default function SelectMealScreen() {
 
   const activeTypeNum = TAB_TYPE_NUM[activeTab];
   const filteredMeals: Meal[] = meals.filter((m) =>
-    m.meal_type_ids.split(',').map((s) => s.trim()).includes(activeTypeNum)
+    m.meal_type_ids
+      .split(',')
+      .map((s) => s.trim())
+      .includes(activeTypeNum),
   );
 
   const lastWeekCountsByMealId = useMemo(() => {
@@ -93,7 +111,9 @@ export default function SelectMealScreen() {
 
     const counts: Record<number, number> = {};
     for (const log of userMeals) {
-      const logDate = log.date ? new Date(`${log.date}T00:00:00.000Z`) : new Date(log.datetime);
+      const logDate = log.date
+        ? new Date(`${log.date}T00:00:00.000Z`)
+        : new Date(log.datetime);
       if (Number.isNaN(logDate.getTime())) continue;
       if (logDate < start || logDate > end) continue;
       counts[log.meal_id] = (counts[log.meal_id] ?? 0) + 1;
@@ -101,37 +121,55 @@ export default function SelectMealScreen() {
     return counts;
   }, [userMeals]);
 
-  const isReplaceFlow = typeof replaceUserMealId === 'string' && replaceUserMealId.length > 0;
+  const isReplaceFlow =
+    typeof replaceUserMealId === 'string' && replaceUserMealId.length > 0;
   const headerTitle = isReplaceFlow ? 'قم بتبديل وجبتك' : 'اختر وجبتك';
 
   return (
     <View className="flex-1 bg-app-background">
       {/* header */}
-      <View className="flex-row items-center justify-between px-[20px] pb-2" style={{ paddingTop: insets.top + 12, flexDirection: rowDir }}>
+      <View
+        className="flex-row items-center justify-between px-[20px] pb-2"
+        style={{ paddingTop: insets.top + 12, flexDirection: rowDir }}
+      >
         <TouchableOpacity
           className="h-10 w-10 items-center justify-center rounded-full border border-app-line bg-app-surface"
           onPress={() => router.back()}
           activeOpacity={0.7}
         >
           {isRTL ? (
-            <ChevronRight size={22} color={theme.colors.onSurface} strokeWidth={2.5} />
+            <ChevronRight
+              size={22}
+              color={theme.colors.onSurface}
+              strokeWidth={2.5}
+            />
           ) : (
-            <ChevronLeft size={22} color={theme.colors.onSurface} strokeWidth={2.5} />
+            <ChevronLeft
+              size={22}
+              color={theme.colors.onSurface}
+              strokeWidth={2.5}
+            />
           )}
         </TouchableOpacity>
         <View className="items-center gap-0.5">
-          <AppText variant="bold" className="text-center text-[17px]  text-app-navy">{headerTitle}</AppText>
+          <AppText
+            variant="bold"
+            className="text-center text-[17px]  text-app-navy"
+          >
+            {headerTitle}
+          </AppText>
         </View>
         <View className="w-10" />
       </View>
 
       {/* tabs */}
       <View className="px-[22px] py-3">
-        <View
-          className="self-center"
-          style={{ width: '100%', maxWidth: 380 }}
-        >
-          <GradientTabs options={TABS} value={activeTab} onChange={handleTabChange} />
+        <View className="self-center" style={{ width: '100%', maxWidth: 380 }}>
+          <GradientTabs
+            options={TABS}
+            value={activeTab}
+            onChange={handleTabChange}
+          />
         </View>
       </View>
 
@@ -142,11 +180,14 @@ export default function SelectMealScreen() {
             <MealListSkeleton />
           </View>
         </View>
+      ) : meals.length === 0 && !isOnline ? (
+        <OfflineState onRetry={initializeMeals} />
       ) : (
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           <View className="px-[22px] pb-6">
             <AppText className="mb-2 text-[12px] leading-[18px] text-app-textSoft">
-              {toArabicNumerals(filteredMeals.length)} اقتراحات مناسبة لمرحلتك الحالية
+              {toArabicNumerals(filteredMeals.length)} اقتراحات مناسبة لمرحلتك
+              الحالية
             </AppText>
             <View className="gap-2.5">
               {filteredMeals.map((meal) => (
@@ -154,9 +195,16 @@ export default function SelectMealScreen() {
                   key={meal.id}
                   meal={meal}
                   lastWeekCount={lastWeekCountsByMealId[meal.id] ?? 0}
-                  replaceUserMealId={Array.isArray(replaceUserMealId) ? replaceUserMealId[0] : replaceUserMealId}
+                  replaceUserMealId={
+                    Array.isArray(replaceUserMealId)
+                      ? replaceUserMealId[0]
+                      : replaceUserMealId
+                  }
                   onPress={() =>
-                    router.push({ pathname: '/(main)/meal-detail', params: { mealId: String(meal.id) } })
+                    router.push({
+                      pathname: '/(main)/meal-detail',
+                      params: { mealId: String(meal.id) },
+                    })
                   }
                 />
               ))}
@@ -218,22 +266,30 @@ function MealCard({
   const [isAdding, setIsAdding] = useState(false);
   const imageUri = getMealImageUri(meal);
   const ingredientsCount =
-    typeof meal.meal_item_codes === 'string' && meal.meal_item_codes.trim().length > 0
+    typeof meal.meal_item_codes === 'string' &&
+    meal.meal_item_codes.trim().length > 0
       ? meal.meal_item_codes.split(',').filter(Boolean).length
       : 0;
 
   const handleAddInternal = async () => {
     if (isAdding) return;
     setIsAdding(true);
-    const replaceId = replaceUserMealId ? Number(replaceUserMealId) : Number.NaN;
-    const ok = Number.isFinite(replaceId) ? await replaceMeal(replaceId, meal.id) : await logMeal(meal.id);
+    const replaceId = replaceUserMealId
+      ? Number(replaceUserMealId)
+      : Number.NaN;
+    const ok = Number.isFinite(replaceId)
+      ? await replaceMeal(replaceId, meal.id)
+      : await logMeal(meal.id);
     if (ok) {
       router.replace('/(main)' as never);
       return;
     }
     setIsAdding(false);
     const message = useUserMealsStore.getState().errorMessage;
-    Alert.alert(replaceUserMealId ? 'تعذّر استبدال الوجبة' : 'تعذّر تسجيل الوجبة', message || 'حاول مرة أخرى');
+    Alert.alert(
+      replaceUserMealId ? 'تعذّر استبدال الوجبة' : 'تعذّر تسجيل الوجبة',
+      message || 'حاول مرة أخرى',
+    );
   };
 
   const handleAdd = () => requireAuth(handleAddInternal);
@@ -246,17 +302,33 @@ function MealCard({
       activeOpacity={0.7}
     >
       <View className="h-[54px] w-[54px] flex-shrink-0 overflow-hidden rounded-[16px] border border-app-line bg-app-surfaceAlt">
-        <MealImage uri={imageUri} defaultSource={defaultFoodImage} className="h-full w-full" resizeMode="cover" />
+        <MealImage
+          uri={imageUri}
+          defaultSource={defaultFoodImage}
+          className="h-full w-full"
+          resizeMode="cover"
+        />
       </View>
 
       <View className="flex-1 gap-0.5" style={{ minWidth: 0 }}>
-        <AppText variant="bold" className="text-[12px] leading-5 text-app-navy" numberOfLines={1}>
+        <AppText
+          variant="bold"
+          className="text-[12px] leading-5 text-app-navy"
+          numberOfLines={1}
+        >
           {meal.name}
         </AppText>
 
-        <View className="flex-row items-center gap-1" style={{ flexDirection: rowDir }}>
-          <AppText variant="bold" className="text-[10.5px] leading-5 text-app-textSoft">
-            تناولت آخر أسبوع: {toArabicNumerals(lastWeekCount)} {lastWeekCount === 1 ? 'مرة' : 'مرات'}
+        <View
+          className="flex-row items-center gap-1"
+          style={{ flexDirection: rowDir }}
+        >
+          <AppText
+            variant="bold"
+            className="text-[10.5px] leading-5 text-app-textSoft"
+          >
+            تناولت آخر أسبوع: {toArabicNumerals(lastWeekCount)}{' '}
+            {lastWeekCount === 1 ? 'مرة' : 'مرات'}
           </AppText>
           <View className="h-[3px] w-[3px] rounded-full bg-app-muted2" />
           <AppText className="text-[10.5px] leading-5 text-app-textSoft">
@@ -264,7 +336,10 @@ function MealCard({
           </AppText>
         </View>
 
-        <View className="flex-row items-center" style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}>
+        <View
+          className="flex-row items-center"
+          style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}
+        >
           <StarRating value={meal.rating} size={13} gap={2} />
         </View>
       </View>

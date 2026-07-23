@@ -9,11 +9,13 @@ import { AppText, AppTextInput } from '@/components/common/AppText';
 import { MealImage } from '@/components/common/MealImage';
 import { MealSpinner } from '@/components/common/MealSpinner';
 import { GradientTabs } from '@/components/common/GradientTabs';
+import { OfflineState } from '@/components/common/OfflineState';
 import { StarRating } from '@/components/common/StarRating';
 import { useAuthGate } from '@/hooks/useAuthGate';
 import { useRTL } from '@/hooks/useRTL';
 import { useMealPreferencesStore } from '@/stores/mealPreferences.store';
 import { useMealsStore } from '@/stores/meals.store';
+import { useNetworkStore } from '@/stores/network.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import { useUserStore } from '@/stores/user.store';
 import type { Meal } from '@/types';
@@ -21,10 +23,19 @@ import { toArabicNumerals } from '@/utils/zoneUtils';
 
 const defaultFoodImage = require('../../assets/images/food/risotto.png');
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
   return (
     <View className="mt-5">
-      <AppText variant="bold" className="mb-2 px-1 text-[13px] leading-5 text-app-textMuted">
+      <AppText
+        variant="bold"
+        className="text-app-textMuted mb-2 px-1 text-[13px] leading-5"
+      >
         {title}
       </AppText>
       <View className="gap-2">{children}</View>
@@ -59,7 +70,8 @@ function MealCard(props: {
   const getMealImageUri = useMealsStore((s) => s.getMealImageUri);
   const imageUri = getMealImageUri(props.meal);
   const ingredientsCount =
-    typeof props.meal.meal_item_codes === 'string' && props.meal.meal_item_codes.trim().length > 0
+    typeof props.meal.meal_item_codes === 'string' &&
+    props.meal.meal_item_codes.trim().length > 0
       ? props.meal.meal_item_codes.split(',').filter(Boolean).length
       : 0;
 
@@ -68,21 +80,42 @@ function MealCard(props: {
       onPress={props.onPress}
       disabled={props.disabled}
       className="rounded-[18px] border border-app-lineSoft bg-app-surface p-3.5 shadow-sm shadow-black/10"
-      style={({ pressed }) => [{ opacity: props.disabled ? 0.5 : pressed ? 0.9 : 1 }]}
+      style={({ pressed }) => [
+        { opacity: props.disabled ? 0.5 : pressed ? 0.9 : 1 },
+      ]}
     >
-      <View className="items-center gap-3" style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}>
+      <View
+        className="items-center gap-3"
+        style={{ flexDirection: rowDir, justifyContent: 'flex-start' }}
+      >
         <View className="h-[54px] w-[54px] flex-shrink-0 overflow-hidden rounded-[16px] border border-app-line bg-app-surfaceAlt">
-          <MealImage uri={imageUri} defaultSource={defaultFoodImage} className="h-full w-full" resizeMode="cover" />
+          <MealImage
+            uri={imageUri}
+            defaultSource={defaultFoodImage}
+            className="h-full w-full"
+            resizeMode="cover"
+          />
         </View>
 
         <View className="flex-1" style={{ minWidth: 0 }}>
-          <AppText variant="bold" className="text-[12px] leading-5 text-app-navy" numberOfLines={1}>
+          <AppText
+            variant="bold"
+            className="text-[12px] leading-5 text-app-navy"
+            numberOfLines={1}
+          >
             {props.meal.name}
           </AppText>
 
-          <View className="mt-0.5 flex-row items-center gap-1" style={{ flexDirection: rowDir }}>
-            <AppText variant="bold" className="text-[10.5px] leading-4 text-app-textSoft">
-              تناولت آخر أسبوع: {toArabicNumerals(props.lastWeekCount)} {props.lastWeekCount === 1 ? 'مرة' : 'مرات'}
+          <View
+            className="mt-0.5 flex-row items-center gap-1"
+            style={{ flexDirection: rowDir }}
+          >
+            <AppText
+              variant="bold"
+              className="text-[10.5px] leading-4 text-app-textSoft"
+            >
+              تناولت آخر أسبوع: {toArabicNumerals(props.lastWeekCount)}{' '}
+              {props.lastWeekCount === 1 ? 'مرة' : 'مرات'}
             </AppText>
             <View className="h-[3px] w-[3px] rounded-full bg-app-muted2" />
             <AppText className="text-[10.5px] leading-4 text-app-textSoft">
@@ -90,7 +123,10 @@ function MealCard(props: {
             </AppText>
           </View>
 
-          <View className="mt-1 flex-row items-center" style={{ flexDirection: rowDir }}>
+          <View
+            className="mt-1 flex-row items-center"
+            style={{ flexDirection: rowDir }}
+          >
             <StarRating value={props.meal.rating} size={13} gap={2} />
           </View>
         </View>
@@ -99,11 +135,17 @@ function MealCard(props: {
           onPress={props.onToggleFavorite}
           disabled={props.disabled}
           className="h-[38px] w-[38px] flex-shrink-0 items-center justify-center overflow-hidden rounded-full bg-app-surfaceAlt"
-          style={({ pressed }) => [{ opacity: props.disabled ? 0.5 : pressed ? 0.9 : 1 }]}
+          style={({ pressed }) => [
+            { opacity: props.disabled ? 0.5 : pressed ? 0.9 : 1 },
+          ]}
         >
           <Heart
             size={20}
-            color={props.favorite ? theme.colors.primary : theme.colors.onSurfaceVariant}
+            color={
+              props.favorite
+                ? theme.colors.primary
+                : theme.colors.onSurfaceVariant
+            }
             fill={props.favorite ? theme.colors.primary : 'transparent'}
             strokeWidth={2.4}
           />
@@ -122,7 +164,14 @@ export default function MealPreferencesScreen() {
   const { user } = useUserStore();
   const { meals, initializeMeals } = useMealsStore();
   const { userMeals, initializeUserMeals } = useUserMealsStore();
-  const { favoriteMealIds, isLoading, errorMessage, initializePreferences, toggleFavorite } = useMealPreferencesStore();
+  const isOnline = useNetworkStore((s) => s.isOnline);
+  const {
+    favoriteMealIds,
+    isLoading,
+    errorMessage,
+    initializePreferences,
+    toggleFavorite,
+  } = useMealPreferencesStore();
 
   const [query, setQuery] = useState('');
   const [activeTab, setActiveTab] = useState<TabKey>('breakfast');
@@ -139,8 +188,14 @@ export default function MealPreferencesScreen() {
     initializePreferences();
   }, [initializePreferences]);
 
-  const favoriteSet = useMemo(() => new Set(favoriteMealIds), [favoriteMealIds]);
-  const isFavorite = useCallback((mealId: number) => favoriteSet.has(mealId), [favoriteSet]);
+  const favoriteSet = useMemo(
+    () => new Set(favoriteMealIds),
+    [favoriteMealIds],
+  );
+  const isFavorite = useCallback(
+    (mealId: number) => favoriteSet.has(mealId),
+    [favoriteSet],
+  );
 
   const activeTypeNum = TAB_TYPE_NUM[activeTab];
 
@@ -155,7 +210,9 @@ export default function MealPreferencesScreen() {
 
     const counts: Record<number, number> = {};
     for (const log of userMeals) {
-      const logDate = log.date ? new Date(`${log.date}T00:00:00.000Z`) : new Date(log.datetime);
+      const logDate = log.date
+        ? new Date(`${log.date}T00:00:00.000Z`)
+        : new Date(log.datetime);
       if (Number.isNaN(logDate.getTime())) continue;
       if (logDate < start || logDate > end) continue;
       counts[log.meal_id] = (counts[log.meal_id] ?? 0) + 1;
@@ -164,7 +221,12 @@ export default function MealPreferencesScreen() {
   }, [userMeals]);
 
   const visibleMeals: Meal[] = useMemo(() => {
-    const base = meals.filter((m) => m.meal_type_ids.split(',').map((s) => s.trim()).includes(activeTypeNum));
+    const base = meals.filter((m) =>
+      m.meal_type_ids
+        .split(',')
+        .map((s) => s.trim())
+        .includes(activeTypeNum),
+    );
     const q = query.trim();
     const searched = q ? base.filter((m) => m.name.includes(q)) : base;
     return [...searched].sort((a, b) => {
@@ -177,6 +239,14 @@ export default function MealPreferencesScreen() {
       return a.name.localeCompare(b.name);
     });
   }, [activeTypeNum, favoriteSet, lastWeekCountsByMealId, meals, query]);
+
+  if (!meals.length && !isOnline) {
+    return (
+      <View className="flex-1 bg-app-background">
+        <OfflineState onRetry={initializeMeals} />
+      </View>
+    );
+  }
 
   if (!user || !meals.length) {
     return (
@@ -198,12 +268,23 @@ export default function MealPreferencesScreen() {
           style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }]}
         >
           {isRTL ? (
-            <ChevronRight size={22} color={theme.colors.onSurface} strokeWidth={2.5} />
+            <ChevronRight
+              size={22}
+              color={theme.colors.onSurface}
+              strokeWidth={2.5}
+            />
           ) : (
-            <ChevronLeft size={22} color={theme.colors.onSurface} strokeWidth={2.5} />
+            <ChevronLeft
+              size={22}
+              color={theme.colors.onSurface}
+              strokeWidth={2.5}
+            />
           )}
         </Pressable>
-        <AppText variant="bold" className="text-center text-[17px] leading-6 text-app-navy">
+        <AppText
+          variant="bold"
+          className="text-center text-[17px] leading-6 text-app-navy"
+        >
           وجباتي المفضلة
         </AppText>
         <View className="w-10" />
@@ -211,7 +292,11 @@ export default function MealPreferencesScreen() {
 
       <View className="px-[22px] py-3">
         <View className="self-center" style={{ width: '100%', maxWidth: 380 }}>
-          <GradientTabs options={TABS} value={activeTab} onChange={setActiveTab} />
+          <GradientTabs
+            options={TABS}
+            value={activeTab}
+            onChange={setActiveTab}
+          />
         </View>
       </View>
 
@@ -236,13 +321,20 @@ export default function MealPreferencesScreen() {
                 favorite={isFavorite(meal.id)}
                 lastWeekCount={lastWeekCountsByMealId[meal.id] ?? 0}
                 disabled={isLoading}
-                onPress={() => router.push({ pathname: '/(main)/meal-detail', params: { mealId: String(meal.id) } })}
-                onToggleFavorite={() => requireAuth(() => toggleFavorite(meal.id))}
+                onPress={() =>
+                  router.push({
+                    pathname: '/(main)/meal-detail',
+                    params: { mealId: String(meal.id) },
+                  })
+                }
+                onToggleFavorite={() =>
+                  requireAuth(() => toggleFavorite(meal.id))
+                }
               />
             ))}
             {!visibleMeals.length && (
               <View className="rounded-[18px] border border-app-lineSoft bg-app-surface p-4">
-                <AppText className="text-[13px] leading-5 text-app-textMuted">
+                <AppText className="text-app-textMuted text-[13px] leading-5">
                   لا توجد وجبات مطابقة لهذا التصفية.
                 </AppText>
               </View>
@@ -251,7 +343,10 @@ export default function MealPreferencesScreen() {
 
           {!!errorMessage && (
             <View className="mt-3 rounded-[14px] border border-app-lineSoft bg-app-surface p-3">
-              <AppText className="text-[12.5px] leading-5" style={{ color: theme.colors.error }}>
+              <AppText
+                className="text-[12.5px] leading-5"
+                style={{ color: theme.colors.error }}
+              >
                 {errorMessage}
               </AppText>
             </View>

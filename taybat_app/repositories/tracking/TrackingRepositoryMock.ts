@@ -2,7 +2,10 @@ import { MOCK_USER_MEALS } from '@/data/mock';
 import type { UserMeal } from '@/types';
 import { localDateISO } from '@/utils/dateUtils';
 import { mockDelay } from '@/utils/mockDelay';
-import type { CreateUserMealPayload, ITrackingRepository } from './ITrackingRepository';
+import type {
+  CreateUserMealPayload,
+  ITrackingRepository,
+} from './ITrackingRepository';
 
 // In-memory store — starts from mock data, mutations are session-only.
 let _meals: UserMeal[] = [...MOCK_USER_MEALS];
@@ -36,17 +39,20 @@ export class TrackingRepositoryMock implements ITrackingRepository {
     return entry;
   }
 
-  async replaceMeal(userMealId: number, payload: CreateUserMealPayload): Promise<UserMeal> {
+  async replaceMeal(
+    userMealId: number,
+    payload: CreateUserMealPayload,
+  ): Promise<UserMeal> {
     await mockDelay();
-    const now = new Date().toISOString();
+    const now = new Date();
     const existing = _meals.find((m) => m.id === userMealId);
     const updated: UserMeal = {
       id: userMealId,
       user_id: payload.userId,
       meal_id: payload.mealId,
       meal_item_codes: payload.mealItemCodes,
-      datetime: now,
-      date: existing?.date ?? now.slice(0, 10),
+      datetime: now.toISOString(),
+      date: existing?.date ?? localDateISO(now),
       zone_summary: payload.zoneSummary,
     };
     _meals = _meals.map((m) => (m.id === userMealId ? updated : m));

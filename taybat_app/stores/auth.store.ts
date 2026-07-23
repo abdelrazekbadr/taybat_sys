@@ -3,7 +3,14 @@ import { create } from 'zustand';
 import { authService } from '@/api/auth/auth.service';
 import { AppError } from '@/shared/errors/AppError';
 import { createLogger } from '@/lib/logger';
-import type { AuthStatus, AuthUser, LoginPayload, ProfileCompletionPayload, SignUpPayload, UserProfile } from '@/types';
+import type {
+  AuthStatus,
+  AuthUser,
+  LoginPayload,
+  ProfileCompletionPayload,
+  SignUpPayload,
+  UserProfile,
+} from '@/types';
 
 import { useUserStore } from './user.store';
 
@@ -18,8 +25,12 @@ interface AuthState {
 
   initializeAuth: () => Promise<void>;
   loginWithEmail: (payload: LoginPayload) => Promise<boolean>;
-  signUpWithEmail: (payload: SignUpPayload) => Promise<boolean | 'pending_confirmation'>;
-  loginWithOAuth: (provider: 'google' | 'apple' | 'facebook') => Promise<boolean>;
+  signUpWithEmail: (
+    payload: SignUpPayload,
+  ) => Promise<boolean | 'pending_confirmation'>;
+  loginWithOAuth: (
+    provider: 'google' | 'apple' | 'facebook',
+  ) => Promise<boolean>;
   verifyEmailOtp: (email: string, token: string) => Promise<boolean>;
   resendVerificationEmail: (email: string) => Promise<boolean>;
   completeProfile: (data: ProfileCompletionPayload) => Promise<boolean>;
@@ -52,24 +63,68 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const result = await authService.getSessionAndProfile();
       if (result) {
         useUserStore.getState().setUserFromProfile(result.profile);
-        set({ status: 'authenticated', user: result.user, profile: result.profile, isLoading: false });
+        set({
+          status: 'authenticated',
+          user: result.user,
+          profile: result.profile,
+          isLoading: false,
+        });
       } else {
-        set({ status: 'unauthenticated', user: null, profile: null, isLoading: false });
+        set({
+          status: 'unauthenticated',
+          user: null,
+          profile: null,
+          isLoading: false,
+        });
       }
     } catch (error: unknown) {
       if (error instanceof AppError && error.code === 'SESSION_EXPIRED') {
         // Stale/already-used refresh token from a previous session — not a real error,
         // just an invalid local session. Clear it so the SDK stops retrying the dead token.
         await authService.logout().catch(() => {});
-        set({ status: 'unauthenticated', user: null, profile: null, isLoading: false, errorMessage: '' });
-      } else {
         set({
-          status: 'error',
+          status: 'unauthenticated',
           user: null,
           profile: null,
           isLoading: false,
-          errorMessage: error instanceof Error ? error.message : 'حدث خطأ ما. حاول مرة أخرى',
+          errorMessage: '',
         });
+      } else {
+        // The session check itself only reads local storage (no network), so
+        // this failure is almost always the profile RE-FETCH — i.e. offline.
+        // If the local session still points at the same user we have a
+        // cached profile for (persisted in Phase 1), stay authenticated with
+        // that cached data instead of forcing the user back to login just
+        // because there's no connection.
+        const sessionUserId = await authService.getLocalSessionUserId();
+        const cachedUser = useUserStore.getState().user;
+        if (sessionUserId && cachedUser && cachedUser.id === sessionUserId) {
+          set({
+            status: 'authenticated',
+            user: {
+              id: cachedUser.id,
+              email: cachedUser.email,
+              name: cachedUser.name,
+              avatar_url: cachedUser.avatar_url,
+              provider: 'email',
+              profile_completed: cachedUser.profile_completed,
+            },
+            profile: null,
+            isLoading: false,
+            errorMessage: '',
+          });
+        } else {
+          set({
+            status: 'error',
+            user: null,
+            profile: null,
+            isLoading: false,
+            errorMessage:
+              error instanceof Error
+                ? error.message
+                : 'حدث خطأ ما. حاول مرة أخرى',
+          });
+        }
       }
     }
 
@@ -77,7 +132,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     _unsubscribeAuthListener?.();
     _unsubscribeAuthListener = authService.subscribeToAuthChanges(() => {
       useUserStore.getState().resetUser();
-      set({ status: 'unauthenticated', user: null, profile: null, isLoading: false, errorMessage: '' });
+      set({
+        status: 'unauthenticated',
+        user: null,
+        profile: null,
+        isLoading: false,
+        errorMessage: '',
+      });
     });
   },
 
@@ -86,10 +147,22 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const result = await authService.loginWithEmail(payload);
       useUserStore.getState().setUserFromProfile(result.profile);
-      set({ status: 'authenticated', user: result.user, profile: result.profile, isLoading: false });
+      set({
+        status: 'authenticated',
+        user: result.user,
+        profile: result.profile,
+        isLoading: false,
+      });
       return true;
     } catch (error: unknown) {
-      set({ status: 'unauthenticated', user: null, profile: null, isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر تسجيل الدخول' });
+      set({
+        status: 'unauthenticated',
+        user: null,
+        profile: null,
+        isLoading: false,
+        errorMessage:
+          error instanceof Error ? error.message : 'تعذّر تسجيل الدخول',
+      });
       return false;
     }
   },
@@ -100,14 +173,31 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const result = await authService.signUpWithEmail(payload);
       if (!result) {
         // Supabase returned no session — email confirmation required
-        set({ status: 'unauthenticated', user: null, profile: null, isLoading: false });
+        set({
+          status: 'unauthenticated',
+          user: null,
+          profile: null,
+          isLoading: false,
+        });
         return 'pending_confirmation';
       }
       useUserStore.getState().setUserFromProfile(result.profile);
-      set({ status: 'authenticated', user: result.user, profile: result.profile, isLoading: false });
+      set({
+        status: 'authenticated',
+        user: result.user,
+        profile: result.profile,
+        isLoading: false,
+      });
       return true;
     } catch (error: unknown) {
-      set({ status: 'unauthenticated', user: null, profile: null, isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر إنشاء الحساب' });
+      set({
+        status: 'unauthenticated',
+        user: null,
+        profile: null,
+        isLoading: false,
+        errorMessage:
+          error instanceof Error ? error.message : 'تعذّر إنشاء الحساب',
+      });
       return false;
     }
   },
@@ -117,10 +207,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const result = await authService.verifyEmailOtp(email, token);
       useUserStore.getState().setUserFromProfile(result.profile);
-      set({ status: 'authenticated', user: result.user, profile: result.profile, isLoading: false });
+      set({
+        status: 'authenticated',
+        user: result.user,
+        profile: result.profile,
+        isLoading: false,
+      });
       return true;
     } catch (error: unknown) {
-      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'رمز التحقق غير صحيح' });
+      set({
+        isLoading: false,
+        errorMessage:
+          error instanceof Error ? error.message : 'رمز التحقق غير صحيح',
+      });
       return false;
     }
   },
@@ -132,7 +231,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false });
       return true;
     } catch (error: unknown) {
-      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر إعادة الإرسال' });
+      set({
+        isLoading: false,
+        errorMessage:
+          error instanceof Error ? error.message : 'تعذّر إعادة الإرسال',
+      });
       return false;
     }
   },
@@ -142,17 +245,27 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       const result = await authService.loginWithOAuth(provider);
       useUserStore.getState().setUserFromProfile(result.profile);
-      set({ status: 'authenticated', user: result.user, profile: result.profile, isLoading: false });
+      set({
+        status: 'authenticated',
+        user: result.user,
+        profile: result.profile,
+        isLoading: false,
+      });
       return true;
     } catch (error: unknown) {
-      const isCanceled = error instanceof AppError && error.code === 'OAUTH_CANCELED';
+      const isCanceled =
+        error instanceof AppError && error.code === 'OAUTH_CANCELED';
       set({
         status: 'unauthenticated',
         user: null,
         profile: null,
         isLoading: false,
         // No error banner for user-initiated cancel — only real failures show a message
-        errorMessage: isCanceled ? '' : (error instanceof Error ? error.message : 'تعذّر تسجيل الدخول'),
+        errorMessage: isCanceled
+          ? ''
+          : error instanceof Error
+            ? error.message
+            : 'تعذّر تسجيل الدخول',
       });
       return false;
     }
@@ -166,7 +279,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     }
     set({ status: 'loading', isLoading: true, errorMessage: '' });
     try {
-      const profile = await authService.completeProfile(user.id, user.email ?? '', data);
+      const profile = await authService.completeProfile(
+        user.id,
+        user.email ?? '',
+        data,
+      );
       log.debug('[AuthStore] completeProfile ← profile returned:', {
         id: profile.id,
         email: profile.email,
@@ -176,20 +293,35 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       useUserStore.getState().setUserFromProfile(profile);
       set({
         status: 'authenticated',
-        user: { ...user, name: profile.name, profile_completed: profile.profile_completed },
+        user: {
+          ...user,
+          name: profile.name,
+          profile_completed: profile.profile_completed,
+        },
         profile,
         isLoading: false,
       });
       log.info('[AuthStore] completeProfile: profile saved, navigating');
       return true;
     } catch (error: unknown) {
-      set({ status: 'authenticated', isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر حفظ البيانات' });
+      set({
+        status: 'authenticated',
+        isLoading: false,
+        errorMessage:
+          error instanceof Error ? error.message : 'تعذّر حفظ البيانات',
+      });
       return false;
     }
   },
 
   setGuestMode: () => {
-    set({ status: 'guest', user: null, profile: null, isLoading: false, errorMessage: '' });
+    set({
+      status: 'guest',
+      user: null,
+      profile: null,
+      isLoading: false,
+      errorMessage: '',
+    });
   },
 
   logout: async () => {
@@ -197,9 +329,19 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     try {
       await authService.logout();
       useUserStore.getState().resetUser();
-      set({ status: 'unauthenticated', user: null, profile: null, isLoading: false });
+      set({
+        status: 'unauthenticated',
+        user: null,
+        profile: null,
+        isLoading: false,
+      });
     } catch (error: unknown) {
-      set({ status: 'error', isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر تسجيل الخروج' });
+      set({
+        status: 'error',
+        isLoading: false,
+        errorMessage:
+          error instanceof Error ? error.message : 'تعذّر تسجيل الخروج',
+      });
     }
   },
 
@@ -210,7 +352,11 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false });
       return true;
     } catch (error: unknown) {
-      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر إرسال الرمز' });
+      set({
+        isLoading: false,
+        errorMessage:
+          error instanceof Error ? error.message : 'تعذّر إرسال الرمز',
+      });
       return false;
     }
   },
@@ -222,7 +368,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false });
       return true;
     } catch (error: unknown) {
-      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'رمز التحقق غير صحيح أو منتهي الصلاحية' });
+      set({
+        isLoading: false,
+        errorMessage:
+          error instanceof Error
+            ? error.message
+            : 'رمز التحقق غير صحيح أو منتهي الصلاحية',
+      });
       return false;
     }
   },
@@ -234,13 +386,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       set({ isLoading: false });
       return true;
     } catch (error: unknown) {
-      set({ isLoading: false, errorMessage: error instanceof Error ? error.message : 'تعذّر تحديث كلمة المرور' });
+      set({
+        isLoading: false,
+        errorMessage:
+          error instanceof Error ? error.message : 'تعذّر تحديث كلمة المرور',
+      });
       return false;
     }
   },
 
   clearError: () =>
-    set((state) => ({ errorMessage: '', status: state.status === 'error' ? 'unauthenticated' : state.status })),
+    set((state) => ({
+      errorMessage: '',
+      status: state.status === 'error' ? 'unauthenticated' : state.status,
+    })),
 
   resetAuth: () => set({ ...initialState }),
 }));

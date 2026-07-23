@@ -9,9 +9,11 @@ import { PostCard } from '@/components/community/PostCard';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { AppText } from '@/components/common/AppText';
 import { GradientTabs } from '@/components/common/GradientTabs';
+import { OfflineState } from '@/components/common/OfflineState';
 import { useAuthGate } from '@/hooks/useAuthGate';
 import { useRTL } from '@/hooks/useRTL';
 import { useCommunityStore } from '@/stores/community.store';
+import { useNetworkStore } from '@/stores/network.store';
 import { useUserStore } from '@/stores/user.store';
 
 type CommunityTab = 'posts' | 'stats';
@@ -28,8 +30,21 @@ export default function CommunityScreen() {
   const [activeTab, setActiveTab] = useState<CommunityTab>('posts');
   const { user } = useUserStore();
   const { requireAuth } = useAuthGate();
-  const { posts, userReactions, userFollows, isLoading, isLoadingMore, hasMore, errorMessage, initializeCommunity, loadMorePosts, refreshPosts, toggleReaction, toggleFollow } =
-    useCommunityStore();
+  const {
+    posts,
+    userReactions,
+    userFollows,
+    isLoading,
+    isLoadingMore,
+    hasMore,
+    errorMessage,
+    initializeCommunity,
+    loadMorePosts,
+    refreshPosts,
+    toggleReaction,
+    toggleFollow,
+  } = useCommunityStore();
+  const isOnline = useNetworkStore((s) => s.isOnline);
 
   useEffect(() => {
     initializeCommunity();
@@ -38,7 +53,10 @@ export default function CommunityScreen() {
   return (
     <View className="flex-1 bg-app-background">
       <View className="px-[22px]" style={{ paddingTop: insets.top + 10 }}>
-        <View className="flex-row items-center justify-between" style={{ flexDirection: rowDir }}>
+        <View
+          className="flex-row items-center justify-between"
+          style={{ flexDirection: rowDir }}
+        >
           <View className="w-11" />
           <AppText variant="bold" className="text-[17px] text-app-navy">
             عائلة الطيبات
@@ -47,7 +65,11 @@ export default function CommunityScreen() {
         </View>
 
         <View className="mt-4">
-          <GradientTabs options={COMMUNITY_TABS} value={activeTab} onChange={setActiveTab} />
+          <GradientTabs
+            options={COMMUNITY_TABS}
+            value={activeTab}
+            onChange={setActiveTab}
+          />
         </View>
       </View>
 
@@ -62,7 +84,9 @@ export default function CommunityScreen() {
             paddingTop: 8,
             paddingBottom: insets.bottom + 110,
           }}
-          ItemSeparatorComponent={() => <View className="h-2 bg-app-background" />}
+          ItemSeparatorComponent={() => (
+            <View className="h-2 bg-app-background" />
+          )}
           onRefresh={refreshPosts}
           refreshing={isLoading}
           onEndReached={() => {
@@ -71,9 +95,11 @@ export default function CommunityScreen() {
           onEndReachedThreshold={0.4}
           ListEmptyComponent={
             isLoading ? (
-              <View className="py-10 items-center">
+              <View className="items-center py-10">
                 <MealSpinner size={120} />
               </View>
+            ) : !isOnline ? (
+              <OfflineState compact onRetry={refreshPosts} />
             ) : (
               <EmptyFeed />
             )
@@ -81,7 +107,9 @@ export default function CommunityScreen() {
           ListHeaderComponent={
             errorMessage ? (
               <View className="mb-2 bg-app-surface px-4 py-3">
-                <AppText className="text-[12.5px] leading-6 text-app-textMuted">{errorMessage}</AppText>
+                <AppText className="text-app-textMuted text-[12.5px] leading-6">
+                  {errorMessage}
+                </AppText>
               </View>
             ) : null
           }
@@ -92,14 +120,20 @@ export default function CommunityScreen() {
                 post={item}
                 isLoved={userReactions.includes(item.id)}
                 onLovePress={() => requireAuth(() => toggleReaction(item.id))}
-                isFollowing={isFollowable ? userFollows.includes(item.user_id) : undefined}
-                onFollowPress={isFollowable ? () => requireAuth(() => toggleFollow(item.user_id)) : undefined}
+                isFollowing={
+                  isFollowable ? userFollows.includes(item.user_id) : undefined
+                }
+                onFollowPress={
+                  isFollowable
+                    ? () => requireAuth(() => toggleFollow(item.user_id))
+                    : undefined
+                }
               />
             );
           }}
           ListFooterComponent={
             isLoadingMore ? (
-              <View className="py-6 items-center">
+              <View className="items-center py-6">
                 <MealSpinner variant="arc" size={80} />
               </View>
             ) : (

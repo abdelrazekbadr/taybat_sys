@@ -6,6 +6,8 @@ npx expo start --clear
 
 npx expo run:android --port 8082
 
+eas build --platform android --profile production
+
 ---
 
 adb logcat -s ReactNativeJS
@@ -23,8 +25,6 @@ keytool-keystore android/app/debug.keystore\
 -keypassandroid
 
 ---
-
-
 
 exportANDROID_HOME="$HOME/Library/Android/sdk"
 

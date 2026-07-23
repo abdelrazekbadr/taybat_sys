@@ -52,7 +52,7 @@
 
 ### 2a. Outbox queue
 
-- New `stores/outbox.store.ts` (persisted): array of ops
+- قق`stores/outbox.store.ts` (persisted): array of ops
   ```ts
   type OutboxOp = {
     opId: string;                  // uuid — idempotency key

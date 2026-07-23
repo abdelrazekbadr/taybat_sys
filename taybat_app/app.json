@@ -72,6 +72,12 @@
     "locales": {
       "en": "./localization/translations/en.json",
       "ar": "./localization/translations/ar.json"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e07e8451-ac5f-403a-9677-ef3fbb16cd35"
+      }
     }
   }
 }

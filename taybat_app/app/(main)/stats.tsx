@@ -10,7 +10,13 @@ import {
   Smile,
 } from 'lucide-react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Dimensions, Pressable, ScrollView, View } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  Pressable,
+  ScrollView,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme } from 'react-native-paper';
 import Svg, { Circle, Line, Path, Text as SvgText } from 'react-native-svg';
@@ -20,7 +26,12 @@ import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/common/AppText';
 import { GradientTabs } from '@/components/common/GradientTabs';
-import { OptionSelector, type OptionItem } from '@/components/common/OptionSelector';
+import {
+  OptionSelector,
+  type OptionItem,
+} from '@/components/common/OptionSelector';
+import { OfflineState } from '@/components/common/OfflineState';
+import { OutlineButton } from '@/components/common/OutlineButton';
 import { PrimaryButton } from '@/components/common/PrimaryButton';
 import { AppTabBar } from '@/components/common/AppTabBar';
 import { CommitmentCalendar } from '@/components/stats/CommitmentCalendar';
@@ -32,13 +43,20 @@ import {
 import { buildStatsTopic, shareContent } from '@/services/sharing';
 import { useHealthGoalsStore } from '@/stores/healthGoals.store';
 import { useMembershipStore } from '@/stores/membership.store';
+import { useNetworkStore } from '@/stores/network.store';
 import { useNotificationSettingsStore } from '@/stores/notificationSettings.store';
 import { useUserStore } from '@/stores/user.store';
 import { useUserRatingStore } from '@/stores/userRating.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import type { UserRating, WeeklyScore } from '@/types';
 import { localDateISO } from '@/utils/dateUtils';
-import { daysOnPlan, nextRatingDate, toHealthTimelineInDays } from '@/utils/statsUtils';
+import {
+  addDaysISO,
+  committedDaysInLastNDays,
+  daysOnPlan,
+  nextRatingDate,
+  toHealthTimelineInDays,
+} from '@/utils/statsUtils';
 import { toArabicNumerals } from '@/utils/zoneUtils';
 
 // ─── Types ─────────────────────────────────────────────────────────────────
@@ -55,7 +73,11 @@ type PeriodDays = 30 | 60 | 90;
 // ─── Validation ────────────────────────────────────────────────────────────
 
 const weeklyScoreSchema = z.union([
-  z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5),
+  z.literal(1),
+  z.literal(2),
+  z.literal(3),
+  z.literal(4),
+  z.literal(5),
 ]);
 
 const evaluationSchema = z.object({
@@ -66,16 +88,16 @@ const evaluationSchema = z.object({
 // ─── Constants ─────────────────────────────────────────────────────────────
 
 const SCORE_OPTIONS: OptionItem<WeeklyScore>[] = [
-  { key: 1, icon: { kind: 'lucide', Icon: Frown },      label: 'سيء جداً' },
-  { key: 2, icon: { kind: 'lucide', Icon: Meh },        label: 'سيء' },
-  { key: 3, icon: { kind: 'lucide', Icon: Smile },      label: 'عادي' },
-  { key: 4, icon: { kind: 'lucide', Icon: Laugh },      label: 'جيد' },
-  { key: 5, icon: { kind: 'lucide', Icon: PartyPopper },label: 'ممتاز' },
+  { key: 1, icon: { kind: 'lucide', Icon: Frown }, label: 'سيء جداً' },
+  { key: 2, icon: { kind: 'lucide', Icon: Meh }, label: 'سيء' },
+  { key: 3, icon: { kind: 'lucide', Icon: Smile }, label: 'عادي' },
+  { key: 4, icon: { kind: 'lucide', Icon: Laugh }, label: 'جيد' },
+  { key: 5, icon: { kind: 'lucide', Icon: PartyPopper }, label: 'ممتاز' },
 ];
 
 const STATS_TABS = [
   { key: 'evaluation', label: 'التقييم' },
-  { key: 'timeline',   label: 'إنجازاتي' },
+  { key: 'timeline', label: 'إنجازاتي' },
 ] as const;
 
 const PERIOD_OPTIONS: { key: PeriodDays; label: string }[] = [
@@ -85,17 +107,27 @@ const PERIOD_OPTIONS: { key: PeriodDays; label: string }[] = [
 ];
 
 // Chart geometry — responsive to screen width
-const SCREEN_W    = Dimensions.get('window').width;
-const Y_AXIS_W    = 22;                              // width reserved for Y-axis labels
-const CHART_H     = 170;
-const CHART_PX    = 16;
-const CHART_PY    = 22;
+const SCREEN_W = Dimensions.get('window').width;
+const Y_AXIS_W = 22; // width reserved for Y-axis labels
+const CHART_H = 170;
+const CHART_PX = 16;
+const CHART_PY = 22;
 const CHART_SVG_W = Math.max(200, SCREEN_W - 76 - Y_AXIS_W); // 76 = scrollview+card padding
 
 // Arabic month abbreviations for X-axis dates
 const MONTHS_SHORT = [
-  'يناير','فبراير','مارس','أبريل','مايو','يونيو',
-  'يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر',
+  'يناير',
+  'فبراير',
+  'مارس',
+  'أبريل',
+  'مايو',
+  'يونيو',
+  'يوليو',
+  'أغسطس',
+  'سبتمبر',
+  'أكتوبر',
+  'نوفمبر',
+  'ديسمبر',
 ];
 
 // Health score colour + label mapping (1=worst … 5=best)
@@ -120,8 +152,14 @@ const SCORE_LABELS: Record<number, string> = {
 function formatArabicDate(isoDate: string) {
   const date = new Date(isoDate);
   try {
-    return date.toLocaleDateString('ar-EG', { weekday: 'long', day: 'numeric', month: 'long' });
-  } catch { return isoDate; }
+    return date.toLocaleDateString('ar-EG', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+    });
+  } catch {
+    return isoDate;
+  }
 }
 
 function shortDate(isoDate: string): string {
@@ -148,7 +186,9 @@ function PeriodFilter({
             key={key}
             onPress={() => onChange(key)}
             className={`flex-1 items-center rounded-full py-[7px] ${
-              active ? 'bg-app-primary' : 'border border-app-lineSoft bg-app-surface'
+              active
+                ? 'bg-app-primary'
+                : 'border border-app-lineSoft bg-app-surface'
             }`}
             style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
           >
@@ -167,19 +207,29 @@ function PeriodFilter({
 
 // ─── HealthTimelineChart ───────────────────────────────────────────────────
 
-function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
-  const theme       = useTheme();
+function HealthTimelineChart({
+  ratings,
+  isOfflineEmpty,
+}: {
+  ratings: UserRating[];
+  isOfflineEmpty: boolean;
+}) {
+  const theme = useTheme();
   const { isRTL, rowDir } = useRTL();
 
   const yFor = (v: number) =>
-    CHART_H - CHART_PY - ((Math.max(1, Math.min(5, v)) - 1) / 4) * (CHART_H - CHART_PY * 2);
+    CHART_H -
+    CHART_PY -
+    ((Math.max(1, Math.min(5, v)) - 1) / 4) * (CHART_H - CHART_PY * 2);
 
   // Center single point; spread multiple evenly — oldest on the left,
   // newest on the right, same orientation in RTL and LTR. Used for the
   // date labels, which render as plain Views and are not auto-mirrored.
   const xFor = (idx: number) => {
     if (ratings.length === 1) return CHART_SVG_W / 2;
-    return CHART_PX + idx * (CHART_SVG_W - CHART_PX * 2) / (ratings.length - 1);
+    return (
+      CHART_PX + (idx * (CHART_SVG_W - CHART_PX * 2)) / (ratings.length - 1)
+    );
   };
 
   // The <Svg> canvas itself gets auto-mirrored by the OS under RTL (unlike
@@ -188,13 +238,19 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
   const svgXFor = (idx: number) => {
     if (ratings.length === 1) return CHART_SVG_W / 2;
     const orderedIdx = isRTL ? ratings.length - 1 - idx : idx;
-    return CHART_PX + orderedIdx * (CHART_SVG_W - CHART_PX * 2) / (ratings.length - 1);
+    return (
+      CHART_PX +
+      (orderedIdx * (CHART_SVG_W - CHART_PX * 2)) / (ratings.length - 1)
+    );
   };
 
   const pathD = useMemo(() => {
     if (ratings.length < 2) return '';
     return ratings
-      .map((r, i) => `${i === 0 ? 'M' : 'L'} ${svgXFor(i)} ${yFor(r.health_score)}`)
+      .map(
+        (r, i) =>
+          `${i === 0 ? 'M' : 'L'} ${svgXFor(i)} ${yFor(r.health_score)}`,
+      )
       .join(' ');
   }, [ratings, isRTL]);
 
@@ -230,7 +286,9 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
         مسار التحسن الصحي بشكل عام
       </AppText>
 
-      {ratings.length === 0 ? (
+      {ratings.length === 0 && isOfflineEmpty ? (
+        <OfflineState compact />
+      ) : ratings.length === 0 ? (
         <AppText className="mt-3 text-[12px] leading-5 text-app-textSoft">
           لا توجد تقييمات مسجّلة في هذه الفترة.
         </AppText>
@@ -248,8 +306,10 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
                   return (
                     <Line
                       key={idx}
-                      x1={CHART_PX} y1={y}
-                      x2={CHART_SVG_W - CHART_PX} y2={y}
+                      x1={CHART_PX}
+                      y1={y}
+                      x2={CHART_SVG_W - CHART_PX}
+                      y2={y}
                       stroke={theme.colors.outlineVariant}
                       strokeWidth={1}
                     />
@@ -268,9 +328,10 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
 
                 {/* Dots + score labels — each coloured by its score value */}
                 {ratings.map((r, i) => {
-                  const cx    = svgXFor(i);
-                  const cy    = yFor(r.health_score);
-                  const color = SCORE_COLORS[r.health_score] ?? theme.colors.primary;
+                  const cx = svgXFor(i);
+                  const cy = yFor(r.health_score);
+                  const color =
+                    SCORE_COLORS[r.health_score] ?? theme.colors.primary;
                   return (
                     <React.Fragment key={i}>
                       <SvgText
@@ -294,7 +355,8 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
                 {ratings.map((r, i) => {
                   // Skip dense labels: always show first/last, sample middle
                   const step = Math.max(1, Math.ceil((ratings.length - 1) / 4));
-                  if (i !== 0 && i !== ratings.length - 1 && i % step !== 0) return null;
+                  if (i !== 0 && i !== ratings.length - 1 && i % step !== 0)
+                    return null;
                   const labelW = 64;
                   return (
                     <View
@@ -327,10 +389,16 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
             style={{ flexDirection: rowDir }}
           >
             {([1, 2, 3, 4, 5] as const).map((s) => (
-              <View key={s} className="flex-row items-center gap-1" style={{ flexDirection: rowDir }}>
+              <View
+                key={s}
+                className="flex-row items-center gap-1"
+                style={{ flexDirection: rowDir }}
+              >
                 <View
                   style={{
-                    width: 9, height: 9, borderRadius: 5,
+                    width: 9,
+                    height: 9,
+                    borderRadius: 5,
                     backgroundColor: SCORE_COLORS[s],
                   }}
                 />
@@ -349,28 +417,35 @@ function HealthTimelineChart({ ratings }: { ratings: UserRating[] }) {
 // ─── Main Screen ───────────────────────────────────────────────────────────
 
 export default function StatsScreen() {
-  const theme  = useTheme();
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { isRTL, rowDir } = useRTL();
   const { i18n } = useTranslation();
-  const { force, initialTab } = useLocalSearchParams<{ force?: ForceMode; initialTab?: string }>();
+  const { force, initialTab } = useLocalSearchParams<{
+    force?: ForceMode;
+    initialTab?: string;
+  }>();
   const isEnglish = i18n.language?.startsWith('en');
   const user = useUserStore((s) => s.user);
+  const isOnline = useNetworkStore((s) => s.isOnline);
 
-  const ratings           = useUserRatingStore((s) => s.ratings);
-  const pendingRating     = useUserRatingStore((s) => s.pendingRating);
-  const isLoading         = useUserRatingStore((s) => s.isLoading);
-  const errorMessage      = useUserRatingStore((s) => s.errorMessage);
+  const ratings = useUserRatingStore((s) => s.ratings);
+  const pendingRating = useUserRatingStore((s) => s.pendingRating);
+  const isLoading = useUserRatingStore((s) => s.isLoading);
+  const errorMessage = useUserRatingStore((s) => s.errorMessage);
   const initializeRatings = useUserRatingStore((s) => s.initializeRatings);
-  const submitRating      = useUserRatingStore((s) => s.submitRating);
+  const submitRating = useUserRatingStore((s) => s.submitRating);
+  const minCommitmentDays = useUserRatingStore((s) => s.minCommitmentDays);
 
-  const userMeals           = useUserMealsStore((s) => s.userMeals);
+  const userMeals = useUserMealsStore((s) => s.userMeals);
   const initializeUserMeals = useUserMealsStore((s) => s.initializeUserMeals);
 
-  const goals      = useHealthGoalsStore((s) => s.goals);
+  const goals = useHealthGoalsStore((s) => s.goals);
   const fetchGoals = useHealthGoalsStore((s) => s.fetchGoals);
 
-  const resolvedInitialTab = Array.isArray(initialTab) ? initialTab[0] : initialTab;
+  const resolvedInitialTab = Array.isArray(initialTab)
+    ? initialTab[0]
+    : initialTab;
   const initialTabKey: 'evaluation' | 'timeline' | undefined =
     resolvedInitialTab === 'timeline'
       ? 'timeline'
@@ -378,18 +453,16 @@ export default function StatsScreen() {
         ? 'evaluation'
         : undefined;
 
-  const [activeTab, setActiveTab]   = useState<'evaluation' | 'timeline'>(initialTabKey ?? 'evaluation');
-  const [dayFilter, setDayFilter]   = useState<PeriodDays>(30);
+  const [activeTab, setActiveTab] = useState<'evaluation' | 'timeline'>(
+    initialTabKey ?? 'evaluation',
+  );
+  const [dayFilter, setDayFilter] = useState<PeriodDays>(30);
   const [localError, setLocalError] = useState('');
   const [successKey, setSuccessKey] = useState(0);
 
   const dueDate = useMemo(() => {
     if (ratings.length > 0) return nextRatingDate(ratings);
-    if (user?.plan_start_date) {
-      const dt = new Date(user.plan_start_date.slice(0, 10));
-      dt.setDate(dt.getDate() + 7);
-      return dt.toISOString().slice(0, 10);
-    }
+    if (user?.plan_start_date) return addDaysISO(user.plan_start_date, 7);
     if (user?.next_rating_date) return user.next_rating_date;
     return localDateISO();
   }, [ratings, user?.next_rating_date, user?.plan_start_date]);
@@ -401,9 +474,26 @@ export default function StatsScreen() {
     );
   }, [dueDate]);
 
-  const ratingBlocked    = !user?.plan_start_date || !user?.profile_completed;
-  const effectivePending = force === 'pending' ? true : force === 'locked' ? false : pendingRating;
-  const canSubmit        = !ratingBlocked && effectivePending;
+  const commitmentDaysLast7 = useMemo(
+    () => committedDaysInLastNDays(userMeals, 7),
+    [userMeals],
+  );
+  const commitmentTooLow = commitmentDaysLast7 < minCommitmentDays;
+
+  const ratingBlocked = !user?.plan_start_date || !user?.profile_completed;
+  const effectivePending =
+    force === 'pending' ? true : force === 'locked' ? false : pendingRating;
+  const canSubmit = !ratingBlocked && effectivePending && !commitmentTooLow;
+
+  // Rating is due (or overdue) but blocked by the commitment gate — submitting
+  // is impossible, so the card offers a "next round" preview instead of a
+  // disabled submit CTA. The real next date is only set once this overdue
+  // rating is actually submitted, so the preview is illustrative (+7 days
+  // from today), not a promise.
+  const lateBlockedByCommitment =
+    !ratingBlocked && effectivePending && commitmentTooLow;
+  const [showNextRoundPreview, setShowNextRoundPreview] = useState(false);
+  const previewDueDate = useMemo(() => addDaysISO(localDateISO(), 7), []);
 
   const filteredRatings = useMemo(
     () => toHealthTimelineInDays(ratings, dayFilter),
@@ -413,7 +503,10 @@ export default function StatsScreen() {
   const latestRating = useMemo(() => {
     if (!ratings.length) return null;
     return ratings.reduce((latest, r) =>
-      new Date(r.submitted_at).getTime() > new Date(latest.submitted_at).getTime() ? r : latest,
+      new Date(r.submitted_at).getTime() >
+      new Date(latest.submitted_at).getTime()
+        ? r
+        : latest,
     );
   }, [ratings]);
 
@@ -427,7 +520,15 @@ export default function StatsScreen() {
       const topic = buildStatsTopic(latestRating.health_score, 'هذا الأسبوع');
       const { shared } = await shareContent(topic, dayNo);
       if (shared) {
-        void useMembershipStore.getState().recordEvent('supporter', 'share_stats', undefined, 'stat', latestRating.id);
+        void useMembershipStore
+          .getState()
+          .recordEvent(
+            'supporter',
+            'share_stats',
+            undefined,
+            'stat',
+            latestRating.id,
+          );
       }
     } finally {
       setIsSharingStats(false);
@@ -443,31 +544,54 @@ export default function StatsScreen() {
     didApplyInitialTab.current = true;
   }, [initialTabKey]);
 
-  useEffect(() => { initializeRatings(); },      [initializeRatings]);
-  useEffect(() => { initializeUserMeals(); },    [initializeUserMeals]);
+  useEffect(() => {
+    if (!lateBlockedByCommitment) setShowNextRoundPreview(false);
+  }, [lateBlockedByCommitment]);
+
+  useEffect(() => {
+    initializeRatings();
+  }, [initializeRatings]);
+  useEffect(() => {
+    initializeUserMeals();
+  }, [initializeUserMeals]);
   useEffect(() => {
     if (goals.length === 0) fetchGoals();
   }, [fetchGoals, goals.length]);
 
   useEffect(() => {
     sheetEntrance.setValue(0);
-    Animated.timing(sheetEntrance, { toValue: 1, duration: 550, useNativeDriver: true }).start();
+    Animated.timing(sheetEntrance, {
+      toValue: 1,
+      duration: 550,
+      useNativeDriver: true,
+    }).start();
   }, [sheetEntrance, activeTab, successKey]);
 
   const sheetAnimatedStyle = {
     opacity: sheetEntrance,
     transform: [
-      { translateY: sheetEntrance.interpolate({ inputRange: [0, 1], outputRange: [24, 0] }) },
+      {
+        translateY: sheetEntrance.interpolate({
+          inputRange: [0, 1],
+          outputRange: [24, 0],
+        }),
+      },
     ],
   };
 
   const improvementOptions: OptionItem<number>[] = useMemo(
     () =>
-      goals.filter((g) => g.active).map((g) => ({
-        key: g.id,
-        label: isEnglish && g.name_en ? g.name_en : g.name,
-        icon: { kind: 'image' as const, name: g.image ?? 'dish', tint: false },
-      })),
+      goals
+        .filter((g) => g.active)
+        .map((g) => ({
+          key: g.id,
+          label: isEnglish && g.name_en ? g.name_en : g.name,
+          icon: {
+            kind: 'image' as const,
+            name: g.image ?? 'dish',
+            tint: false,
+          },
+        })),
     [goals, isEnglish],
   );
 
@@ -477,30 +601,49 @@ export default function StatsScreen() {
 
   const handleSubmit = form.handleSubmit(async (values) => {
     setLocalError('');
-    if (!canSubmit) { setLocalError('التقييم غير متاح الآن'); return; }
+    if (!canSubmit) {
+      setLocalError('التقييم غير متاح الآن');
+      return;
+    }
 
     form.clearErrors(['health_score', 'improvements']);
-    const missingHealthScore  = values.health_score === null;
+    const missingHealthScore = values.health_score === null;
     const missingImprovements = values.improvements.length === 0;
     if (missingHealthScore || missingImprovements) {
       if (missingHealthScore)
-        form.setError('health_score', { type: 'manual', message: 'اختر تقييم الحالة الصحية' });
+        form.setError('health_score', {
+          type: 'manual',
+          message: 'اختر تقييم الحالة الصحية',
+        });
       if (missingImprovements)
-        form.setError('improvements', { type: 'manual', message: 'اختر تحسناً واحداً على الأقل' });
+        form.setError('improvements', {
+          type: 'manual',
+          message: 'اختر تحسناً واحداً على الأقل',
+        });
       setLocalError('يرجى إكمال الحقول المطلوبة');
       return;
     }
 
     const parsed = evaluationSchema.safeParse(values);
-    if (!parsed.success) { setLocalError('يرجى إكمال الحقول المطلوبة'); return; }
+    if (!parsed.success) {
+      setLocalError('يرجى إكمال الحقول المطلوبة');
+      return;
+    }
 
+    // dueDate is the END of the period being rated (next_rating_date); the
+    // period this rating actually covers starts 7 days before it. Recording
+    // the real period — not "today" — keeps period_start meaningful even
+    // when submission is delayed (e.g. blocked by the commitment gate).
     const ok = await submitRating({
-      period_start: localDateISO(),
+      period_start: addDaysISO(dueDate, -7),
       health_score: parsed.data.health_score,
       improvement_goals_codes: parsed.data.improvements.join(','),
     });
 
-    if (!ok) { setLocalError(errorMessage || 'تعذّر إرسال التقييم'); return; }
+    if (!ok) {
+      setLocalError(errorMessage || 'تعذّر إرسال التقييم');
+      return;
+    }
 
     // Reschedule (or cancel) the rating notification for the new next_rating_date
     const notifState = useNotificationSettingsStore.getState();
@@ -519,15 +662,20 @@ export default function StatsScreen() {
     <View className="flex-1 bg-app-background">
       {/* ── Header ──────────────────────────────────────────── */}
       <View className="px-[22px]" style={{ paddingTop: insets.top + 10 }}>
-        <View className="flex-row items-center justify-between" style={{ flexDirection: rowDir }}>
+        <View
+          className="flex-row items-center justify-between"
+          style={{ flexDirection: rowDir }}
+        >
           <Pressable
             onPress={() => router.back()}
             className="h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface"
             style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1 }]}
           >
-            {isRTL
-              ? <ChevronRight size={24} color={theme.colors.onSurface} />
-              : <ChevronLeft  size={24} color={theme.colors.onSurface} />}
+            {isRTL ? (
+              <ChevronRight size={24} color={theme.colors.onSurface} />
+            ) : (
+              <ChevronLeft size={24} color={theme.colors.onSurface} />
+            )}
           </Pressable>
           <AppText variant="bold" className="text-[17px] text-app-navy">
             تقييم الطيبات
@@ -536,7 +684,11 @@ export default function StatsScreen() {
         </View>
 
         <View className="mt-4">
-          <GradientTabs options={STATS_TABS} value={activeTab} onChange={setActiveTab} />
+          <GradientTabs
+            options={STATS_TABS}
+            value={activeTab}
+            onChange={setActiveTab}
+          />
         </View>
       </View>
 
@@ -547,7 +699,9 @@ export default function StatsScreen() {
             className="flex-1"
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
-              paddingHorizontal: 22, paddingTop: 18, paddingBottom: insets.bottom + 96,
+              paddingHorizontal: 22,
+              paddingTop: 18,
+              paddingBottom: insets.bottom + 96,
             }}
           >
             {/* Period info card */}
@@ -556,20 +710,47 @@ export default function StatsScreen() {
                 className="flex-row items-center justify-between"
                 style={{ flexDirection: rowDir }}
               >
-                <AppText variant="bold" className="text-[15px] leading-[22px] text-app-navy">
-                  {canSubmit ? 'التقييم الحالي' : 'التقييم القادم'}
+                <AppText
+                  variant="bold"
+                  className="text-[15px] leading-[22px] text-app-navy"
+                >
+                  {lateBlockedByCommitment && showNextRoundPreview
+                    ? 'التقييم القادم'
+                    : effectivePending
+                      ? 'التقييم الحالي'
+                      : 'التقييم القادم'}
                 </AppText>
                 <View className="rounded-full bg-app-surfaceAlt px-3 py-1">
-                  <AppText variant="bold" className="text-[11px] text-app-textSoft">
-                    {formatArabicDate(dueDate)}
+                  <AppText
+                    variant="bold"
+                    className="text-[11px] text-app-textSoft"
+                  >
+                    {formatArabicDate(
+                      lateBlockedByCommitment && showNextRoundPreview
+                        ? previewDueDate
+                        : dueDate,
+                    )}
                   </AppText>
                 </View>
               </View>
-              {!canSubmit ? (
+              {lateBlockedByCommitment && showNextRoundPreview ? (
+                <>
+                  <AppText className="mt-2 text-[11px] leading-5 text-app-textSoft">
+                    متاح بعد ٧ أيام - قم بالالتزام بتسجيل وجباتك يومياً حتى
+                    تستطيع التقييم بالموعد القادم
+                  </AppText>
+                  <AppText className="mt-1 text-[10px] leading-5 text-app-textSoft opacity-70">
+                    * الموعد الفعلي يعتمد على وقت إرسال التقييم الحالي
+                    المتأخر
+                  </AppText>
+                </>
+              ) : !canSubmit ? (
                 <AppText className="mt-2 text-[11px] leading-5 text-app-textSoft">
                   {ratingBlocked
                     ? 'أكمل ملفك الشخصي أولاً لتفعيل التقييم الأسبوعي'
-                    : `${daysUntilDue > 0 ? `متاح بعد ${toArabicNumerals(daysUntilDue)} أيام - ` : ''}قم بالالتزام بتسجيل وجباتك يومياً حتى تستطيع التقييم بالموعد القادم`}
+                    : effectivePending && commitmentTooLow
+                      ? `${daysUntilDue < 0 ? `التقييم متأخر منذ ${toArabicNumerals(-daysUntilDue)} ${-daysUntilDue === 1 ? 'يوم' : 'أيام'} — ` : ''}يلزم الالتزام بتسجيل وجباتك ${toArabicNumerals(minCommitmentDays)} أيام على الأقل من آخر ٧ أيام لتفعيل التقييم — التزمت حالياً ${toArabicNumerals(commitmentDaysLast7)} ${commitmentDaysLast7 === 1 ? 'يوم' : 'أيام'}`
+                      : `${daysUntilDue > 0 ? `متاح بعد ${toArabicNumerals(daysUntilDue)} أيام - ` : ''}قم بالالتزام بتسجيل وجباتك يومياً حتى تستطيع التقييم بالموعد القادم`}
                 </AppText>
               ) : (
                 <AppText className="mt-2 text-[12.5px] leading-6 text-app-textSoft">
@@ -584,7 +765,10 @@ export default function StatsScreen() {
             >
               {/* Health score selector */}
               <View className="mt-5">
-                <AppText variant="bold" className="text-[13px] leading-6 text-app-navy">
+                <AppText
+                  variant="bold"
+                  className="text-[13px] leading-6 text-app-navy"
+                >
                   الحالة الصحية العامة
                 </AppText>
                 <Controller
@@ -614,7 +798,10 @@ export default function StatsScreen() {
               {/* Improvements selector */}
               {improvementOptions.length > 0 && (
                 <View className="mt-6">
-                  <AppText variant="bold" className="text-[13px] leading-6 text-app-navy">
+                  <AppText
+                    variant="bold"
+                    className="text-[13px] leading-6 text-app-navy"
+                  >
                     التحسينات الملحوظة
                   </AppText>
                   <AppText className="mb-3 mt-0.5 text-[12px] leading-5 text-app-textSoft">
@@ -647,12 +834,25 @@ export default function StatsScreen() {
             </View>
 
             <View className="mt-6">
-              <PrimaryButton
-                title="أرسل التقييم"
-                onPress={handleSubmit}
-                disabled={!canSubmit || isLoading}
-                loading={isLoading}
-              />
+              {lateBlockedByCommitment ? (
+                <OutlineButton
+                  title={
+                    showNextRoundPreview
+                      ? 'عرض حالة التقييم الحالي'
+                      : 'عرض التقييم القادم'
+                  }
+                  onPress={() =>
+                    setShowNextRoundPreview((prev) => !prev)
+                  }
+                />
+              ) : (
+                <PrimaryButton
+                  title="أرسل التقييم"
+                  onPress={handleSubmit}
+                  disabled={!canSubmit || isLoading}
+                  loading={isLoading}
+                />
+              )}
               {localError || errorMessage ? (
                 <AppText className="mt-2 text-center text-[12.5px] leading-5 text-red-500">
                   * {localError || errorMessage}
@@ -660,7 +860,10 @@ export default function StatsScreen() {
               ) : null}
               {successKey > 0 && !localError && !errorMessage ? (
                 <View className="mt-3 items-center">
-                  <AppText variant="bold" className="text-[13px] text-app-primary">
+                  <AppText
+                    variant="bold"
+                    className="text-[13px] text-app-primary"
+                  >
                     تم إرسال التقييم بنجاح ✓
                   </AppText>
                 </View>
@@ -692,7 +895,10 @@ export default function StatsScreen() {
 
             {/* Health improvement chart — period filter lives directly above it */}
             <View className="mt-5">
-              <View className="mb-2 items-center justify-between" style={{ flexDirection: rowDir }}>
+              <View
+                className="mb-2 items-center justify-between"
+                style={{ flexDirection: rowDir }}
+              >
                 <AppText variant="bold" className="text-[13px] text-app-navy">
                   مسار التحسن الصحي
                 </AppText>
@@ -700,15 +906,24 @@ export default function StatsScreen() {
                   <Pressable
                     onPress={handleShareStats}
                     disabled={isSharingStats}
-                    style={({ pressed }) => ({ opacity: pressed || isSharingStats ? 0.6 : 1 })}
+                    style={({ pressed }) => ({
+                      opacity: pressed || isSharingStats ? 0.6 : 1,
+                    })}
                   >
-                    <Share2 size={16} color={theme.colors.primary} strokeWidth={2.2} />
+                    <Share2
+                      size={16}
+                      color={theme.colors.primary}
+                      strokeWidth={2.2}
+                    />
                   </Pressable>
                 ) : null}
               </View>
               <PeriodFilter value={dayFilter} onChange={setDayFilter} />
             </View>
-            <HealthTimelineChart ratings={filteredRatings} />
+            <HealthTimelineChart
+              ratings={filteredRatings}
+              isOfflineEmpty={!isOnline && ratings.length === 0}
+            />
           </ScrollView>
         )}
       </Animated.View>

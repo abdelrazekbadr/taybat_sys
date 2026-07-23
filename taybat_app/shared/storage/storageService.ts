@@ -1,5 +1,6 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform } from 'react-native';
+
+import { tracedAsyncStorage as AsyncStorage } from '@/lib/tracedAsyncStorage';
 
 const isWeb = Platform.OS === 'web';
 
@@ -26,7 +27,8 @@ const storage = isWeb ? webStorage : AsyncStorage;
 
 class StorageService {
   async set(key: string, value: unknown): Promise<void> {
-    const storeValue = typeof value === 'string' ? value : JSON.stringify(value);
+    const storeValue =
+      typeof value === 'string' ? value : JSON.stringify(value);
     await storage.setItem(key, storeValue);
   }
 

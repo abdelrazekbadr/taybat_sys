@@ -10,5 +10,14 @@ export const publicConfigRepository: IPublicConfigRepository = USE_MOCK
   ? new PublicConfigRepositoryMock()
   : new PublicConfigRepositorySupabase(supabase);
 
-export type { IPublicConfigRepository, NotificationConfig, ShareConfig } from './IPublicConfigRepository';
-export { DEFAULT_MEAL_IMAGE_BASE_URL, DEFAULT_NOTIFICATION_CONFIG, DEFAULT_SHARE_CONFIG } from './IPublicConfigRepository';
+export type {
+  IPublicConfigRepository,
+  NotificationConfig,
+  ShareConfig,
+} from './IPublicConfigRepository';
+export {
+  DEFAULT_MEAL_IMAGE_BASE_URL,
+  DEFAULT_NOTIFICATION_CONFIG,
+  DEFAULT_RATING_MIN_COMMITMENT_DAYS,
+  DEFAULT_SHARE_CONFIG,
+} from './IPublicConfigRepository';

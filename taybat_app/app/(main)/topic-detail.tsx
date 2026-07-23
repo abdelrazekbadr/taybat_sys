@@ -1,6 +1,14 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Dimensions, Easing, Image, ScrollView, TouchableOpacity, View } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  Easing,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTheme, type MD3Theme } from 'react-native-paper';
 
@@ -45,9 +53,11 @@ import {
 } from 'lucide-react-native';
 
 import { AppText } from '@/components/common/AppText';
+import { OfflineState } from '@/components/common/OfflineState';
 import { useRTL } from '@/hooks/useRTL';
 import { buildTopicTopic, shareContent } from '@/services/sharing';
 import { useMembershipStore } from '@/stores/membership.store';
+import { useNetworkStore } from '@/stores/network.store';
 import { useTopicsStore } from '@/stores/topics.store';
 import { useUserStore } from '@/stores/user.store';
 import { daysOnPlan } from '@/utils/statsUtils';
@@ -99,23 +109,35 @@ function resolveIcon(name: string): LucideIcon {
   return ICONS[name] ?? BookOpen;
 }
 
-function resolveAccentColor(theme: MD3Theme, code: string, accentColor: string) {
+function resolveAccentColor(
+  theme: MD3Theme,
+  code: string,
+  accentColor: string,
+) {
   if (accentColor && accentColor.startsWith('#')) return accentColor;
   switch (code) {
-    case 'forbidden-foods': return theme.colors.error;
-    default: return theme.colors.primary;
+    case 'forbidden-foods':
+      return theme.colors.error;
+    default:
+      return theme.colors.primary;
   }
 }
 
 function resolveTopicImage(code: string, imageUrl: string) {
   if (imageUrl.trim().length > 0) return { uri: imageUrl };
   switch (code) {
-    case 'allowed-foods':   return imageAllowed;
-    case 'forbidden-foods': return imageForbidden;
-    case 'weekly-rating':   return imageRating;
-    case 'system-intro':    return imageMobileApp2;
-    case 'app-goals':       return imageMobileApp;
-    default:                return defaultTopicImage;
+    case 'allowed-foods':
+      return imageAllowed;
+    case 'forbidden-foods':
+      return imageForbidden;
+    case 'weekly-rating':
+      return imageRating;
+    case 'system-intro':
+      return imageMobileApp2;
+    case 'app-goals':
+      return imageMobileApp;
+    default:
+      return defaultTopicImage;
   }
 }
 
@@ -127,13 +149,17 @@ export default function TopicDetailScreen() {
   const sheetEntrance = useRef(new Animated.Value(0)).current;
   const screenHeight = Dimensions.get('window').height / 2;
 
-  const fetchTopics    = useTopicsStore((s) => s.fetchTopics);
+  const fetchTopics = useTopicsStore((s) => s.fetchTopics);
   const getTopicByCode = useTopicsStore((s) => s.getTopicByCode);
+  const topicsLoaded = useTopicsStore((s) => s.topics.length > 0);
+  const isOnline = useNetworkStore((s) => s.isOnline);
   const { user } = useUserStore();
   const dayNo = daysOnPlan(user?.plan_start_date);
   const [isSharingTopic, setIsSharingTopic] = useState(false);
 
-  useEffect(() => { fetchTopics(); }, [fetchTopics]);
+  useEffect(() => {
+    fetchTopics();
+  }, [fetchTopics]);
 
   const code = Array.isArray(topicCode) ? topicCode[0] : topicCode;
   const topic = code ? getTopicByCode(code) : undefined;
@@ -142,17 +168,32 @@ export default function TopicDetailScreen() {
     if (isSharingTopic || !topic) return;
     setIsSharingTopic(true);
     try {
-      const { shared } = await shareContent(buildTopicTopic(topic.title, topic.description), dayNo);
+      const { shared } = await shareContent(
+        buildTopicTopic(topic.title, topic.description),
+        dayNo,
+      );
       if (shared) {
-        void useMembershipStore.getState().recordEvent('supporter', 'share_topic', undefined, 'topic', topic.id);
+        void useMembershipStore
+          .getState()
+          .recordEvent(
+            'supporter',
+            'share_topic',
+            undefined,
+            'topic',
+            topic.id,
+          );
       }
     } finally {
       setIsSharingTopic(false);
     }
   };
 
-  const accentColor = topic ? resolveAccentColor(theme, topic.code, topic.accent_color) : theme.colors.primary;
-  const imageSource  = topic ? resolveTopicImage(topic.code, topic.image_url) : defaultTopicImage;
+  const accentColor = topic
+    ? resolveAccentColor(theme, topic.code, topic.accent_color)
+    : theme.colors.primary;
+  const imageSource = topic
+    ? resolveTopicImage(topic.code, topic.image_url)
+    : defaultTopicImage;
 
   useEffect(() => {
     if (!topic) return;
@@ -179,7 +220,10 @@ export default function TopicDetailScreen() {
 
   if (!topic) {
     return (
-      <View className="flex-1 bg-app-background" style={{ paddingTop: insets.top + 12 }}>
+      <View
+        className="flex-1 bg-app-background"
+        style={{ paddingTop: insets.top + 12 }}
+      >
         <TouchableOpacity
           className="mx-[22px] h-11 w-11 items-center justify-center rounded-full border border-app-line bg-app-surface shadow-lg shadow-black/10"
           style={{ elevation: 5 }}
@@ -187,16 +231,31 @@ export default function TopicDetailScreen() {
           activeOpacity={0.8}
         >
           {isRTL ? (
-            <ChevronRight size={24} color={theme.colors.onSurface} strokeWidth={2.5} />
+            <ChevronRight
+              size={24}
+              color={theme.colors.onSurface}
+              strokeWidth={2.5}
+            />
           ) : (
-            <ChevronLeft size={24} color={theme.colors.onSurface} strokeWidth={2.5} />
+            <ChevronLeft
+              size={24}
+              color={theme.colors.onSurface}
+              strokeWidth={2.5}
+            />
           )}
         </TouchableOpacity>
-        <View className="flex-1 items-center justify-center px-[22px]">
-          <AppText variant="bold" className="text-[16px] leading-6 text-app-textSoft">
-            المحتوى غير موجود
-          </AppText>
-        </View>
+        {!topicsLoaded && !isOnline ? (
+          <OfflineState onRetry={fetchTopics} />
+        ) : (
+          <View className="flex-1 items-center justify-center px-[22px]">
+            <AppText
+              variant="bold"
+              className="text-[16px] leading-6 text-app-textSoft"
+            >
+              المحتوى غير موجود
+            </AppText>
+          </View>
+        )}
       </View>
     );
   }
@@ -207,7 +266,11 @@ export default function TopicDetailScreen() {
         <View className="relative h-[260px] bg-app-background">
           <View className="absolute inset-0 px-[14px] pb-2">
             <View className="h-full rounded-[22px] border border-app-lineSoft bg-white">
-              <Image source={imageSource} className="h-full w-full" resizeMode="contain" />
+              <Image
+                source={imageSource}
+                className="h-full w-full"
+                resizeMode="contain"
+              />
             </View>
           </View>
 
@@ -222,9 +285,17 @@ export default function TopicDetailScreen() {
               activeOpacity={0.8}
             >
               {isRTL ? (
-                <ChevronRight size={25} color={theme.colors.onSurface} strokeWidth={2.5} />
+                <ChevronRight
+                  size={25}
+                  color={theme.colors.onSurface}
+                  strokeWidth={2.5}
+                />
               ) : (
-                <ChevronLeft size={25} color={theme.colors.onSurface} strokeWidth={2.5} />
+                <ChevronLeft
+                  size={25}
+                  color={theme.colors.onSurface}
+                  strokeWidth={2.5}
+                />
               )}
             </TouchableOpacity>
             <TouchableOpacity
@@ -234,19 +305,29 @@ export default function TopicDetailScreen() {
               disabled={isSharingTopic}
               activeOpacity={0.8}
             >
-              <Share2 size={20} color={theme.colors.onSurface} strokeWidth={2.2} />
+              <Share2
+                size={20}
+                color={theme.colors.onSurface}
+                strokeWidth={2.2}
+              />
             </TouchableOpacity>
           </View>
         </View>
       </View>
 
-      <Animated.View className="-mt-7 flex-1 bg-app-background" style={sheetAnimatedStyle}>
+      <Animated.View
+        className="-mt-7 flex-1 bg-app-background"
+        style={sheetAnimatedStyle}
+      >
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: insets.bottom + 28 }}
         >
           <View className="px-[22px] pt-4">
-            <AppText variant="bold" className="text-[22px] leading-[35px] text-app-navy">
+            <AppText
+              variant="bold"
+              className="text-[22px] leading-[35px] text-app-navy"
+            >
               {topic.title}
             </AppText>
             <AppText className="mt-2 text-[13.5px] leading-6 text-app-textSoft">
@@ -263,10 +344,17 @@ export default function TopicDetailScreen() {
                     style={{ flexDirection: rowDir }}
                   >
                     <View className="h-10 w-10 flex-shrink-0 items-center justify-center rounded-[14px] bg-app-surfaceAlt">
-                      <ItemIcon size={20} color={accentColor} strokeWidth={2.5} />
+                      <ItemIcon
+                        size={20}
+                        color={accentColor}
+                        strokeWidth={2.5}
+                      />
                     </View>
                     <View className="flex-1 gap-1" style={{ minWidth: 0 }}>
-                      <AppText variant="bold" className="text-[14px] text-app-navy">
+                      <AppText
+                        variant="bold"
+                        className="text-[14px] text-app-navy"
+                      >
                         {item.title}
                       </AppText>
                       <AppText className="text-[12.5px] leading-5 text-app-textSoft">

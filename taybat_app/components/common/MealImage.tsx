@@ -1,5 +1,10 @@
+import { Image, type ImageContentFit } from 'expo-image';
 import React, { useEffect, useRef, useState } from 'react';
-import { Image, View, type ImageResizeMode, type ImageSourcePropType } from 'react-native';
+import {
+  View,
+  type ImageResizeMode,
+  type ImageSourcePropType,
+} from 'react-native';
 
 import { Skeleton } from '@/components/common/Skeleton';
 
@@ -9,6 +14,16 @@ interface MealImageProps {
   className?: string;
   resizeMode?: ImageResizeMode;
 }
+
+// Map the RN ImageResizeMode our callers already pass to expo-image's contentFit.
+const CONTENT_FIT: Record<ImageResizeMode, ImageContentFit> = {
+  cover: 'cover',
+  contain: 'contain',
+  stretch: 'fill',
+  center: 'none',
+  repeat: 'cover',
+  none: 'none',
+};
 
 // `onLoad`/`onError` are the only image events that fire reliably on both
 // platforms — `onLoadStart` is inconsistent on Android, so it's not used at
@@ -28,8 +43,16 @@ const SKELETON_REVEAL_DELAY_MS = 120;
  * url doesn't exist in storage). Shows a pulsing skeleton over the image
  * while a remote `uri` is genuinely still loading, without flickering for
  * uris that resolve instantly from cache.
+ *
+ * Backed by expo-image with a persistent disk cache, so images that loaded
+ * once render again with no network (offline-first).
  */
-export function MealImage({ uri, defaultSource, className, resizeMode = 'cover' }: MealImageProps) {
+export function MealImage({
+  uri,
+  defaultSource,
+  className,
+  resizeMode = 'cover',
+}: MealImageProps) {
   const [failed, setFailed] = useState(false);
   const [showSkeleton, setShowSkeleton] = useState(false);
   const pendingRef = useRef(false);
@@ -58,8 +81,9 @@ export function MealImage({ uri, defaultSource, className, resizeMode = 'cover' 
     <View className={className}>
       <Image
         source={source}
-        className="h-full w-full"
-        resizeMode={resizeMode}
+        style={{ width: '100%', height: '100%' }}
+        contentFit={CONTENT_FIT[resizeMode]}
+        cachePolicy="disk"
         onLoad={() => resolve('loaded')}
         onError={() => resolve('error')}
       />

@@ -20,6 +20,7 @@ import { initNotificationChannel, syncAllNotifications } from '@/services/notifi
 import { useAppStore } from '@/stores/app.store';
 import { useAuthStore } from '@/stores/auth.store';
 import { useNotificationSettingsStore } from '@/stores/notificationSettings.store';
+import { initNetworkListener } from '@/stores/network.store';
 import { useThemeStore } from '@/stores/theme.store';
 import { useUserMealsStore } from '@/stores/userMeals.store';
 import { useUserStore } from '@/stores/user.store';
@@ -81,6 +82,7 @@ export default function RootLayout() {
 
   React.useEffect(() => {
     const run = async () => {
+      initNetworkListener();
       await initializeThemeMode();
       await initializeApp();
       // initNotificationChannel can throw if the native module isn't ready yet

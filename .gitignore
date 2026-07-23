@@ -30,6 +30,10 @@ node_modules/
 .home/
 **/.home/
 
+supabase/.temp/
+supabase/.branches/
+.supabase-cli-home/
+
 .expo/
 **/.expo/
 .expo-shared/

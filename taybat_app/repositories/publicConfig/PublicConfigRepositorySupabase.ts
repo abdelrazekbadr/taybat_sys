@@ -2,10 +2,22 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 
 import { ServerError } from '@/shared/errors/AppError';
 
-import type { IPublicConfigRepository, NotificationConfig, ShareConfig } from './IPublicConfigRepository';
-import { DEFAULT_MEAL_IMAGE_BASE_URL, DEFAULT_NOTIFICATION_CONFIG, DEFAULT_SHARE_CONFIG } from './IPublicConfigRepository';
+import type {
+  IPublicConfigRepository,
+  NotificationConfig,
+  ShareConfig,
+} from './IPublicConfigRepository';
+import {
+  DEFAULT_MEAL_IMAGE_BASE_URL,
+  DEFAULT_NOTIFICATION_CONFIG,
+  DEFAULT_RATING_MIN_COMMITMENT_DAYS,
+  DEFAULT_SHARE_CONFIG,
+} from './IPublicConfigRepository';
 
-interface ConfigRow { key: string; value: string | null }
+interface ConfigRow {
+  key: string;
+  value: string | null;
+}
 
 function parseHour(raw: string | null | undefined, fallback: number): number {
   const n = parseInt(raw ?? '', 10);
@@ -33,12 +45,30 @@ export class PublicConfigRepositorySupabase implements IPublicConfigRepository {
 
     const d = DEFAULT_NOTIFICATION_CONFIG;
     return {
-      fastReminderHour:    parseHour(val('app_fast_reminder_hour'),   d.fastReminderHour),
-      fastReminderMinute:  parseMinute(val('app_fast_reminder_minute'), d.fastReminderMinute),
-      mealReminderHour:    parseHour(val('app_meal_reminder_hour'),   d.mealReminderHour),
-      mealReminderMinute:  parseMinute(val('app_meal_reminder_minute'), d.mealReminderMinute),
-      ratingReminderHour:  parseHour(val('app_rating_reminder_hour'),   d.ratingReminderHour),
-      ratingReminderMinute: parseMinute(val('app_rating_reminder_minute'), d.ratingReminderMinute),
+      fastReminderHour: parseHour(
+        val('app_fast_reminder_hour'),
+        d.fastReminderHour,
+      ),
+      fastReminderMinute: parseMinute(
+        val('app_fast_reminder_minute'),
+        d.fastReminderMinute,
+      ),
+      mealReminderHour: parseHour(
+        val('app_meal_reminder_hour'),
+        d.mealReminderHour,
+      ),
+      mealReminderMinute: parseMinute(
+        val('app_meal_reminder_minute'),
+        d.mealReminderMinute,
+      ),
+      ratingReminderHour: parseHour(
+        val('app_rating_reminder_hour'),
+        d.ratingReminderHour,
+      ),
+      ratingReminderMinute: parseMinute(
+        val('app_rating_reminder_minute'),
+        d.ratingReminderMinute,
+      ),
     };
   }
 
@@ -58,7 +88,10 @@ export class PublicConfigRepositorySupabase implements IPublicConfigRepository {
     // flatten it into a string array, trimming whitespace around each tag.
     const rawHashtags = val('community_hash_tags');
     const hashtags = rawHashtags
-      ? rawHashtags.split(',').map((tag) => tag.trim()).filter(Boolean)
+      ? rawHashtags
+          .split(',')
+          .map((tag) => tag.trim())
+          .filter(Boolean)
       : DEFAULT_SHARE_CONFIG.hashtags;
 
     return { webUrl, hashtags };
@@ -73,5 +106,19 @@ export class PublicConfigRepositorySupabase implements IPublicConfigRepository {
 
     if (error) throw new ServerError(error);
     return data?.value || DEFAULT_MEAL_IMAGE_BASE_URL;
+  }
+
+  async getRatingMinCommitmentDays(): Promise<number> {
+    const { data, error } = await this.client
+      .from('public_config')
+      .select('value')
+      .eq('key', 'rating_max_allowed_commitment')
+      .maybeSingle();
+
+    if (error) throw new ServerError(error);
+    const n = parseInt(data?.value ?? '', 10);
+    return Number.isFinite(n) && n >= 0 && n <= 7
+      ? n
+      : DEFAULT_RATING_MIN_COMMITMENT_DAYS;
   }
 }

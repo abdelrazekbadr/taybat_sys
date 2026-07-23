@@ -1,7 +1,9 @@
 import type { UserMeal, UserRating, ZoneColor } from '@/types';
-import { localDateISO } from './dateUtils';
+import { addDaysToISODate, localDateISO } from './dateUtils';
 
-export const daysOnPlan = (planStartDate: string | null | undefined): number => {
+export const daysOnPlan = (
+  planStartDate: string | null | undefined,
+): number => {
   if (!planStartDate) return 0;
   const startDate = planStartDate.slice(0, 10);
   const todayDate = localDateISO();
@@ -23,6 +25,21 @@ export const currentStreak = (userMeals: UserMeal[]): number => {
 export const greenMealsToday = (todayMeals: UserMeal[]): number =>
   todayMeals.filter((m) => m.zone_summary === 1).length;
 
+/** Count of distinct days (out of the last `days`, inclusive of today) with at least one logged meal. */
+export const committedDaysInLastNDays = (
+  userMeals: UserMeal[],
+  days: number,
+): number => {
+  const mealDates = new Set(userMeals.map((m) => m.date));
+  let count = 0;
+  const cursor = new Date();
+  for (let i = 0; i < days; i++) {
+    if (mealDates.has(localDateISO(cursor))) count++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return count;
+};
+
 export const formatArabicTime = (isoDatetime: string): string => {
   const date = new Date(isoDatetime);
   const h = date.getHours();
@@ -35,13 +52,11 @@ export const formatArabicTime = (isoDatetime: string): string => {
   return `${arabicDigits} ${isAM ? 'صباحاً' : 'مساءً'}`;
 };
 
-// Date arithmetic on existing ISO date strings — consistently UTC-midnight based,
-// safe to keep as toISOString since inputs are pure "YYYY-MM-DD" strings.
-const addDaysISO = (isoDatetime: string, days: number) => {
-  const date = new Date(isoDatetime);
-  date.setDate(date.getDate() + days);
-  return date.toISOString().slice(0, 10);
-};
+// DST-safe date-only arithmetic — see addDaysToISODate for why the naive
+// UTC-parse/local-mutate/UTC-serialize pattern silently loses a day around
+// DST transitions.
+export const addDaysISO = (isoDatetime: string, days: number) =>
+  addDaysToISODate(isoDatetime, days);
 
 const daysBetweenISO = (fromISODate: string, toISODate: string) => {
   const from = new Date(fromISODate).getTime();
@@ -52,7 +67,9 @@ const daysBetweenISO = (fromISODate: string, toISODate: string) => {
 export const nextRatingDate = (ratings: UserRating[]): string => {
   if (!ratings.length) return localDateISO();
   const last = ratings.reduce((latest, r) =>
-    new Date(r.submitted_at).getTime() > new Date(latest.submitted_at).getTime() ? r : latest,
+    new Date(r.submitted_at).getTime() > new Date(latest.submitted_at).getTime()
+      ? r
+      : latest,
   );
   return addDaysISO(last.submitted_at, 7);
 };
@@ -69,13 +86,19 @@ export type WeeklyChartPoint = {
   label: string;
 };
 
-export const toWeeklyChartData = (ratings: UserRating[], weeks: number): WeeklyChartPoint[] => {
+export const toWeeklyChartData = (
+  ratings: UserRating[],
+  weeks: number,
+): WeeklyChartPoint[] => {
   if (weeks <= 0) return [];
   const byStart = new Map(ratings.map((r) => [r.period_start, r]));
   const lastStart =
     ratings.length > 0
       ? ratings.reduce((latest, r) =>
-          new Date(r.period_start).getTime() > new Date(latest.period_start).getTime() ? r : latest,
+          new Date(r.period_start).getTime() >
+          new Date(latest.period_start).getTime()
+            ? r
+            : latest,
         ).period_start
       : localDateISO();
 
@@ -113,8 +136,12 @@ export type CommitmentData = {
   dailyStatus: DayStatus[];
 };
 
-export const toCommitmentData = (userMeals: UserMeal[], days: number): CommitmentData => {
-  if (days <= 0) return { pct: 0, activeDays: 0, totalDays: 0, dailyStatus: [] };
+export const toCommitmentData = (
+  userMeals: UserMeal[],
+  days: number,
+): CommitmentData => {
+  if (days <= 0)
+    return { pct: 0, activeDays: 0, totalDays: 0, dailyStatus: [] };
 
   const zoneByDate = new Map<string, ZoneColor>();
   userMeals.forEach((m) => {
@@ -142,19 +169,31 @@ export const toCommitmentData = (userMeals: UserMeal[], days: number): Commitmen
   };
 };
 
-export const toHealthTimelineInDays = (ratings: UserRating[], days: number): UserRating[] => {
+export const toHealthTimelineInDays = (
+  ratings: UserRating[],
+  days: number,
+): UserRating[] => {
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days + 1);
   const cutoffIso = localDateISO(cutoff);
   return [...ratings]
     .filter((r) => r.submitted_at.slice(0, 10) >= cutoffIso)
-    .sort((a, b) => new Date(a.submitted_at).getTime() - new Date(b.submitted_at).getTime());
+    .sort(
+      (a, b) =>
+        new Date(a.submitted_at).getTime() - new Date(b.submitted_at).getTime(),
+    );
 };
 
 // ─── Monthly chart (kept for legacy use) ──────────────────────────────────
 
-export const toMonthlyChartData = (ratings: UserRating[], year: number): MonthlyChartPoint[] => {
-  const buckets: { sum: number; count: number }[] = Array.from({ length: 12 }, () => ({ sum: 0, count: 0 }));
+export const toMonthlyChartData = (
+  ratings: UserRating[],
+  year: number,
+): MonthlyChartPoint[] => {
+  const buckets: { sum: number; count: number }[] = Array.from(
+    { length: 12 },
+    () => ({ sum: 0, count: 0 }),
+  );
   ratings.forEach((r) => {
     const d = new Date(r.submitted_at);
     if (d.getFullYear() !== year) return;

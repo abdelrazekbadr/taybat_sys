@@ -2,7 +2,6 @@ import { getApp } from '@react-native-firebase/app';
 import {
   getAnalytics,
   logEvent,
-  logScreenView,
   setAnalyticsCollectionEnabled,
   setUserId,
   setUserProperties,
@@ -71,15 +70,23 @@ export async function trackEvent(
   }
 }
 
-/** Call when a screen becomes focused (see useScreenTracking). */
+/**
+ * Call when a screen becomes focused (see useScreenTracking).
+ *
+ * `logScreenView()` is deprecated in both RNFB's namespaced and "modular"
+ * APIs — it still calls through to the same deprecated native method under
+ * the hood (see @react-native-firebase/analytics migration guide). Firebase's
+ * documented replacement is to log the reserved `screen_view` event directly
+ * via logEvent() with `firebase_screen`/`firebase_screen_class` params.
+ */
 export async function trackScreen(
   screenName: string,
   screenClass?: string,
 ): Promise<void> {
   try {
-    await logScreenView(analytics(), {
-      screen_name: screenName,
-      screen_class: screenClass ?? screenName,
+    await logEvent(analytics(), 'screen_view', {
+      firebase_screen: screenName,
+      firebase_screen_class: screenClass ?? screenName,
     });
   } catch (error: unknown) {
     log.error('trackScreen failed', screenName, error);
